@@ -1,0 +1,48 @@
+export const projects = [
+  {
+    id: 1,
+    title: 'مشروع سكني فاخر - القاهرة الجديدة',
+    company: 'benaa',
+    category: 'construction',
+    badge: 'شركة البناء',
+    image: 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80',
+    description: 'تنفيذ مجمع سكني متكامل ومطابق لأعلى مواصفات البناء الحديثة بمساحة 5000 م².',
+  },
+  {
+    id: 2,
+    title: 'تجديد وتطوير مقر إداري وتجاري',
+    company: 'benaa',
+    category: 'renovation',
+    badge: 'شركة البناء',
+    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
+    description: 'إعادة تأهيل وتجديد معماري وإنشائي كامل للمقر الرئيسي وفق أحدث التصاميم.',
+  },
+  {
+    id: 3,
+    title: 'استيراد وتوريد مواد بناء ومعدات',
+    company: 'majd',
+    category: 'import-export',
+    badge: 'شركة المجد',
+    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+    description: 'توريد حديد التسليح والمواد العازلة ومستلزمات الإنشاءات من كبرى المصانع العالمية.',
+  },
+  {
+    id: 4,
+    title: 'تجهيز وتشطيب مجمع تجاري',
+    company: 'benaa',
+    category: 'construction',
+    badge: 'شركة البناء',
+    image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80',
+    description: 'أعمال البنية التحتية والتشطيبات الكهروميكانيكية المتكاملة بمستوى عالمي.',
+  },
+  {
+    id: 5,
+    title: 'خدمات لوجستية وتوريد دولي',
+    company: 'majd',
+    category: 'logistics',
+    badge: 'شركة المجد',
+    image: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80',
+    description: 'إدارة سلاسل الإمداد والشحن البحري والجوي للبضائع والمعدات الثقيلة.',
+  },
+]
+

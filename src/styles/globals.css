@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 rounded-lg bg-benaa text-white font-semibold hover:bg-benaa-light transition-colors duration-300;
+  }
+  .btn-secondary {
+    @apply px-6 py-3 rounded-lg bg-majd text-white font-semibold hover:bg-majd-light transition-colors duration-300;
+  }
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16;
+  }
+}
