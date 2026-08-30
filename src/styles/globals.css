@@ -7,17 +7,24 @@ html {
 }
 
 body {
+  font-family: 'Plus Jakarta Sans', 'Cairo', 'Tajawal', system-ui, sans-serif;
+  color: #1f2937;
+  background-color: #ffffff;
+}
+
+.font-arabic {
   font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
 }
 
 @layer components {
   .btn-primary {
-    @apply px-6 py-3 rounded-lg bg-benaa text-white font-semibold hover:bg-benaa-light transition-colors duration-300;
+    @apply px-6 py-3 rounded-xl bg-benaa text-white font-semibold hover:bg-benaa-light transition-all duration-300 shadow-sm hover:shadow-md;
   }
   .btn-secondary {
-    @apply px-6 py-3 rounded-lg bg-majd text-white font-semibold hover:bg-majd-light transition-colors duration-300;
+    @apply px-6 py-3 rounded-xl bg-majd text-white font-semibold hover:bg-majd-light transition-all duration-300 shadow-sm hover:shadow-md;
   }
   .section-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16;
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 }
+

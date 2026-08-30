@@ -11,12 +11,20 @@ export default function Projects() {
   const filtered = active === 'all' ? projects : projects.filter((p) => p.category === active)
 
   return (
-    <section className="section-container">
+    <div className="py-16 md:py-24">
       <Container>
-        <SectionTitle eyebrow="أعمالنا" title="جميع المشاريع" />
+        <SectionTitle
+          eyebrow="Our Work & Deliveries"
+          eyebrowAr="سجل الإنجاز والمشاريع"
+          title="All Projects & Supply Contracts"
+          titleAr="كافة المشاريع وعقود التوريد"
+          subtitle="A showcase of delivered construction excellence and international trade shipments across Saudi Arabia."
+          subtitleAr="استعراض لأبرز المشاريع الإنشائية المنجزة وعقود التوريد التجاري المكتملة في المملكة."
+        />
         <ProjectFilter categories={categories} active={active} onChange={setActive} />
         <ProjectGrid projects={filtered} />
       </Container>
-    </section>
+    </div>
   )
 }
+

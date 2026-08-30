@@ -19,9 +19,11 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Cairo', 'Tajawal', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'Cairo', 'Tajawal', 'system-ui', 'sans-serif'],
+        arabic: ['Cairo', 'Tajawal', 'sans-serif'],
       },
     },
   },
   plugins: [],
 }
+

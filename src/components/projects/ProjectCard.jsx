@@ -18,24 +18,35 @@ export default function ProjectCard({ project }) {
           loading="lazy"
         />
         <div className="absolute top-3 right-3 bg-benaa text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
-          {project.badge || (project.company === 'benaa' ? 'شركة البناء' : 'شركة المجد')}
+          {project.badge || (project.company === 'benaa' ? 'Al-Benaa' : 'Al-Majd')}
         </div>
       </div>
       <div className="p-6 flex flex-col flex-grow">
-        <h3 className="font-bold text-benaa text-lg group-hover:text-majd transition-colors line-clamp-1">
+        <h3 className="font-bold text-benaa text-lg group-hover:text-majd transition-colors leading-snug">
           {project.title}
         </h3>
-        <p className="text-sm text-gray-600 mt-2 line-clamp-2 leading-relaxed flex-grow">
+        {project.titleAr && (
+          <p className="font-semibold text-sm text-gray-700 font-arabic mt-1">
+            {project.titleAr}
+          </p>
+        )}
+        <p className="text-xs text-gray-600 mt-3 line-clamp-2 leading-relaxed flex-grow">
           {project.description}
         </p>
+        {project.descriptionAr && (
+          <p className="text-[11px] text-gray-500 font-arabic mt-1 line-clamp-1 leading-relaxed">
+            {project.descriptionAr}
+          </p>
+        )}
         <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-          <span className="capitalize">{project.category}</span>
-          <span className="text-benaa font-medium flex items-center gap-1 group-hover:translate-x-[-2px] transition-transform">
-            تفاصيل المشروع <ArrowUpRight className="w-4 h-4" />
+          <span className="capitalize font-medium">{project.category}</span>
+          <span className="text-benaa font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            View Details <ArrowUpRight className="w-3.5 h-3.5" />
           </span>
         </div>
       </div>
     </motion.div>
   )
 }
+
 

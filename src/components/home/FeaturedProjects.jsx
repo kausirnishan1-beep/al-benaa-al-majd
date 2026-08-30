@@ -10,17 +10,24 @@ import { projects } from '../../data/projects.js'
 
 export default function FeaturedProjects() {
   return (
-    <section className="section-container bg-gray-50 py-16">
+    <section className="section-container bg-white py-20">
       <Container>
-        <SectionTitle eyebrow="أعمالنا" title="مشاريع مميزة" />
+        <SectionTitle
+          eyebrow="Our Portfolio"
+          eyebrowAr="سجل أعمالنا ومشاريعنا"
+          title="Featured Projects & Trade Deliveries"
+          titleAr="مشاريع مميزة وعقود توريد استراتيجية"
+          subtitle="Explore our milestone achievements in construction engineering and commercial trading across Saudi Arabia."
+          subtitleAr="استعرض أبرز إنجازاتنا في التطوير الإنشائي والتجارة العامة في مختلف مناطق المملكة."
+        />
         
-        <div className="mt-8">
+        <div className="mt-10">
           <Swiper
             modules={[Autoplay, Pagination, Navigation]}
             spaceBetween={24}
             slidesPerView={1}
             autoplay={{
-              delay: 3500,
+              delay: 4000,
               disableOnInteraction: false,
               pauseOnMouseEnter: true,
             }}
@@ -51,4 +58,5 @@ export default function FeaturedProjects() {
     </section>
   )
 }
+
 

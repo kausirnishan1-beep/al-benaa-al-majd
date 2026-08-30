@@ -6,14 +6,22 @@ import { companies } from '../data/companies.js'
 
 export default function CompaniesPage() {
   return (
-    <section className="section-container">
+    <div className="py-16 md:py-24">
       <Container>
-        <SectionTitle eyebrow="شركاتنا" title="تعرف على شركتينا" />
-        <div className="grid md:grid-cols-2 gap-8">
+        <SectionTitle
+          eyebrow="Our Group Structure"
+          eyebrowAr="الهيكل المؤسسي للمجموعة"
+          title="Explore Our Core Divisions"
+          titleAr="تعرف على شركاتنا المتخصصة"
+          subtitle="Specialized market leaders operating synchronously to provide complete contracting and global supply chain execution."
+          subtitleAr="شركتان رائدتان تعملان بتكامل لتقديم حلول إنشائية وتجارية ولوجستية متكاملة."
+        />
+        <div className="grid md:grid-cols-2 gap-8 mt-10">
           <BenaaCard data={companies[0]} />
           <MajdCard data={companies[1]} />
         </div>
       </Container>
-    </section>
+    </div>
   )
 }
+

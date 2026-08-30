@@ -6,32 +6,47 @@ import SectionTitle from '../common/SectionTitle.jsx'
 const points = [
   {
     icon: Award,
-    title: 'خبرة موثوقة',
-    desc: 'سنوات من الخبرة العريقة في مجال الإنشاءات والتجارة الدولية.',
+    title: 'Proven Track Record',
+    titleAr: 'خبرة موثوقة وعريقة',
+    desc: 'Decades of deep industry expertise in Saudi construction and international trade operations.',
+    descAr: 'سنوات من الخبرة العريقة في الإنشاءات والتجارة الدولية بالمملكة.',
   },
   {
     icon: ShieldCheck,
-    title: 'جودة عالية',
-    desc: 'التزام صارم بأعلى معايير الجودة والمواصفات العالمية القياسية.',
+    title: 'Uncompromised Quality',
+    titleAr: 'جودة واعتمادية عالمية',
+    desc: 'Strict compliance with ISO certifications and the official Saudi Building Code (SBC).',
+    descAr: 'التزام صارم بأعلى معايير الجودة العالمية وكود البناء السعودي.',
   },
   {
     icon: Globe,
-    title: 'شبكة عالمية',
-    desc: 'شراكات استراتيجية وموردون موثوقون في مختلف أنحاء العالم.',
+    title: 'Global Supply Network',
+    titleAr: 'شبكة توريد دولية',
+    desc: 'Strategic partnerships with leading international manufacturers and logistics hubs.',
+    descAr: 'شراكات وموردون معتمدون في مختلف أنحاء العالم وسلاسل توريد سريعة.',
   },
   {
     icon: Users,
-    title: 'فريق محترف',
-    desc: 'كوادر هندسية وإدارية مؤهلة تدير كافة المشاريع باحترافية وكفاءة.',
+    title: 'Expert Engineering Team',
+    titleAr: 'فريق هندسي وإداري محترف',
+    desc: 'Highly qualified engineers, project managers, and logistics consultants driving your success.',
+    descAr: 'كوادر هندسية وإدارية مؤهلة تدير كافة المشاريع باحترافية وكفاءة.',
   },
 ]
 
 export default function WhyChooseUs() {
   return (
-    <section className="section-container">
+    <section className="section-container py-20 bg-gray-50/70">
       <Container>
-        <SectionTitle eyebrow="لماذا نحن" title="ما يميزنا" />
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <SectionTitle
+          eyebrow="Why Partner With Us"
+          eyebrowAr="لماذا تختار مجموعتنا"
+          title="Our Core Strengths & Advantages"
+          titleAr="ما يميزنا ويجعلنا خيارك الأفضل"
+          subtitle="Combining localized market excellence with international standards and supply chains."
+          subtitleAr="نجمع بين الخبرة المحلية العميقة والمعايير العالمية وسلاسل التوريد الموثوقة."
+        />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
           {points.map((p, i) => {
             const Icon = p.icon
             return (
@@ -41,13 +56,18 @@ export default function WhyChooseUs() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
-                className="text-center p-6 border border-gray-100 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow group"
+                className="text-center p-6 border border-gray-100 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between"
               >
-                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-benaa/10 text-benaa flex items-center justify-center group-hover:bg-benaa group-hover:text-white transition-colors">
-                  <Icon className="w-7 h-7" />
+                <div>
+                  <div className="w-14 h-14 mx-auto mb-5 rounded-2xl bg-benaa/10 text-benaa flex items-center justify-center group-hover:bg-benaa group-hover:text-white transition-colors duration-300">
+                    <Icon className="w-7 h-7" />
+                  </div>
+                  <h3 className="font-extrabold text-benaa text-lg leading-snug">{p.title}</h3>
+                  <p className="font-bold text-xs text-gray-700 font-arabic mt-1">{p.titleAr}</p>
+                  
+                  <p className="text-xs text-gray-600 mt-3 leading-relaxed">{p.desc}</p>
+                  <p className="text-[11px] text-gray-500 font-arabic mt-1.5 leading-relaxed">{p.descAr}</p>
                 </div>
-                <h3 className="font-bold text-benaa mb-2 text-lg">{p.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{p.desc}</p>
               </motion.div>
             )
           })}
@@ -56,4 +76,5 @@ export default function WhyChooseUs() {
     </section>
   )
 }
+
 
