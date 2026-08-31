@@ -45,10 +45,19 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden sm:flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-2.5">
+          <NavLink
+            to="/admin"
+            className="border border-benaa/30 text-benaa hover:bg-benaa hover:text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5"
+            title="Admin Portal / لوحة الإدارة"
+          >
+            <span className="block leading-tight">Admin</span>
+            <span className="block text-[10px] opacity-75 font-arabic">(الإدارة)</span>
+          </NavLink>
+
           <NavLink
             to="/contact"
-            className="bg-benaa text-white text-xs font-bold px-4 py-2.5 rounded-lg hover:bg-benaa-light transition-colors flex items-center gap-2 shadow-sm"
+            className="bg-benaa text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-benaa-light transition-colors flex items-center gap-2 shadow-sm"
           >
             <PhoneCall className="w-3.5 h-3.5 text-majd-light" />
             <div className="text-left">

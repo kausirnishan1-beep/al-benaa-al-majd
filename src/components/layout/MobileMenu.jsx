@@ -31,6 +31,18 @@ export default function MobileMenu({ onClose }) {
             <ChevronRight className="w-5 h-5 text-gray-400" />
           </NavLink>
         ))}
+
+        <NavLink
+          to="/admin"
+          onClick={onClose}
+          className="py-3 px-2 flex items-center justify-between text-benaa font-bold hover:bg-benaa/5 rounded-lg transition-colors"
+        >
+          <div>
+            <span className="block font-bold text-base">Admin Portal</span>
+            <span className="block text-xs text-gray-500 font-arabic">لوحة التحكم والإدارة</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-benaa" />
+        </NavLink>
       </nav>
     </motion.div>
   )
