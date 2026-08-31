@@ -6,9 +6,12 @@ import 'swiper/css/navigation'
 import Container from '../common/Container.jsx'
 import SectionTitle from '../common/SectionTitle.jsx'
 import ProjectCard from '../projects/ProjectCard.jsx'
-import { projects } from '../../data/projects.js'
+import { useProjects } from '../../admin/hooks/useProjects.js'
 
 export default function FeaturedProjects() {
+  const { projects } = useProjects()
+  const featured = projects.filter((p) => p.isFeatured !== false)
+
   return (
     <section className="section-container bg-white py-20">
       <Container>
@@ -47,7 +50,7 @@ export default function FeaturedProjects() {
             }}
             className="pb-14"
           >
-            {projects.map((project) => (
+            {featured.map((project) => (
               <SwiperSlide key={project.id} className="h-auto">
                 <ProjectCard project={project} />
               </SwiperSlide>
@@ -58,5 +61,6 @@ export default function FeaturedProjects() {
     </section>
   )
 }
+
 
 

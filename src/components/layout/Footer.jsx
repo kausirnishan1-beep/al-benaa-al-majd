@@ -1,9 +1,14 @@
 import { Link } from 'react-router-dom'
-import { Phone, Mail, MapPin, Building2, ChevronRight, Clock } from 'lucide-react'
+import { Phone, Mail, MapPin, Building2, ChevronRight, Clock, ShieldCheck } from 'lucide-react'
 import Container from '../common/Container.jsx'
 import { CONTACT_INFO } from '../../utils/constants.js'
+import { useSettings } from '../../admin/hooks/useSettings.js'
 
 export default function Footer() {
+  const { settings } = useSettings()
+  const contact = settings?.contact || CONTACT_INFO
+  const general = settings?.general || {}
+
   return (
     <footer className="bg-benaa-dark text-white mt-auto border-t-2 border-majd/30">
       <Container className="py-14 grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -13,8 +18,12 @@ export default function Footer() {
               <Building2 className="w-6 h-6 text-majd-light" />
             </div>
             <div>
-              <h3 className="text-lg font-bold leading-tight">Al-Benaa & Al-Majd Group</h3>
-              <p className="text-xs text-majd-light font-arabic">مجموعة البناء والمجد القابضة</p>
+              <h3 className="text-lg font-bold leading-tight">
+                {general.siteNameEn || 'Al-Benaa & Al-Majd Group'}
+              </h3>
+              <p className="text-xs text-majd-light font-arabic">
+                {general.siteNameAr || 'مجموعة البناء والمجد القابضة'}
+              </p>
             </div>
           </div>
           <p className="text-white/70 text-sm leading-relaxed mb-2">
@@ -59,6 +68,12 @@ export default function Footer() {
                 <span>Contact Us <span className="text-xs text-white/50 font-arabic">(تواصل معنا)</span></span>
               </Link>
             </li>
+            <li>
+              <Link to="/admin" className="hover:text-majd-light flex items-center gap-2 transition-colors text-white/40 text-xs mt-2">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Admin Portal <span className="font-arabic">(بوابة الإدارة)</span></span>
+              </Link>
+            </li>
           </ul>
         </div>
 
@@ -69,26 +84,26 @@ export default function Footer() {
             <li className="flex items-start gap-2.5">
               <Phone className="w-4 h-4 text-majd-light flex-shrink-0 mt-1" />
               <div>
-                <span className="block font-medium" dir="ltr">{CONTACT_INFO.phone}</span>
-                <span className="block text-xs text-white/50" dir="ltr">{CONTACT_INFO.phoneAlt}</span>
+                <span className="block font-medium" dir="ltr">{contact.phone || CONTACT_INFO.phone}</span>
+                <span className="block text-xs text-white/50" dir="ltr">{contact.phoneAlt || CONTACT_INFO.phoneAlt}</span>
               </div>
             </li>
             <li className="flex items-start gap-2.5">
               <Mail className="w-4 h-4 text-majd-light flex-shrink-0 mt-1" />
-              <span className="font-medium">{CONTACT_INFO.email}</span>
+              <span className="font-medium">{contact.email || CONTACT_INFO.email}</span>
             </li>
             <li className="flex items-start gap-2.5">
               <MapPin className="w-4 h-4 text-majd-light flex-shrink-0 mt-1" />
               <div>
-                <span className="block font-medium">{CONTACT_INFO.addressEn}</span>
-                <span className="block text-xs text-white/50 font-arabic mt-0.5">{CONTACT_INFO.addressAr}</span>
+                <span className="block font-medium">{contact.addressEn || CONTACT_INFO.addressEn}</span>
+                <span className="block text-xs text-white/50 font-arabic mt-0.5">{contact.addressAr || CONTACT_INFO.addressAr}</span>
               </div>
             </li>
             <li className="flex items-start gap-2.5">
               <Clock className="w-4 h-4 text-majd-light flex-shrink-0 mt-1" />
               <div>
-                <span className="block font-medium">{CONTACT_INFO.workingHoursEn}</span>
-                <span className="block text-xs text-white/50 font-arabic mt-0.5">{CONTACT_INFO.workingHoursAr}</span>
+                <span className="block font-medium">{contact.workingHoursEn || CONTACT_INFO.workingHoursEn}</span>
+                <span className="block text-xs text-white/50 font-arabic mt-0.5">{contact.workingHoursAr || CONTACT_INFO.workingHoursAr}</span>
               </div>
             </li>
           </ul>
@@ -101,5 +116,6 @@ export default function Footer() {
     </footer>
   )
 }
+
 
 

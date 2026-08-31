@@ -2,9 +2,12 @@ import { PackageCheck, ArrowUpRight } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
-import { products } from '../../data/products.js'
+import { useProducts } from '../../admin/hooks/useProducts.js'
 
 export default function Products() {
+  const { products } = useProducts()
+  const activeProducts = products.filter((p) => p.isActive !== false)
+
   return (
     <div className="py-16 md:py-24">
       <Container>
@@ -18,7 +21,7 @@ export default function Products() {
         />
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-          {products.map((p) => (
+          {activeProducts.map((p) => (
             <div
               key={p.id}
               className="rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white border border-gray-100 flex flex-col group"
@@ -73,4 +76,5 @@ export default function Products() {
     </div>
   )
 }
+
 

@@ -1,43 +1,11 @@
 import { FileText, ShieldCheck, Download, ExternalLink, Award } from 'lucide-react'
 import Container from '../components/common/Container.jsx'
 import SectionTitle from '../components/common/SectionTitle.jsx'
-
-const items = [
-  {
-    title: 'Comprehensive Corporate Profile & Qualifications',
-    titleAr: 'الملف التعريفي الشامل وسابقة الأعمال للمجموعة',
-    desc: 'Download our official company credentials, completed projects portfolio, and technical capabilities brochure.',
-    descAr: 'تحميل البروفايل الرسمي الشامل وسجل المشاريع المنجزة والقدرات الفنية والتنفيذية.',
-    file: '/documents/company-profile.pdf',
-    tag: 'PDF Brochure',
-  },
-  {
-    title: 'Saudi Commercial Registration (CR) & Licensing',
-    titleAr: 'السجل التجاري والتراخيص النظامية بالمملكة',
-    desc: 'Fully accredited and certified by the Saudi Ministry of Commerce for contracting, general trading, and import/export.',
-    descAr: 'تراخيص معتمدة وسارية من وزارة التجارة والاستثمار للمقاولات العامة والتجارة والاستيراد.',
-    file: '#',
-    tag: 'Certified License',
-  },
-  {
-    title: 'Saudi Contractors Authority (SCA) Membership',
-    titleAr: 'عضوية الهيئة السعودية للمقاولين',
-    desc: 'Classified commercial contractor complying with high industry classification and technical governance standards.',
-    descAr: 'عضوية وتصنيف معتمد لدى الهيئة السعودية للمقاولين لمشاريع البناء والتشييد.',
-    file: '#',
-    tag: 'Accreditation',
-  },
-  {
-    title: 'ZATCA Tax & VAT Compliance Certificate',
-    titleAr: 'شهادة الالتزام الضريبي والزكاة (هيئة الزكاة والضريبة والجمارك)',
-    desc: 'Full tax, customs, and electronic invoicing compliance certified by ZATCA.',
-    descAr: 'شهادة تسجيل وضريبة القيمة المضافة والفوترة الإلكترونية المعتمدة.',
-    file: '#',
-    tag: 'Tax Compliance',
-  },
-]
+import { useDocuments } from '../admin/hooks/useDocuments.js'
 
 export default function Compliance() {
+  const { documents } = useDocuments()
+
   return (
     <div className="py-16 md:py-24 bg-gray-50/50">
       <Container>
@@ -51,9 +19,9 @@ export default function Compliance() {
         />
 
         <div className="max-w-3xl mx-auto space-y-5 mt-10">
-          {items.map((item) => (
+          {documents.map((item) => (
             <div
-              key={item.title}
+              key={item.id || item.title}
               className="p-6 md:p-8 bg-white border border-gray-100 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6 group"
             >
               <div className="flex items-start gap-4">
@@ -71,16 +39,16 @@ export default function Compliance() {
                     {item.titleAr}
                   </p>
                   <p className="text-xs text-gray-600 mt-2 leading-relaxed">
-                    {item.desc}
+                    {item.description}
                   </p>
                   <p className="text-[11px] text-gray-500 font-arabic mt-1 leading-relaxed">
-                    {item.descAr}
+                    {item.descriptionAr}
                   </p>
                 </div>
               </div>
 
               <a
-                href={item.file}
+                href={item.fileUrl || '#'}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-benaa/5 hover:bg-benaa hover:text-white text-benaa font-bold text-xs transition-all flex-shrink-0 border border-benaa/20"
@@ -95,4 +63,5 @@ export default function Compliance() {
     </div>
   )
 }
+
 

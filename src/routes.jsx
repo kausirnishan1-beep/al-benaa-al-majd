@@ -1,6 +1,7 @@
 import { Routes, Route, Link } from 'react-router-dom'
 import { Home as HomeIcon, AlertCircle } from 'lucide-react'
 
+// Public Pages
 import Home from './pages/Home.jsx'
 import About from './pages/About.jsx'
 import Companies from './pages/Companies.jsx'
@@ -8,6 +9,7 @@ import Projects from './pages/Projects.jsx'
 import Compliance from './pages/Compliance.jsx'
 import Contact from './pages/Contact.jsx'
 
+// Al-Benaa Contracting Sub-pages
 import BenaaHome from './pages/Benaa/BenaaHome.jsx'
 import Construction from './pages/Benaa/Construction.jsx'
 import Renovation from './pages/Benaa/Renovation.jsx'
@@ -15,12 +17,25 @@ import Maintenance from './pages/Benaa/Maintenance.jsx'
 import ProjectManagement from './pages/Benaa/ProjectManagement.jsx'
 import BenaaProjects from './pages/Benaa/BenaaProjects.jsx'
 
+// Al-Majd Trading Sub-pages
 import MajdHome from './pages/Majd/MajdHome.jsx'
 import ImportExport from './pages/Majd/ImportExport.jsx'
 import GeneralTrading from './pages/Majd/GeneralTrading.jsx'
 import ProductSourcing from './pages/Majd/ProductSourcing.jsx'
 import Logistics from './pages/Majd/Logistics.jsx'
 import Products from './pages/Majd/Products.jsx'
+
+// Admin Portal Pages & Layout
+import AdminLayout from './admin/components/AdminLayout.jsx'
+import Login from './admin/pages/Login.jsx'
+import Dashboard from './admin/pages/Dashboard.jsx'
+import AdminCompanies from './admin/pages/Companies.jsx'
+import AdminServices from './admin/pages/Services.jsx'
+import AdminProjects from './admin/pages/Projects.jsx'
+import AdminProducts from './admin/pages/Products.jsx'
+import AdminMessages from './admin/pages/Messages.jsx'
+import AdminDocuments from './admin/pages/Documents.jsx'
+import AdminSettings from './admin/pages/Settings.jsx'
 
 function NotFound() {
   return (
@@ -49,6 +64,7 @@ function NotFound() {
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
       <Route path="/companies" element={<Companies />} />
@@ -72,9 +88,25 @@ export default function AppRoutes() {
       <Route path="/majd/logistics" element={<Logistics />} />
       <Route path="/majd/products" element={<Products />} />
 
+      {/* Admin Portal Authentication */}
+      <Route path="/admin/login" element={<Login />} />
+
+      {/* Admin Protected Dashboard Routes */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="companies" element={<AdminCompanies />} />
+        <Route path="services" element={<AdminServices />} />
+        <Route path="projects" element={<AdminProjects />} />
+        <Route path="products" element={<AdminProducts />} />
+        <Route path="messages" element={<AdminMessages />} />
+        <Route path="documents" element={<AdminDocuments />} />
+        <Route path="settings" element={<AdminSettings />} />
+      </Route>
+
       {/* 404 Fallback */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }
+
 

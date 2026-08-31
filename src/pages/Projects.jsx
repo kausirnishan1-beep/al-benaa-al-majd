@@ -3,11 +3,12 @@ import Container from '../components/common/Container.jsx'
 import SectionTitle from '../components/common/SectionTitle.jsx'
 import ProjectGrid from '../components/projects/ProjectGrid.jsx'
 import ProjectFilter from '../components/projects/ProjectFilter.jsx'
-import { projects } from '../data/projects.js'
+import { useProjects } from '../admin/hooks/useProjects.js'
 
 export default function Projects() {
+  const { projects } = useProjects()
   const [active, setActive] = useState('all')
-  const categories = useMemo(() => [...new Set(projects.map((p) => p.category))], [])
+  const categories = useMemo(() => [...new Set(projects.map((p) => p.category))], [projects])
   const filtered = active === 'all' ? projects : projects.filter((p) => p.category === active)
 
   return (
@@ -27,4 +28,5 @@ export default function Projects() {
     </div>
   )
 }
+
 
