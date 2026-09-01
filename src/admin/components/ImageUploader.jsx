@@ -1,4 +1,4 @@
-﻿import { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { UploadCloud, Image as ImageIcon, X, Link2, Check } from 'lucide-react'
 import { supabase } from '../../utils/supabaseClient.js'
 
@@ -6,6 +6,7 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
   const [activeTab, setActiveTab] = useState('upload') // 'upload' | 'url'
   const [urlInput, setUrlInput] = useState('')
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
   const fileInputRef = useRef(null)
 
   const handleFileSelect = async (e) => {
@@ -13,8 +14,8 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
     if (!file) return
 
     setIsUploading(true)
+    setUploadError('')
 
-    // Try Supabase Storage upload first
     try {
       const fileExt = file.name.split('.').pop()
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
@@ -22,9 +23,14 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
 
       const { data, error } = await supabase.storage
         .from('images')
-        .upload(filePath, file)
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        })
 
-      if (!error && data) {
+      if (error) throw error
+
+      if (data) {
         const { data: publicUrlData } = supabase.storage
           .from('images')
           .getPublicUrl(filePath)
@@ -35,23 +41,19 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
           return
         }
       }
+      throw new Error('Failed to retrieve public URL for uploaded image')
     } catch (err) {
-      console.warn('Storage upload error, using local base64 preview:', err)
-    }
-
-    // Fallback: Read as base64 data URL
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      onChange(reader.result)
+      console.error('Storage upload error:', err)
+      setUploadError(err.message || 'Image upload failed. Ensure the "images" bucket exists in Supabase Storage with public access.')
       setIsUploading(false)
     }
-    reader.readAsDataURL(file)
   }
 
   const handleApplyUrl = () => {
     if (urlInput.trim()) {
       onChange(urlInput.trim())
       setUrlInput('')
+      setUploadError('')
     }
   }
 
@@ -140,6 +142,13 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
             <Check className="w-4 h-4" />
             <span>Apply</span>
           </button>
+        </div>
+      )}
+
+      {uploadError && (
+        <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+          <X className="w-4 h-4 flex-shrink-0 cursor-pointer" onClick={() => setUploadError('')} />
+          <span className="flex-grow">{uploadError}</span>
         </div>
       )}
 

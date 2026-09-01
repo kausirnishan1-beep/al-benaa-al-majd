@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Mail, CheckCircle2, Trash2, Eye, Phone, MessageSquare, ExternalLink, Calendar, User } from 'lucide-react'
 import { useMessages } from '../hooks/useMessages.js'
 import DataTable from '../components/DataTable.jsx'
@@ -19,7 +19,10 @@ export default function Messages() {
 
   const handleConfirmDelete = async () => {
     if (deleteTargetId) {
-      await deleteMessage(deleteTargetId)
+      const res = await deleteMessage(deleteTargetId)
+      if (res?.success === false) {
+        alert(`Error deleting message: ${res.error}`)
+      }
       setDeleteTargetId(null)
       if (selectedMessage?.id === deleteTargetId) {
         setSelectedMessage(null)

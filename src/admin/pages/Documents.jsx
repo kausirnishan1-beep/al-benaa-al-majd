@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Plus, Edit2, Trash2, FileText, Download, ShieldCheck, CheckCircle2 } from 'lucide-react'
 import { useDocuments } from '../hooks/useDocuments.js'
 import DataTable from '../components/DataTable.jsx'
@@ -22,8 +22,12 @@ export default function Documents() {
     sortOrder: 1,
   })
 
+  const [formError, setFormError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+
   const handleOpenAdd = () => {
     setEditingDoc(null)
+    setFormError('')
     setFormData({
       title: '',
       titleAr: '',
@@ -38,6 +42,7 @@ export default function Documents() {
 
   const handleOpenEdit = (doc) => {
     setEditingDoc(doc)
+    setFormError('')
     setFormData({
       title: doc.title,
       titleAr: doc.titleAr || doc.title_ar || '',
@@ -52,17 +57,27 @@ export default function Documents() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (editingDoc) {
-      await updateDocument(editingDoc.id, formData)
-    } else {
-      await addDocument(formData)
+    setIsSaving(true)
+    setFormError('')
+
+    const res = editingDoc
+      ? await updateDocument(editingDoc.id, formData)
+      : await addDocument(formData)
+
+    setIsSaving(false)
+    if (res?.success === false) {
+      setFormError(res.error || 'Failed to save document in database.')
+      return
     }
     setIsModalOpen(false)
   }
 
   const handleConfirmDelete = async () => {
     if (deleteTargetId) {
-      await deleteDocument(deleteTargetId)
+      const res = await deleteDocument(deleteTargetId)
+      if (res?.success === false) {
+        alert(`Error deleting document: ${res.error}`)
+      }
       setDeleteTargetId(null)
     }
   }
@@ -179,6 +194,12 @@ export default function Documents() {
               </button>
             </div>
 
+            {formError && (
+              <div className="mb-4 p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
+                ⚠️ {formError}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
@@ -266,9 +287,10 @@ export default function Documents() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-benaa text-white text-xs font-bold hover:bg-benaa-light transition-all shadow-md"
+                  disabled={isSaving}
+                  className="px-6 py-2.5 rounded-xl bg-benaa text-white text-xs font-bold hover:bg-benaa-light disabled:opacity-50 transition-all shadow-md"
                 >
-                  {editingDoc ? 'Save Document / حفظ' : 'Add Document / حفظ المستند'}
+                  {isSaving ? 'Saving / جاري الحفظ...' : editingDoc ? 'Save Document / حفظ' : 'Add Document / حفظ المستند'}
                 </button>
               </div>
             </form>

@@ -8,10 +8,14 @@ export default function Companies() {
   const [activeTab, setActiveTab] = useState('benaa') // 'benaa' | 'majd'
   const [formData, setFormData] = useState({})
   const [savedSuccess, setSavedSuccess] = useState('')
+  const [saveError, setSaveError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
 
   const activeCompany = companies.find((c) => c.id === activeTab) || companies[0]
 
   const handleFieldChange = (field, value) => {
+    setSavedSuccess('')
+    setSaveError('')
     setFormData((prev) => ({
       ...prev,
       [activeTab]: {
@@ -26,10 +30,15 @@ export default function Companies() {
   const handleSave = async (e) => {
     e.preventDefault()
     setSavedSuccess('')
+    setSaveError('')
+    setIsSaving(true)
     const res = await updateCompany(activeTab, currentValues)
+    setIsSaving(false)
     if (res.success) {
       setSavedSuccess('Saved successfully / تم حفظ البيانات بنجاح!')
       setTimeout(() => setSavedSuccess(''), 3500)
+    } else {
+      setSaveError(res.error || 'Failed to update company in database.')
     }
   }
 
@@ -166,24 +175,29 @@ export default function Companies() {
             />
           </div>
 
-          <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
+          <div className="pt-6 border-t border-gray-100 flex items-center justify-between gap-4">
             {savedSuccess ? (
               <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 animate-fade-in">
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                 <span>{savedSuccess}</span>
+              </span>
+            ) : saveError ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 animate-fade-in">
+                <span>⚠️ {saveError}</span>
               </span>
             ) : <div />}
 
             <button
               type="submit"
-              className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-white font-bold text-xs shadow-md transition-all ${
+              disabled={isSaving}
+              className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-white font-bold text-xs shadow-md disabled:opacity-50 transition-all flex-shrink-0 ${
                 activeTab === 'benaa'
                   ? 'bg-benaa hover:bg-benaa-light'
                   : 'bg-majd hover:bg-majd-light'
               }`}
             >
               <Save className="w-4 h-4" />
-              <span>Save Company Profile</span>
+              <span>{isSaving ? 'Saving...' : 'Save Company Profile'}</span>
             </button>
           </div>
         </form>

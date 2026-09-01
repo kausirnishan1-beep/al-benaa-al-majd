@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
 import { benaaServices, majdServices } from '../../data/services.js'
 
@@ -75,8 +75,7 @@ export function useServices() {
       return { success: true, data }
     } catch (err) {
       console.error('Error adding service:', err)
-      setServices((prev) => [...prev, { ...serviceData, id: serviceData.id || Date.now().toString() }])
-      return { success: true, localOnly: true }
+      return { success: false, error: err.message || 'Failed to save service in Supabase database' }
     }
   }
 
@@ -105,10 +104,7 @@ export function useServices() {
       return { success: true, data }
     } catch (err) {
       console.error('Error updating service:', err)
-      setServices((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, ...serviceData } : s))
-      )
-      return { success: true, localOnly: true }
+      return { success: false, error: err.message || 'Failed to update service in Supabase database' }
     }
   }
 
@@ -125,8 +121,7 @@ export function useServices() {
       return { success: true }
     } catch (err) {
       console.error('Error deleting service:', err)
-      setServices((prev) => prev.filter((s) => s.id !== id))
-      return { success: true, localOnly: true }
+      return { success: false, error: err.message || 'Failed to delete service from Supabase database' }
     }
   }
 

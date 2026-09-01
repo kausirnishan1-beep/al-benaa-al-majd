@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
 import { products as fallbackProducts } from '../../data/products.js'
 
@@ -69,9 +69,7 @@ export function useProducts() {
       return { success: true, data }
     } catch (err) {
       console.error('Error adding product:', err)
-      const newProd = { id: Date.now(), ...productData }
-      setProducts((prev) => [...prev, newProd])
-      return { success: true, localOnly: true }
+      return { success: false, error: err.message || 'Failed to save product in Supabase database' }
     }
   }
 
@@ -100,10 +98,7 @@ export function useProducts() {
       return { success: true, data }
     } catch (err) {
       console.error('Error updating product:', err)
-      setProducts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, ...productData } : p))
-      )
-      return { success: true, localOnly: true }
+      return { success: false, error: err.message || 'Failed to update product in Supabase database' }
     }
   }
 
@@ -120,8 +115,7 @@ export function useProducts() {
       return { success: true }
     } catch (err) {
       console.error('Error deleting product:', err)
-      setProducts((prev) => prev.filter((p) => p.id !== id))
-      return { success: true, localOnly: true }
+      return { success: false, error: err.message || 'Failed to delete product from Supabase database' }
     }
   }
 

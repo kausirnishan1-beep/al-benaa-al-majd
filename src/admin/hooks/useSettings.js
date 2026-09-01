@@ -86,12 +86,8 @@ export function useSettings() {
       }))
       return { success: true }
     } catch (err) {
-      console.error(`Error saving settings for ${key}:`, err)
-      setSettings((prev) => ({
-        ...prev,
-        [key]: newValue,
-      }))
-      return { success: true, localOnly: true }
+      console.error(`Error saving settings for ${key} in Supabase:`, err)
+      return { success: false, error: err.message || `Failed to save settings for ${key} in Supabase database` }
     }
   }
 

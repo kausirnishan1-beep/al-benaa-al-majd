@@ -1,4 +1,4 @@
-﻿import { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { UploadCloud, FileText, X, Check, Link2 } from 'lucide-react'
 import { supabase } from '../../utils/supabaseClient.js'
 
@@ -11,6 +11,7 @@ export default function FileUploader({
   const [activeTab, setActiveTab] = useState('upload') // 'upload' | 'url'
   const [urlInput, setUrlInput] = useState('')
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
   const [fileName, setFileName] = useState('')
   const fileInputRef = useRef(null)
 
@@ -20,8 +21,8 @@ export default function FileUploader({
 
     setFileName(file.name)
     setIsUploading(true)
+    setUploadError('')
 
-    // Try Supabase Storage
     try {
       const fileExt = file.name.split('.').pop()
       const cleanFileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
@@ -29,9 +30,14 @@ export default function FileUploader({
 
       const { data, error } = await supabase.storage
         .from('documents')
-        .upload(filePath, file)
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        })
 
-      if (!error && data) {
+      if (error) throw error
+
+      if (data) {
         const { data: publicUrlData } = supabase.storage
           .from('documents')
           .getPublicUrl(filePath)
@@ -42,19 +48,19 @@ export default function FileUploader({
           return
         }
       }
+      throw new Error('Failed to get public URL for document')
     } catch (err) {
-      console.warn('Document storage upload error, using local fallback:', err)
+      console.error('Document storage upload error:', err)
+      setUploadError(err.message || 'Document upload failed. Ensure the "documents" bucket exists in Supabase Storage with public access.')
+      setIsUploading(false)
     }
-
-    // Fallback URL or relative mock path
-    onChange(`/documents/${file.name}`)
-    setIsUploading(false)
   }
 
   const handleApplyUrl = () => {
     if (urlInput.trim()) {
       onChange(urlInput.trim())
       setUrlInput('')
+      setUploadError('')
     }
   }
 
@@ -160,6 +166,13 @@ export default function FileUploader({
             <Check className="w-4 h-4" />
             <span>Apply</span>
           </button>
+        </div>
+      )}
+
+      {uploadError && (
+        <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+          <X className="w-4 h-4 flex-shrink-0 cursor-pointer" onClick={() => setUploadError('')} />
+          <span className="flex-grow">{uploadError}</span>
         </div>
       )}
 

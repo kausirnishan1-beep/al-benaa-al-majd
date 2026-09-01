@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
 
 const sampleMessages = [
@@ -70,11 +70,8 @@ export function useMessages() {
       )
       return { success: true }
     } catch (err) {
-      console.error('Error updating message status:', err)
-      setMessages((prev) =>
-        prev.map((m) => (m.id === id ? { ...m, is_read: isRead } : m))
-      )
-      return { success: true, localOnly: true }
+      console.error('Error updating message status in Supabase:', err)
+      return { success: false, error: err.message || 'Failed to update message status' }
     }
   }
 
@@ -90,9 +87,8 @@ export function useMessages() {
       setMessages((prev) => prev.filter((m) => m.id !== id))
       return { success: true }
     } catch (err) {
-      console.error('Error deleting message:', err)
-      setMessages((prev) => prev.filter((m) => m.id !== id))
-      return { success: true, localOnly: true }
+      console.error('Error deleting message from Supabase:', err)
+      return { success: false, error: err.message || 'Failed to delete message' }
     }
   }
 

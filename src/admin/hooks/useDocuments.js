@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
 
 const defaultDocuments = [
@@ -110,9 +110,8 @@ export function useDocuments() {
       await fetchDocuments()
       return { success: true, data }
     } catch (err) {
-      console.error('Error adding document:', err)
-      setDocuments((prev) => [...prev, { id: Date.now(), ...docData }])
-      return { success: true, localOnly: true }
+      console.error('Error adding document to Supabase:', err)
+      return { success: false, error: err.message || 'Failed to save document in Supabase database' }
     }
   }
 
@@ -140,11 +139,8 @@ export function useDocuments() {
       await fetchDocuments()
       return { success: true, data }
     } catch (err) {
-      console.error('Error updating document:', err)
-      setDocuments((prev) =>
-        prev.map((d) => (d.id === id ? { ...d, ...docData } : d))
-      )
-      return { success: true, localOnly: true }
+      console.error('Error updating document in Supabase:', err)
+      return { success: false, error: err.message || 'Failed to update document in Supabase database' }
     }
   }
 
@@ -160,9 +156,8 @@ export function useDocuments() {
       setDocuments((prev) => prev.filter((p) => p.id !== id))
       return { success: true }
     } catch (err) {
-      console.error('Error deleting document:', err)
-      setDocuments((prev) => prev.filter((p) => p.id !== id))
-      return { success: true, localOnly: true }
+      console.error('Error deleting document from Supabase:', err)
+      return { success: false, error: err.message || 'Failed to delete document from Supabase database' }
     }
   }
 

@@ -22,47 +22,62 @@ export default function Services() {
     isActive: true,
   })
 
+  const [formError, setFormError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+
   const handleOpenAdd = () => {
     setEditingService(null)
+    setFormError('')
     setFormData({
       title: '',
       titleAr: '',
       description: '',
       descriptionAr: '',
       companyId: activeCompany,
-      path: `/${activeCompany}/service-${Date.now()}`,
       isActive: true,
+      path: `/${activeCompany}/services`,
     })
     setIsModalOpen(true)
   }
 
   const handleOpenEdit = (service) => {
     setEditingService(service)
+    setFormError('')
     setFormData({
       title: service.title,
       titleAr: service.titleAr || service.title_ar || '',
       description: service.description || '',
       descriptionAr: service.descriptionAr || service.description_ar || '',
       companyId: service.companyId || activeCompany,
-      path: service.path || '',
       isActive: service.isActive ?? true,
+      path: service.path || `/${activeCompany}/services`,
     })
     setIsModalOpen(true)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (editingService) {
-      await updateService(editingService.id, formData)
-    } else {
-      await addService(formData)
+    setIsSaving(true)
+    setFormError('')
+
+    const res = editingService
+      ? await updateService(editingService.id, formData)
+      : await addService(formData)
+
+    setIsSaving(false)
+    if (res?.success === false) {
+      setFormError(res.error || 'Failed to save service in database.')
+      return
     }
     setIsModalOpen(false)
   }
 
   const handleConfirmDelete = async () => {
     if (deleteTargetId) {
-      await deleteService(deleteTargetId)
+      const res = await deleteService(deleteTargetId)
+      if (res?.success === false) {
+        alert(`Error deleting service: ${res.error}`)
+      }
       setDeleteTargetId(null)
     }
   }
@@ -203,6 +218,12 @@ export default function Services() {
               </button>
             </div>
 
+            {formError && (
+              <div className="mb-4 p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
+                ⚠️ {formError}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
@@ -283,9 +304,10 @@ export default function Services() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-benaa text-white text-xs font-bold hover:bg-benaa-light transition-all shadow-md"
+                  disabled={isSaving}
+                  className="px-6 py-2.5 rounded-xl bg-benaa text-white text-xs font-bold hover:bg-benaa-light disabled:opacity-50 transition-all shadow-md"
                 >
-                  {editingService ? 'Save Changes / حفظ التعديلات' : 'Add Service / إضافة الخدمة'}
+                  {isSaving ? 'Saving / جاري الحفظ...' : editingService ? 'Save Changes / حفظ التعديلات' : 'Add Service / إضافة الخدمة'}
                 </button>
               </div>
             </form>

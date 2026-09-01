@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Plus, Edit2, Trash2, ShoppingBag, CheckCircle2, Image as ImageIcon } from 'lucide-react'
 import { useProducts } from '../hooks/useProducts.js'
 import DataTable from '../components/DataTable.jsx'
@@ -30,8 +30,12 @@ export default function Products() {
     isActive: true,
   })
 
+  const [formError, setFormError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+
   const handleOpenAdd = () => {
     setEditingProduct(null)
+    setFormError('')
     setFormData({
       name: '',
       nameAr: '',
@@ -46,6 +50,7 @@ export default function Products() {
 
   const handleOpenEdit = (product) => {
     setEditingProduct(product)
+    setFormError('')
     setFormData({
       name: product.name,
       nameAr: product.nameAr || product.name_ar || '',
@@ -60,17 +65,27 @@ export default function Products() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (editingProduct) {
-      await updateProduct(editingProduct.id, formData)
-    } else {
-      await addProduct(formData)
+    setIsSaving(true)
+    setFormError('')
+
+    const res = editingProduct
+      ? await updateProduct(editingProduct.id, formData)
+      : await addProduct(formData)
+
+    setIsSaving(false)
+    if (res?.success === false) {
+      setFormError(res.error || 'Failed to save product in database.')
+      return
     }
     setIsModalOpen(false)
   }
 
   const handleConfirmDelete = async () => {
     if (deleteTargetId) {
-      await deleteProduct(deleteTargetId)
+      const res = await deleteProduct(deleteTargetId)
+      if (res?.success === false) {
+        alert(`Error deleting product: ${res.error}`)
+      }
       setDeleteTargetId(null)
     }
   }
@@ -208,6 +223,12 @@ export default function Products() {
               </button>
             </div>
 
+            {formError && (
+              <div className="mb-4 p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
+                ⚠️ {formError}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
@@ -312,9 +333,10 @@ export default function Products() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-majd text-white text-xs font-bold hover:bg-majd-light transition-all shadow-md"
+                  disabled={isSaving}
+                  className="px-6 py-2.5 rounded-xl bg-majd text-white text-xs font-bold hover:bg-majd-light disabled:opacity-50 transition-all shadow-md"
                 >
-                  {editingProduct ? 'Save Product / حفظ التعديلات' : 'Add to Catalog / إضافة المنتج'}
+                  {isSaving ? 'Saving / جاري الحفظ...' : editingProduct ? 'Save Product / حفظ التعديلات' : 'Add to Catalog / إضافة المنتج'}
                 </button>
               </div>
             </form>

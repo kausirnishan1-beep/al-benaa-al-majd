@@ -81,12 +81,7 @@ export function useProjects() {
       return { success: true, data }
     } catch (err) {
       console.error('Error adding project to Supabase:', err)
-      const newProj = {
-        id: Date.now(),
-        ...projectData,
-      }
-      setProjects((prev) => [newProj, ...prev])
-      return { success: true, localOnly: true }
+      return { success: false, error: err.message || 'Failed to save project in Supabase database' }
     }
   }
 
@@ -121,10 +116,7 @@ export function useProjects() {
       return { success: true, data }
     } catch (err) {
       console.error('Error updating project:', err)
-      setProjects((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, ...projectData } : p))
-      )
-      return { success: true, localOnly: true }
+      return { success: false, error: err.message || 'Failed to update project in Supabase database' }
     }
   }
 
@@ -141,8 +133,7 @@ export function useProjects() {
       return { success: true }
     } catch (err) {
       console.error('Error deleting project:', err)
-      setProjects((prev) => prev.filter((p) => p.id !== id))
-      return { success: true, localOnly: true }
+      return { success: false, error: err.message || 'Failed to delete project from Supabase database' }
     }
   }
 

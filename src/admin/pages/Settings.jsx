@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Settings as SettingsIcon, Save, CheckCircle2, Phone, MapPin, Share2, BarChart3, Globe } from 'lucide-react'
 import { useSettings } from '../hooks/useSettings.js'
 
@@ -13,7 +13,12 @@ export default function Settings() {
     setFormData({ ...settings })
   }, [settings])
 
+  const [saveError, setSaveError] = useState('')
+  const [savingGroup, setSavingGroup] = useState('')
+
   const handleFieldChange = (group, field, value) => {
+    setSavedSuccess('')
+    setSaveError('')
     setFormData((prev) => ({
       ...prev,
       [group]: {
@@ -25,13 +30,18 @@ export default function Settings() {
 
   const handleSaveGroup = async (groupKey) => {
     setSavedSuccess('')
+    setSaveError('')
     const targetValue = formData[groupKey]
     if (!targetValue) return
 
+    setSavingGroup(groupKey)
     const res = await updateSettingGroup(groupKey, targetValue)
+    setSavingGroup('')
     if (res.success) {
       setSavedSuccess(groupKey)
       setTimeout(() => setSavedSuccess(''), 3500)
+    } else {
+      setSaveError(res.error || `Failed to save ${groupKey} settings in database.`)
     }
   }
 
@@ -158,21 +168,26 @@ export default function Settings() {
             </div>
           </div>
 
-          <div className="pt-5 border-t border-gray-100 flex items-center justify-between">
+          <div className="pt-5 border-t border-gray-100 flex items-center justify-between gap-4">
             {savedSuccess === 'stats' ? (
               <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 animate-fade-in">
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                 <span>Saved successfully! / تم حفظ الإحصائيات</span>
+              </span>
+            ) : saveError ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 animate-fade-in">
+                <span>⚠️ {saveError}</span>
               </span>
             ) : <div />}
 
             <button
               type="button"
+              disabled={savingGroup === 'stats'}
               onClick={() => handleSaveGroup('stats')}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-benaa text-white font-bold text-xs hover:bg-benaa-light transition-all shadow-md"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-benaa text-white font-bold text-xs hover:bg-benaa-light disabled:opacity-50 transition-all shadow-md flex-shrink-0"
             >
               <Save className="w-4 h-4" />
-              <span>Save Statistics</span>
+              <span>{savingGroup === 'stats' ? 'Saving...' : 'Save Statistics'}</span>
             </button>
           </div>
         </div>
@@ -269,21 +284,26 @@ export default function Settings() {
             </div>
           </div>
 
-          <div className="pt-5 border-t border-gray-100 flex items-center justify-between">
+          <div className="pt-5 border-t border-gray-100 flex items-center justify-between gap-4">
             {savedSuccess === 'contact' ? (
               <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 animate-fade-in">
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                 <span>Saved successfully! / تم حفظ بيانات التواصل</span>
+              </span>
+            ) : saveError ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 animate-fade-in">
+                <span>⚠️ {saveError}</span>
               </span>
             ) : <div />}
 
             <button
               type="button"
+              disabled={savingGroup === 'contact'}
               onClick={() => handleSaveGroup('contact')}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-benaa text-white font-bold text-xs hover:bg-benaa-light transition-all shadow-md"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-benaa text-white font-bold text-xs hover:bg-benaa-light disabled:opacity-50 transition-all shadow-md flex-shrink-0"
             >
               <Save className="w-4 h-4" />
-              <span>Save Contact Info</span>
+              <span>{savingGroup === 'contact' ? 'Saving...' : 'Save Contact Info'}</span>
             </button>
           </div>
         </div>
@@ -353,21 +373,26 @@ export default function Settings() {
             </div>
           </div>
 
-          <div className="pt-5 border-t border-gray-100 flex items-center justify-between">
+          <div className="pt-5 border-t border-gray-100 flex items-center justify-between gap-4">
             {savedSuccess === 'social' ? (
               <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 animate-fade-in">
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                 <span>Saved successfully! / تم حفظ الروابط</span>
+              </span>
+            ) : saveError ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 animate-fade-in">
+                <span>⚠️ {saveError}</span>
               </span>
             ) : <div />}
 
             <button
               type="button"
+              disabled={savingGroup === 'social'}
               onClick={() => handleSaveGroup('social')}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-benaa text-white font-bold text-xs hover:bg-benaa-light transition-all shadow-md"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-benaa text-white font-bold text-xs hover:bg-benaa-light disabled:opacity-50 transition-all shadow-md flex-shrink-0"
             >
               <Save className="w-4 h-4" />
-              <span>Save Social Links</span>
+              <span>{savingGroup === 'social' ? 'Saving...' : 'Save Social Links'}</span>
             </button>
           </div>
         </div>
@@ -379,14 +404,14 @@ export default function Settings() {
           <div>
             <h3 className="font-bold text-benaa text-base">Group Brand Names & Slogan</h3>
             <p className="text-xs text-gray-500 font-arabic">
-              المسمى المؤسسي العام والشعار اللفظي
+              الأسماء التجارية الرسمية، الشعار وشعار المجموعة
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-5">
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                Group Holding Name (English)
+                Site Name (English)
               </label>
               <input
                 type="text"
@@ -398,7 +423,7 @@ export default function Settings() {
 
             <div>
               <label className="block text-xs font-bold text-gray-700 font-arabic mb-1.5">
-                اسم المجموعة القابضة (باللغة العربية)
+                اسم الموقع والمجموعة (باللغة العربية)
               </label>
               <input
                 type="text"
@@ -411,7 +436,7 @@ export default function Settings() {
 
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                Main Group Slogan (English)
+                Group Tagline (English)
               </label>
               <input
                 type="text"
@@ -435,16 +460,21 @@ export default function Settings() {
             </div>
           </div>
 
-          <div className="pt-5 border-t border-gray-100 flex items-center justify-between">
+          <div className="pt-5 border-t border-gray-100 flex items-center justify-between gap-4">
             {savedSuccess === 'general' ? (
               <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 animate-fade-in">
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                 <span>Saved successfully! / تم الحفظ</span>
+              </span>
+            ) : saveError ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 animate-fade-in">
+                <span>⚠️ {saveError}</span>
               </span>
             ) : <div />}
 
             <button
               type="button"
+              disabled={savingGroup === 'general'}
               onClick={() => handleSaveGroup('general')}
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-benaa text-white font-bold text-xs hover:bg-benaa-light transition-all shadow-md"
             >

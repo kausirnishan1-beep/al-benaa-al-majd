@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
 import { companies as fallbackCompanies } from '../../data/companies.js'
 
@@ -71,10 +71,7 @@ export function useCompany() {
       return { success: true, data }
     } catch (err) {
       console.error('Error updating company:', err)
-      setCompanies((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, ...updatedData } : c))
-      )
-      return { success: true, localOnly: true }
+      return { success: false, error: err.message || 'Failed to update company in Supabase database' }
     }
   }
 

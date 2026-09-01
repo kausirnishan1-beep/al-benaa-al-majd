@@ -31,13 +31,14 @@ export default function Projects() {
 
   const handleOpenAdd = () => {
     setEditingProject(null)
+    setFormError('')
     setFormData({
       title: '',
       titleAr: '',
       company: 'benaa',
       category: 'construction',
-      badge: 'Al-Benaa Construction',
-      badgeAr: 'شركة البناء للمقاولات',
+      badge: 'AL BENAA AL RAHAB CONTRACTING EST.',
+      badgeAr: 'مؤسسة البناء الرحاب للمقاولات',
       image: 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80',
       description: '',
       descriptionAr: '',
@@ -51,13 +52,14 @@ export default function Projects() {
 
   const handleOpenEdit = (project) => {
     setEditingProject(project)
+    setFormError('')
     setFormData({
-      title: project.title,
+      title: project.title || '',
       titleAr: project.titleAr || project.title_ar || '',
       company: project.company || 'benaa',
       category: project.category || 'construction',
-      badge: project.badge || '',
-      badgeAr: project.badgeAr || project.badge_ar || '',
+      badge: project.badge || 'AL BENAA AL RAHAB CONTRACTING EST.',
+      badgeAr: project.badgeAr || project.badge_ar || 'مؤسسة البناء الرحاب للمقاولات',
       image: project.image || '',
       description: project.description || '',
       descriptionAr: project.descriptionAr || project.description_ar || '',
@@ -71,17 +73,27 @@ export default function Projects() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (editingProject) {
-      await updateProject(editingProject.id, formData)
-    } else {
-      await addProject(formData)
+    setIsSaving(true)
+    setFormError('')
+
+    const res = editingProject
+      ? await updateProject(editingProject.id, formData)
+      : await addProject(formData)
+
+    setIsSaving(false)
+    if (res?.success === false) {
+      setFormError(res.error || 'Failed to save project in database.')
+      return
     }
     setIsModalOpen(false)
   }
 
   const handleConfirmDelete = async () => {
     if (deleteTargetId) {
-      await deleteProject(deleteTargetId)
+      const res = await deleteProject(deleteTargetId)
+      if (res?.success === false) {
+        alert(`Error deleting project: ${res.error}`)
+      }
       setDeleteTargetId(null)
     }
   }
@@ -251,6 +263,12 @@ export default function Projects() {
               </button>
             </div>
 
+            {formError && (
+              <div className="mb-4 p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
+                ⚠️ {formError}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
@@ -405,9 +423,10 @@ export default function Projects() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-benaa text-white text-xs font-bold hover:bg-benaa-light transition-all shadow-md"
+                  disabled={isSaving}
+                  className="px-6 py-2.5 rounded-xl bg-benaa text-white text-xs font-bold hover:bg-benaa-light disabled:opacity-50 transition-all shadow-md"
                 >
-                  {editingProject ? 'Save Project / حفظ التعديلات' : 'Publish Project / نشر المشروع'}
+                  {isSaving ? 'Saving / جاري الحفظ...' : editingProject ? 'Save Project / حفظ التعديلات' : 'Publish Project / نشر المشروع'}
                 </button>
               </div>
             </form>

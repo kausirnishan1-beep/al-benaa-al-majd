@@ -213,4 +213,29 @@ DO  BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Full access for all on site_settings') THEN
     CREATE POLICY "Full access for all on site_settings" ON public.site_settings FOR ALL USING (true) WITH CHECK (true);
   END IF;
-END ;
+END $$;
+
+-- ==============================================================================
+-- 8. STORAGE BUCKETS (images & documents)
+-- ==============================================================================
+INSERT INTO storage.buckets (id, name, public)
+VALUES 
+  ('images', 'images', true),
+  ('documents', 'documents', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Storage Policies for Public Reading and Authenticated/Public Uploads
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Access Images') THEN
+    CREATE POLICY "Public Access Images" ON storage.objects FOR SELECT USING (bucket_id = 'images');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Upload Access Images') THEN
+    CREATE POLICY "Upload Access Images" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'images');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Access Documents') THEN
+    CREATE POLICY "Public Access Documents" ON storage.objects FOR SELECT USING (bucket_id = 'documents');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Upload Access Documents') THEN
+    CREATE POLICY "Upload Access Documents" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'documents');
+  END IF;
+END $$;
