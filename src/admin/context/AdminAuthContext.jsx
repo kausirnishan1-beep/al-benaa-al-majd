@@ -8,7 +8,7 @@ export function AdminAuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // 1. Check local session storage first
+    // 1. Restore cached admin user if available
     const savedUser = localStorage.getItem('albenaa_admin_user')
     if (savedUser) {
       try {
@@ -18,7 +18,7 @@ export function AdminAuthProvider({ children }) {
       }
     }
 
-    // 2. Check Supabase auth session if available
+    // 2. Check active Supabase session
     const checkSupabaseAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession()
@@ -26,14 +26,17 @@ export function AdminAuthProvider({ children }) {
           const u = {
             id: session.user.id,
             email: session.user.email,
-            name: session.user.user_metadata?.full_name || 'Admin User',
+            name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Admin',
             role: 'Super Admin',
           }
           setUser(u)
           localStorage.setItem('albenaa_admin_user', JSON.stringify(u))
+        } else if (!savedUser) {
+          setUser(null)
+          localStorage.removeItem('albenaa_admin_user')
         }
       } catch (err) {
-        console.warn('Supabase auth session check skipped:', err)
+        console.warn('Supabase auth session check:', err)
       } finally {
         setLoading(false)
       }
@@ -41,16 +44,20 @@ export function AdminAuthProvider({ children }) {
 
     checkSupabaseAuth()
 
+    // 3. Listen to Supabase Auth state changes (login, logout, token refresh)
     const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         const u = {
           id: session.user.id,
           email: session.user.email,
-          name: session.user.user_metadata?.full_name || 'Admin User',
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Admin',
           role: 'Super Admin',
         }
         setUser(u)
         localStorage.setItem('albenaa_admin_user', JSON.stringify(u))
+      } else {
+        setUser(null)
+        localStorage.removeItem('albenaa_admin_user')
       }
     })
 
@@ -60,43 +67,42 @@ export function AdminAuthProvider({ children }) {
   }, [])
 
   const login = async (email, password) => {
-    // 1. Attempt Supabase Auth
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: email.trim(),
+        password: password,
       })
 
-      if (!error && data?.user) {
+      if (error) {
+        return {
+          success: false,
+          error: error.message || 'Invalid login credentials / بيانات الدخول غير صحيحة',
+        }
+      }
+
+      if (data?.user) {
         const u = {
           id: data.user.id,
           email: data.user.email,
-          name: data.user.user_metadata?.full_name || 'Admin User',
+          name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'Admin',
           role: 'Super Admin',
         }
         setUser(u)
         localStorage.setItem('albenaa_admin_user', JSON.stringify(u))
         return { success: true, user: u }
       }
-    } catch (err) {
-      console.warn('Supabase signIn error, checking fallback admin:', err)
-    }
 
-    // 2. Fallback default administrative credentials for rapid setup
-    const validEmails = ['admin@albenaa-almajd.com', 'admin@benaa.sa', 'admin@majd.sa', 'admin@gmail.com', 'admin@albenaa.com']
-    if (validEmails.includes(email.toLowerCase()) && (password === 'admin123' || password === 'admin123456' || password === 'admin')) {
-      const u = {
-        id: 'master-admin-id',
-        email: email.toLowerCase(),
-        name: 'Master Admin',
-        role: 'Super Admin',
+      return {
+        success: false,
+        error: 'Authentication failed / فشل تسجيل الدخول',
       }
-      setUser(u)
-      localStorage.setItem('albenaa_admin_user', JSON.stringify(u))
-      return { success: true, user: u }
+    } catch (err) {
+      console.error('Supabase signIn error:', err)
+      return {
+        success: false,
+        error: err.message || 'Connection error / خطأ في الاتصال بقاعدة البيانات',
+      }
     }
-
-    return { success: false, error: 'Invalid email or password / البريد الإلكتروني أو كلمة المرور غير صحيحة' }
   }
 
   const logout = async () => {

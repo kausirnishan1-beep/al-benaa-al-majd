@@ -1,10 +1,10 @@
 ﻿import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle, Sparkles } from 'lucide-react'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { ShieldCheck, Lock, Mail, ArrowRight, ArrowLeft, AlertCircle, Home } from 'lucide-react'
 import { useAdminAuth } from '../context/AdminAuthContext.jsx'
 
 export default function Login() {
-  const { login, isAuthenticated } = useAdminAuth()
+  const { login } = useAdminAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -30,11 +30,6 @@ export default function Login() {
     }
   }
 
-  const handleQuickFill = () => {
-    setEmail('admin@albenaa-almajd.com')
-    setPassword('admin123456')
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#06241b] via-[#093528] to-[#041913] flex items-center justify-center p-4">
       <div className="max-w-md w-full">
@@ -54,7 +49,7 @@ export default function Login() {
               بوابة الإدارة والتحكم المركزية
             </p>
             <p className="text-xs text-gray-500 mt-2">
-              Sign in to manage projects, products, services & leads
+              Sign in with your Supabase credentials to manage the platform
             </p>
           </div>
 
@@ -79,7 +74,7 @@ export default function Login() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@albenaa-almajd.com"
+                  placeholder="admin@yourdomain.com"
                   className="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 text-xs focus:ring-2 focus:ring-benaa/30 focus:border-benaa outline-none transition-all"
                 />
               </div>
@@ -112,19 +107,15 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Quick Demo Fill Helper */}
+          {/* Back to Public Website Link */}
           <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-            <button
-              type="button"
-              onClick={handleQuickFill}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-benaa hover:text-majd transition-colors"
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-xs font-bold text-gray-600 hover:text-benaa transition-colors group"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span>Fill Default Demo Credentials</span>
-            </button>
-            <p className="text-[10px] text-gray-400 mt-1">
-              (admin@albenaa-almajd.com / admin123456)
-            </p>
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <span>Back to Homepage / العودة للرئيسية</span>
+            </Link>
           </div>
         </div>
       </div>
