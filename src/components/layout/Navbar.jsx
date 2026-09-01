@@ -19,11 +19,11 @@ export default function Navbar() {
             <Building2 className="w-6 h-6 text-majd-light" />
           </div>
           <div>
-            <span className="font-extrabold text-benaa text-lg block leading-tight tracking-tight">
-              Al-Benaa & Al-Majd
+            <span className="font-extrabold text-benaa text-base md:text-lg block leading-tight tracking-tight uppercase">
+              AL BENAA & AL MAJD
             </span>
             <span className="text-xs font-semibold text-majd block font-arabic leading-tight">
-              مجموعة البناء والمجد
+              مؤسسة البناء الرحاب وخطوط المجد
             </span>
           </div>
         </NavLink>

@@ -1,11 +1,11 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
 
 export function useSettings() {
   const [settings, setSettings] = useState({
     general: {
-      siteNameEn: 'Al-Benaa & Al-Majd Group',
-      siteNameAr: 'مجموعة البناء والمجد',
+      siteNameEn: 'AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT',
+      siteNameAr: 'مؤسسة البناء الرحاب للمقاولات ومؤسسة خطوط المجد للتجارة والاستيراد',
       taglineEn: 'Building the Future, Connecting Global Markets',
       taglineAr: 'نبني المستقبل، ونربط الأسواق العالمية',
     },

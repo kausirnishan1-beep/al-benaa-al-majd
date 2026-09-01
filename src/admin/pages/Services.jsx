@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Plus, Edit2, Trash2, Briefcase, CheckCircle2, Building2 } from 'lucide-react'
 import { useServices } from '../hooks/useServices.js'
 import DataTable from '../components/DataTable.jsx'
@@ -136,7 +136,7 @@ export default function Services() {
           }`}
         >
           <Building2 className="w-4 h-4" />
-          <span>Al-Benaa Construction (شركة البناء)</span>
+          <span>AL BENAA AL RAHAB (مؤسسة البناء الرحاب)</span>
         </button>
 
         <button
@@ -149,7 +149,7 @@ export default function Services() {
           }`}
         >
           <Building2 className="w-4 h-4" />
-          <span>Al-Majd Trading (شركة المجد)</span>
+          <span>AL MAJD LINES (مؤسسة خطوط المجد)</span>
         </button>
       </div>
 
@@ -191,7 +191,7 @@ export default function Services() {
                   {editingService ? 'Edit Service / تعديل الخدمة' : 'Add New Service / إضافة خدمة جديدة'}
                 </h3>
                 <p className="text-xs text-gray-500 font-arabic">
-                  {activeCompany === 'benaa' ? 'تابعة لشركة البناء للمقاولات' : 'تابعة لشركة المجد للتجارة'}
+                  {activeCompany === 'benaa' ? 'تابعة لمؤسسة البناء الرحاب للمقاولات' : 'تابعة لمؤسسة خطوط المجد للتجارة'}
                 </p>
               </div>
               <button

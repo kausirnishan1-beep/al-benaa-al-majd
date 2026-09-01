@@ -15,8 +15,8 @@ export default function Construction() {
     <div className="py-16 md:py-24">
       <Container>
         <SectionTitle
-          eyebrow="Al-Benaa Construction Division"
-          eyebrowAr="شركة البناء للمقاولات"
+          eyebrow="AL BENAA AL RAHAB CONTRACTING EST."
+          eyebrowAr="مؤسسة البناء الرحاب للمقاولات"
           title="General Construction & Civil Engineering"
           titleAr="الإنشاءات والمقاولات العامة والهندسة المدنية"
           subtitle="Building resilient, sustainable, and prestigious architectural developments across Saudi Arabia."

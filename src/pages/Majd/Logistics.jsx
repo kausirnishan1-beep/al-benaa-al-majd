@@ -15,8 +15,8 @@ export default function Logistics() {
     <div className="py-16 md:py-24">
       <Container>
         <SectionTitle
-          eyebrow="Al-Majd Trading Division"
-          eyebrowAr="شركة المجد للتجارة"
+          eyebrow="AL MAJD LINES FOR TRADE & IMPORT"
+          eyebrowAr="مؤسسة خطوط المجد للتجارة والاستيراد"
           title="Supply Chain & Logistics Services"
           titleAr="الخدمات اللوجستية وإدارة سلاسل الإمداد"
           subtitle="Delivering cargo safely, efficiently, and on schedule across the Kingdom and GCC."

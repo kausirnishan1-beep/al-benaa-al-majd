@@ -11,8 +11,8 @@ export default function BenaaProjects() {
     <div className="py-16 md:py-24">
       <Container>
         <SectionTitle
-          eyebrow="Al-Benaa Construction Portfolio"
-          eyebrowAr="سجل أعمال ومشاريع شركة البناء"
+          eyebrow="AL BENAA AL RAHAB CONTRACTING EST. Portfolio"
+          eyebrowAr="سجل أعمال ومشاريع مؤسسة البناء الرحاب للمقاولات"
           title="Civil & Architectural Projects"
           titleAr="المشاريع الإنشائية والمعمارية المنفذة"
           subtitle="Discover our track record of residential developments, commercial centers, and engineering milestones."

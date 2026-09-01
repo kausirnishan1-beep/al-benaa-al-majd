@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Plus, Edit2, Trash2, Layers, ExternalLink, Image as ImageIcon, CheckCircle2 } from 'lucide-react'
 import { useProjects } from '../hooks/useProjects.js'
 import DataTable from '../components/DataTable.jsx'
@@ -192,7 +192,7 @@ export default function Projects() {
                   : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
               }`}
             >
-              Al-Benaa
+              AL BENAA AL RAHAB
             </button>
             <button
               type="button"
@@ -203,7 +203,7 @@ export default function Projects() {
                   : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
               }`}
             >
-              Al-Majd
+              AL MAJD LINES
             </button>
           </div>
         }
@@ -263,14 +263,14 @@ export default function Projects() {
                       setFormData({
                         ...formData,
                         company: e.target.value,
-                        badge: e.target.value === 'benaa' ? 'Al-Benaa Construction' : 'Al-Majd Trading',
-                        badgeAr: e.target.value === 'benaa' ? 'شركة البناء' : 'شركة المجد',
+                        badge: e.target.value === 'benaa' ? 'AL BENAA AL RAHAB CONTRACTING EST.' : 'AL MAJD LINES FOR TRADE & IMPORT',
+                        badgeAr: e.target.value === 'benaa' ? 'مؤسسة البناء الرحاب للمقاولات' : 'مؤسسة خطوط المجد للتجارة والاستيراد',
                       })
                     }
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-benaa/30 focus:border-benaa"
                   >
-                    <option value="benaa">Al-Benaa Construction (شركة البناء)</option>
-                    <option value="majd">Al-Majd General Trading (شركة المجد)</option>
+                    <option value="benaa">AL BENAA AL RAHAB (مؤسسة البناء الرحاب)</option>
+                    <option value="majd">AL MAJD LINES (مؤسسة خطوط المجد)</option>
                   </select>
                 </div>
 

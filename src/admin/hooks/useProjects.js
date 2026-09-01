@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
 import { projects as fallbackProjects } from '../../data/projects.js'
 
@@ -59,8 +59,8 @@ export function useProjects() {
         title_ar: projectData.titleAr || projectData.title_ar || '',
         company: projectData.company || 'benaa',
         category: projectData.category || 'construction',
-        badge: projectData.badge || (projectData.company === 'benaa' ? 'Al-Benaa Construction' : 'Al-Majd Trading'),
-        badge_ar: projectData.badgeAr || (projectData.company === 'benaa' ? 'شركة البناء' : 'شركة المجد'),
+        badge: projectData.badge || (projectData.company === 'benaa' ? 'AL BENAA AL RAHAB CONTRACTING EST.' : 'AL MAJD LINES FOR TRADE & IMPORT'),
+        badge_ar: projectData.badgeAr || (projectData.company === 'benaa' ? 'مؤسسة البناء الرحاب للمقاولات' : 'مؤسسة خطوط المجد للتجارة والاستيراد'),
         image: projectData.image || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80',
         description: projectData.description || '',
         description_ar: projectData.descriptionAr || projectData.description_ar || '',

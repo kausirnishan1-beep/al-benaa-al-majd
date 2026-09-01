@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Building2, Save, CheckCircle2 } from 'lucide-react'
 import { useCompany } from '../hooks/useCompany.js'
 
@@ -62,7 +62,7 @@ export default function Companies() {
           }`}
         >
           <Building2 className="w-4 h-4" />
-          <span>Al-Benaa Construction (شركة البناء)</span>
+          <span>AL BENAA AL RAHAB (مؤسسة البناء الرحاب)</span>
         </button>
 
         <button
@@ -78,7 +78,7 @@ export default function Companies() {
           }`}
         >
           <Building2 className="w-4 h-4" />
-          <span>Al-Majd Trading (شركة المجد)</span>
+          <span>AL MAJD LINES (مؤسسة خطوط المجد)</span>
         </button>
       </div>
 

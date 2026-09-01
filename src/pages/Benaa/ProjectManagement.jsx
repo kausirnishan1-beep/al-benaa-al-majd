@@ -15,8 +15,8 @@ export default function ProjectManagement() {
     <div className="py-16 md:py-24">
       <Container>
         <SectionTitle
-          eyebrow="Al-Benaa Construction Division"
-          eyebrowAr="شركة البناء للمقاولات"
+          eyebrow="AL BENAA AL RAHAB CONTRACTING EST."
+          eyebrowAr="مؤسسة البناء الرحاب للمقاولات"
           title="Engineering Project Management"
           titleAr="إدارة المشاريع الهندسية والإشراف الفني"
           subtitle="Delivering complex construction programs on time, within budget, and to the highest quality benchmarks."

@@ -15,8 +15,8 @@ export default function ImportExport() {
     <div className="py-16 md:py-24">
       <Container>
         <SectionTitle
-          eyebrow="Al-Majd Trading Division"
-          eyebrowAr="شركة المجد للتجارة"
+          eyebrow="AL MAJD LINES FOR TRADE & IMPORT"
+          eyebrowAr="مؤسسة خطوط المجد للتجارة والاستيراد"
           title="International Import & Export"
           titleAr="الاستيراد والتصدير والتجارة الدولية"
           subtitle="Connecting certified global factories with the rapidly expanding Saudi infrastructure market."

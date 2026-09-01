@@ -15,8 +15,8 @@ export default function GeneralTrading() {
     <div className="py-16 md:py-24">
       <Container>
         <SectionTitle
-          eyebrow="Al-Majd Trading Division"
-          eyebrowAr="شركة المجد للتجارة"
+          eyebrow="AL MAJD LINES FOR TRADE & IMPORT"
+          eyebrowAr="مؤسسة خطوط المجد للتجارة والاستيراد"
           title="General Trading & Commercial Distribution"
           titleAr="التجارة العامة والتوزيع التجاري الشامل"
           subtitle="Distributing certified construction raw materials, industrial tools, and commercial commodities."
@@ -29,10 +29,10 @@ export default function GeneralTrading() {
             <p className="text-sm font-bold text-majd font-arabic mb-4">شريكك الموثوق في التوريدات التجارية</p>
             
             <p className="text-gray-700 leading-relaxed text-sm md:text-base mb-3">
-              Al-Majd General Trading acts as a central commercial pipeline supplying infrastructure developers, contractors, and local distributors with certified building consumables, safety gear, and industrial equipment with guaranteed stock availability.
+              AL MAJD LINES FOR TRADE & IMPORT acts as a central commercial pipeline supplying infrastructure developers, contractors, and local distributors with certified building consumables, safety gear, and industrial equipment with guaranteed stock availability.
             </p>
             <p className="text-gray-600 font-arabic text-xs md:text-sm leading-relaxed">
-              تقدم شركة المجد للتجارة العامة حلول توريد متكاملة للمقاولين والشركات الإنشائية والموزعين، موفرة مستلزمات البناء ومعدات السلامة والمواد الأولية بضمان الجودة ووفرة المخزون.
+              تقدم مؤسسة خطوط المجد للتجارة والاستيراد حلول توريد متكاملة للمقاولين والشركات الإنشائية والموزعين، موفرة مستلزمات البناء ومعدات السلامة والمواد الأولية بضمان الجودة ووفرة المخزون.
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4 mt-8 pt-6 border-t border-gray-100">

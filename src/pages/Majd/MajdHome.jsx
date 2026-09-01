@@ -14,11 +14,11 @@ export default function MajdHome() {
               <Globe2 className="w-4 h-4" />
               <span>International Trading & Logistics Division</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
-              Al-Majd General Trading
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
+              AL MAJD LINES FOR TRADE & IMPORT
             </h1>
-            <p className="text-2xl md:text-3xl font-bold text-white/90 mt-2 font-arabic leading-snug">
-              شركة المجد للتجارة والاستيراد والتصدير
+            <p className="text-xl md:text-2xl font-bold text-white/90 mt-2 font-arabic leading-snug">
+              مؤسسة خطوط المجد للتجارة والاستيراد
             </p>
             <p className="mt-6 text-white/80 text-base md:text-lg max-w-2xl leading-relaxed">
               Empowering Saudi and regional infrastructure through premium construction material procurement, industrial machinery imports, and reliable global freight operations.

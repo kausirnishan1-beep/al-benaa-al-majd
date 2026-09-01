@@ -9,8 +9,8 @@ export default function About() {
         <SectionTitle
           eyebrow="Corporate Profile"
           eyebrowAr="الملف التعريفي للمجموعة"
-          title="About Al-Benaa & Al-Majd Holding Group"
-          titleAr="نبذة عن مجموعة البناء والمجد القابضة"
+          title="About AL BENAA & AL MAJD"
+          titleAr="نبذة عن مؤسسة البناء الرحاب ومؤسسة خطوط المجد"
           subtitle="Pioneering modern construction contracting and strategic international trade in Saudi Arabia."
           subtitleAr="رواد المقاولات والإنشاءات الحديثة والتجارة والاستيراد والتصدير في المملكة العربية السعودية."
         />
@@ -20,10 +20,10 @@ export default function About() {
             <h3 className="text-2xl font-extrabold text-benaa mb-1">Our Corporate Legacy</h3>
             <p className="text-sm font-bold text-majd font-arabic mb-4">مسيرتنا ورؤيتنا المؤسسية</p>
             <p className="text-base text-gray-700 leading-relaxed mb-3">
-              Al-Benaa & Al-Majd Group is a leading Saudi conglomerate operating two powerhouse business divisions: <strong>Al-Benaa for General Contracting & Construction</strong>, and <strong>Al-Majd for General Trading, Import, Export & Logistics</strong>. Together, we deliver turnkey integrated engineering solutions, premium building materials, and cross-border commercial execution.
+              Operating in the Kingdom of Saudi Arabia, our alliance comprises two fully certified commercial establishments: <strong>AL BENAA AL RAHAB CONTRACTING EST.</strong> (specializing in general construction, civil contracting, renovation, and project management) and <strong>AL MAJD LINES FOR TRADE & IMPORT</strong> (specializing in international product sourcing, commercial imports, building materials, and logistics). Together, we deliver turnkey integrated engineering solutions, premium building materials, and cross-border commercial execution.
             </p>
             <p className="text-sm text-gray-600 font-arabic leading-relaxed">
-              مجموعة البناء والمجد هي كيان تجاري وهندسي سعودي رائد يضم شركتين متخصصتين: شركة البناء للإنشاءات والمقاولات العامة، وشركة المجد للتجارة العامة والاستيراد والتصدير. نسعى لتقديم حلول شاملة بأعلى معايير الجودة والاحترافية والكفاءة التشغيلية.
+              كيان سعودي رائد يضم مؤسستين متخصصتين ومعتمدتين: مؤسسة البناء الرحاب للمقاولات (المتخصصة في المقاولات العامة والإنشاءات والترميم وإدارة المشاريع)، ومؤسسة خطوط المجد للتجارة والاستيراد (المتخصصة في الاستيراد والتجارة وتوريد المواد والحلول اللوجستية). نسعى لتقديم حلول شاملة بأعلى معايير الجودة والاحترافية والكفاءة التشغيلية.
             </p>
           </div>
 

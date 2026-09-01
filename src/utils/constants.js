@@ -1,7 +1,8 @@
-export const SITE_NAME_EN = 'Al-Benaa & Al-Majd Group'
-export const SITE_NAME_AR = 'مجموعة البناء والمجد'
+export const SITE_NAME_EN = 'AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT'
+export const SITE_NAME_AR = 'مؤسسة البناء الرحاب للمقاولات ومؤسسة خطوط المجد للتجارة والاستيراد'
 export const SITE_TAGLINE_EN = 'Building the Future, Connecting Global Markets'
 export const SITE_TAGLINE_AR = 'نبني المستقبل، ونربط الأسواق العالمية'
+
 
 export const CONTACT_INFO = {
   phone: '+966 11 456 7890',

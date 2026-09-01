@@ -12,8 +12,8 @@ export default function Products() {
     <div className="py-16 md:py-24">
       <Container>
         <SectionTitle
-          eyebrow="Al-Majd Commercial Catalog"
-          eyebrowAr="كتالوج منتجات شركة المجد"
+          eyebrow="AL MAJD LINES FOR TRADE & IMPORT"
+          eyebrowAr="كتالوج منتجات مؤسسة خطوط المجد للتجارة والاستيراد"
           title="Certified Construction Materials & Equipment"
           titleAr="المواد والمعدات والمنتجات الإنشائية المعتمدة"
           subtitle="Directly imported, quality certified, and supplied across major project sites in Saudi Arabia."
@@ -33,8 +33,8 @@ export default function Products() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
                 />
-                <div className="absolute top-3 right-3 bg-majd text-white text-[11px] font-bold px-3 py-1 rounded-full shadow">
-                  Al-Majd Trading
+                <div className="absolute top-3 right-3 bg-majd text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow tracking-tight">
+                  AL MAJD LINES
                 </div>
               </div>
               <div className="p-6 flex flex-col flex-grow">

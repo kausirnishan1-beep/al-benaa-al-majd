@@ -18,19 +18,19 @@ export default function Footer() {
               <Building2 className="w-6 h-6 text-majd-light" />
             </div>
             <div>
-              <h3 className="text-lg font-bold leading-tight">
-                {general.siteNameEn || 'Al-Benaa & Al-Majd Group'}
+              <h3 className="text-base md:text-lg font-bold leading-tight uppercase">
+                {general.siteNameEn || 'AL BENAA AL RAHAB & AL MAJD LINES'}
               </h3>
               <p className="text-xs text-majd-light font-arabic">
-                {general.siteNameAr || 'مجموعة البناء والمجد القابضة'}
+                {general.siteNameAr || 'مؤسسة البناء الرحاب ومؤسسة خطوط المجد'}
               </p>
             </div>
           </div>
           <p className="text-white/70 text-sm leading-relaxed mb-2">
-            Two leading specialized companies under one umbrella: General Construction & Contracting, and International Trading & Logistics in Saudi Arabia.
+            Two certified Saudi commercial entities operating in synergy: AL BENAA AL RAHAB CONTRACTING EST. for Civil Construction & Contracting, and AL MAJD LINES FOR TRADE & IMPORT for International Trade & Supply in Saudi Arabia.
           </p>
           <p className="text-white/50 text-xs font-arabic leading-relaxed">
-            شركتان رائدتان في مجالي الإنشاءات والمقاولات، والتجارة العامة والاستيراد والتصدير في المملكة العربية السعودية.
+            مؤسستان معتمدتان في المملكة: مؤسسة البناء الرحاب للمقاولات العامة، ومؤسسة خطوط المجد للتجارة والاستيراد.
           </p>
         </div>
 
@@ -47,7 +47,7 @@ export default function Footer() {
             <li>
               <Link to="/companies" className="hover:text-white flex items-center gap-2 transition-colors">
                 <ChevronRight className="w-4 h-4 text-majd-light" />
-                <span>Our Companies <span className="text-xs text-white/50 font-arabic">(شركاتنا)</span></span>
+                <span>Our Establishments <span className="text-xs text-white/50 font-arabic">(مؤسساتنا)</span></span>
               </Link>
             </li>
             <li>
@@ -111,7 +111,7 @@ export default function Footer() {
       </Container>
 
       <div className="border-t border-white/10 py-5 text-center text-white/60 text-xs">
-        <p>© {new Date().getFullYear()} Al-Benaa & Al-Majd Group. All rights reserved. | جميع الحقوق محفوظة لمجموعة البناء والمجد</p>
+        <p>© {new Date().getFullYear()} AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT. All rights reserved. | جميع الحقوق محفوظة</p>
       </div>
     </footer>
   )

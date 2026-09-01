@@ -19,10 +19,10 @@ export default function Hero() {
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-sm mb-6">
             <span className="w-2 h-2 rounded-full bg-majd-light animate-pulse"></span>
             <span className="text-majd-light font-bold text-xs md:text-sm tracking-wider uppercase">
-              Al-Benaa & Al-Majd Holding Group
+              AL BENAA AL RAHAB & AL MAJD LINES
             </span>
             <span className="text-white/40">|</span>
-            <span className="text-white/80 text-xs md:text-sm font-arabic">مجموعة البناء والمجد القابضة</span>
+            <span className="text-white/80 text-xs md:text-sm font-arabic">مؤسسة البناء الرحاب ومؤسسة خطوط المجد</span>
           </div>
 
           <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight">
@@ -35,11 +35,11 @@ export default function Hero() {
           </p>
 
           <p className="mt-6 text-white/80 text-base md:text-lg leading-relaxed max-w-2xl">
-            A premier Saudi group uniting two market leaders: <strong className="text-white">Al-Benaa for General Contracting & Construction</strong> and <strong className="text-white">Al-Majd for International Trading, Supply & Logistics</strong>.
+            A premier Saudi commercial alliance uniting two market leaders: <strong className="text-white">AL BENAA AL RAHAB CONTRACTING EST.</strong> and <strong className="text-white">AL MAJD LINES FOR TRADE & IMPORT</strong>.
           </p>
 
           <p className="mt-2 text-white/60 text-sm md:text-base font-arabic leading-relaxed max-w-2xl">
-            شركتان رائدتان تحت مظلة واحدة: الإنشاءات والمقاولات العامة، والتجارة الدولية والاستيراد والتصدير في المملكة العربية السعودية.
+            مؤسستان رائدتان: مؤسسة البناء الرحاب للمقاولات، ومؤسسة خطوط المجد للتجارة والاستيراد في المملكة العربية السعودية.
           </p>
 
           <div className="mt-10 flex flex-wrap gap-4">
@@ -51,8 +51,8 @@ export default function Hero() {
               <div className="flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-benaa" />
                 <div className="text-left">
-                  <span className="block font-bold text-sm leading-tight">Al-Benaa Construction</span>
-                  <span className="block text-[11px] text-benaa/80 font-arabic leading-tight">شركة البناء للمقاولات</span>
+                  <span className="block font-bold text-sm leading-tight">AL BENAA AL RAHAB</span>
+                  <span className="block text-[11px] text-benaa/80 font-arabic leading-tight">مؤسسة البناء الرحاب للمقاولات</span>
                 </div>
               </div>
             </Button>
@@ -65,8 +65,8 @@ export default function Hero() {
               <div className="flex items-center gap-2">
                 <Globe2 className="w-5 h-5 text-white" />
                 <div className="text-left">
-                  <span className="block font-bold text-sm leading-tight">Al-Majd Trading</span>
-                  <span className="block text-[11px] text-white/80 font-arabic leading-tight">شركة المجد للتجارة</span>
+                  <span className="block font-bold text-sm leading-tight">AL MAJD LINES</span>
+                  <span className="block text-[11px] text-white/80 font-arabic leading-tight">مؤسسة خطوط المجد للتجارة</span>
                 </div>
               </div>
             </Button>

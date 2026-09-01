@@ -14,11 +14,11 @@ export default function BenaaHome() {
               <Building2 className="w-4 h-4" />
               <span>General Contracting Division</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
-              Al-Benaa Construction
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
+              AL BENAA AL RAHAB CONTRACTING EST.
             </h1>
-            <p className="text-2xl md:text-3xl font-bold text-white/90 mt-2 font-arabic leading-snug">
-              شركة البناء للمقاولات العامة
+            <p className="text-xl md:text-2xl font-bold text-white/90 mt-2 font-arabic leading-snug">
+              مؤسسة البناء الرحاب للمقاولات
             </p>
             <p className="mt-6 text-white/80 text-base md:text-lg max-w-2xl leading-relaxed">
               Specializing in premium residential compounds, commercial towers, structural rehabilitation, and full-lifecycle project management across Saudi Arabia.

@@ -15,8 +15,8 @@ export default function Maintenance() {
     <div className="py-16 md:py-24">
       <Container>
         <SectionTitle
-          eyebrow="Al-Benaa Construction Division"
-          eyebrowAr="شركة البناء للمقاولات"
+          eyebrow="AL BENAA AL RAHAB CONTRACTING EST."
+          eyebrowAr="مؤسسة البناء الرحاب للمقاولات"
           title="Facility Maintenance & Operations"
           titleAr="إدارة وصيانة وتشغيل المرافق والمنشآت"
           subtitle="Ensuring operational continuity, asset preservation, and safety for your properties."

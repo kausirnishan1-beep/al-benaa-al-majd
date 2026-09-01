@@ -15,8 +15,8 @@ export default function Renovation() {
     <div className="py-16 md:py-24">
       <Container>
         <SectionTitle
-          eyebrow="Al-Benaa Construction Division"
-          eyebrowAr="شركة البناء للمقاولات"
+          eyebrow="AL BENAA AL RAHAB CONTRACTING EST."
+          eyebrowAr="مؤسسة البناء الرحاب للمقاولات"
           title="Renovation & Architectural Restoration"
           titleAr="أعمال التجديد، الترميم والتطوير المعماري"
           subtitle="Breathing new life into existing commercial properties and residential estates."

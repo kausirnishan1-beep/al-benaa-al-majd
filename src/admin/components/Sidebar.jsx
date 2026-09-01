@@ -1,4 +1,4 @@
-﻿import { NavLink, Link, useNavigate } from 'react-router-dom'
+import { NavLink, Link, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   Building2,
@@ -103,11 +103,11 @@ export default function Sidebar({ isOpen, onClose }) {
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="font-extrabold text-sm tracking-tight text-white leading-tight">
-                AL-BENAA × AL-MAJD
+              <h2 className="font-extrabold text-xs tracking-tight text-white leading-tight">
+                AL BENAA & AL MAJD
               </h2>
-              <p className="text-[10px] font-bold text-majd-light font-arabic uppercase tracking-wider">
-                بوابة الإدارة والتحكم
+              <p className="text-[9px] font-bold text-majd-light font-arabic">
+                البناء الرحاب وخطوط المجد
               </p>
             </div>
           </Link>
