@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { ShieldCheck, Lock, Mail, ArrowRight, ArrowLeft, AlertCircle, Home } from 'lucide-react'
+import { ShieldCheck, Lock, Mail, ArrowRight, ArrowLeft, AlertCircle, Eye, EyeOff } from 'lucide-react'
 import { useAdminAuth } from '../context/AdminAuthContext.jsx'
 
 export default function Login() {
@@ -12,6 +12,7 @@ export default function Login() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -47,9 +48,6 @@ export default function Login() {
             </h1>
             <p className="text-sm font-bold text-majd font-arabic mt-0.5">
               بوابة الإدارة والتحكم المركزية
-            </p>
-            <p className="text-xs text-gray-500 mt-2">
-              Sign in with your Supabase credentials to manage the platform
             </p>
           </div>
 
@@ -87,13 +85,25 @@ export default function Login() {
               <div className="relative">
                 <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 text-xs focus:ring-2 focus:ring-benaa/30 focus:border-benaa outline-none transition-all"
+                  className="w-full pl-10 pr-11 py-3 rounded-2xl border border-gray-200 text-xs focus:ring-2 focus:ring-benaa/30 focus:border-benaa outline-none transition-all"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none p-1 rounded-lg transition-colors"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
             </div>
 
