@@ -226,9 +226,24 @@ export default function Settings() {
                 type="text"
                 value={formData.contact?.whatsapp || ''}
                 onChange={(e) => handleFieldChange('contact', 'whatsapp', e.target.value)}
-                placeholder="+966 50 123 4567"
+                placeholder="+966 50 123 4567 or 0501234567"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-emerald-300 bg-emerald-50/20 text-xs font-mono focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 font-bold text-emerald-900"
               />
+              {formData.contact?.whatsapp && (
+                <div className="mt-1 flex items-center justify-between text-[11px]">
+                  <span className="text-gray-500">
+                    Live Chat Link: <span className="font-mono text-emerald-700 font-bold">https://wa.me/{formData.contact.whatsapp.replace(/[^0-9]/g, '')}</span>
+                  </span>
+                  <a
+                    href={`https://wa.me/${formData.contact.whatsapp.replace(/[^0-9]/g, '')}?text=Test`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-emerald-600 hover:underline font-bold"
+                  >
+                    Test Link ↗
+                  </a>
+                </div>
+              )}
             </div>
 
             <div className="sm:col-span-2">
