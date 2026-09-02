@@ -206,7 +206,7 @@ export default function Settings() {
           <div className="grid sm:grid-cols-2 gap-5">
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                Primary Phone Number (Saudi)
+                Primary Phone Number / الهاتف الرئيسي
               </label>
               <input
                 type="text"
@@ -218,14 +218,28 @@ export default function Settings() {
             </div>
 
             <div>
+              <label className="block text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                <span>WhatsApp Number / رقم الواتساب المباشر</span>
+                <span className="text-[10px] font-normal text-emerald-600 font-arabic">يستخدم للزر العائم</span>
+              </label>
+              <input
+                type="text"
+                value={formData.contact?.whatsapp || ''}
+                onChange={(e) => handleFieldChange('contact', 'whatsapp', e.target.value)}
+                placeholder="+966 50 123 4567"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-emerald-300 bg-emerald-50/20 text-xs font-mono focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 font-bold text-emerald-900"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                WhatsApp / Direct Mobile
+                Alternative Mobile / رقم جوال إضافي
               </label>
               <input
                 type="text"
                 value={formData.contact?.phoneAlt || ''}
                 onChange={(e) => handleFieldChange('contact', 'phoneAlt', e.target.value)}
-                placeholder="+966 50 123 4567"
+                placeholder="+966 50 000 0000"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-mono focus:ring-2 focus:ring-benaa/30 focus:border-benaa"
               />
             </div>

@@ -60,12 +60,12 @@ export function useSettings() {
                 merged.contact = {
                   ...prev.contact,
                   ...val,
-                  phone: val.phone || prev.contact.phone || '+966 11 456 7890',
-                  phoneAlt: val.phoneAlt || prev.contact.phoneAlt || '+966 50 123 4567',
-                  whatsapp: val.whatsapp || val.phoneAlt || val.phone || prev.contact.whatsapp || '+966501234567',
-                  email: val.email || prev.contact.email || 'info@albenaa-almajd.com',
-                  addressEn: val.addressEn || prev.contact.addressEn || 'King Fahd Road, Al Olaya, Riyadh, Kingdom of Saudi Arabia',
-                  addressAr: val.addressAr || prev.contact.addressAr || 'طريق الملك فهد، حي العليا، الرياض، المملكة العربية السعودية',
+                  phone: val.phone !== undefined && val.phone !== '' ? val.phone.trim() : prev.contact.phone,
+                  phoneAlt: val.phoneAlt !== undefined && val.phoneAlt !== '' ? val.phoneAlt.trim() : prev.contact.phoneAlt,
+                  whatsapp: val.whatsapp !== undefined && val.whatsapp !== '' ? val.whatsapp.trim() : (val.phoneAlt || val.phone || prev.contact.whatsapp || '+966501234567'),
+                  email: val.email !== undefined && val.email !== '' ? val.email.trim() : prev.contact.email,
+                  addressEn: val.addressEn !== undefined && val.addressEn !== '' ? val.addressEn.trim() : prev.contact.addressEn,
+                  addressAr: val.addressAr !== undefined && val.addressAr !== '' ? val.addressAr.trim() : prev.contact.addressAr,
                 }
               }
             }
