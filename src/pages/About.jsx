@@ -1,4 +1,4 @@
-import { Building2, Globe2, Target, Eye, Award, CheckCircle2 } from 'lucide-react'
+import { Target, Eye } from 'lucide-react'
 import Container from '../components/common/Container.jsx'
 import SectionTitle from '../components/common/SectionTitle.jsx'
 

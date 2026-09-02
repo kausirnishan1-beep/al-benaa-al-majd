@@ -1,13 +1,15 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import Container from '../common/Container.jsx'
 import SectionTitle from '../common/SectionTitle.jsx'
-import { benaaServices, majdServices } from '../../data/services.js'
+import { usePublicServices } from '../../hooks/usePublicServices.js'
 import { Link } from 'react-router-dom'
 
-const services = [...benaaServices, ...majdServices]
-
 export default function ServicesOverview() {
+  const { services } = usePublicServices()
+
+  if (!services || services.length === 0) return null
+
   return (
     <section className="section-container bg-gray-50 py-20">
       <Container>

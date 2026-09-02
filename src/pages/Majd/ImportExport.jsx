@@ -1,4 +1,4 @@
-import { Globe, CheckCircle2, Ship, Plane } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'

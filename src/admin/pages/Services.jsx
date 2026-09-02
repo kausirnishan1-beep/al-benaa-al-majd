@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { Plus, Edit2, Trash2, Briefcase, CheckCircle2, Building2 } from 'lucide-react'
+import { Plus, Edit2, Trash2, Building2 } from 'lucide-react'
 import { useServices } from '../hooks/useServices.js'
 import DataTable from '../components/DataTable.jsx'
 import ConfirmDialog from '../components/ConfirmDialog.jsx'
 
 export default function Services() {
-  const { services, addService, updateService, deleteService, loading } = useServices()
+  const { services, addService, updateService, deleteService } = useServices()
 
   const [activeCompany, setActiveCompany] = useState('benaa') // 'benaa' | 'majd'
   const [isModalOpen, setIsModalOpen] = useState(false)

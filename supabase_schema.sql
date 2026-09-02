@@ -1080,3 +1080,30 @@ select
     'admins',
     count(*)
 from public.admins;
+
+
+-- ============================================================
+-- 31. SERVER-SIDE CONTACT MESSAGES RATE LIMIT TRIGGER
+-- ============================================================
+
+create or replace function public.check_contact_rate_limit()
+returns trigger as $$
+begin
+    -- Prevent repeated message submissions from the same email within 60 seconds
+    if exists (
+        select 1 from public.contact_messages
+        where email = new.email
+          and created_at > now() - interval '60 seconds'
+    ) then
+        raise exception 'Rate limit exceeded. Please wait 60 seconds before submitting another message.';
+    end if;
+    return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists trg_contact_rate_limit on public.contact_messages;
+create trigger trg_contact_rate_limit
+before insert on public.contact_messages
+for each row
+execute function public.check_contact_rate_limit();
+

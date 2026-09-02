@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { Mail, CheckCircle2, Trash2, Eye, Phone, MessageSquare, ExternalLink, Calendar, User } from 'lucide-react'
+import { Mail, Trash2, Eye, MessageSquare } from 'lucide-react'
 import { useMessages } from '../hooks/useMessages.js'
 import DataTable from '../components/DataTable.jsx'
 import ConfirmDialog from '../components/ConfirmDialog.jsx'
 
 export default function Messages() {
-  const { messages, markAsRead, deleteMessage, loading } = useMessages()
+  const { messages, markAsRead, deleteMessage } = useMessages()
 
   const [selectedMessage, setSelectedMessage] = useState(null)
   const [deleteTargetId, setDeleteTargetId] = useState(null)

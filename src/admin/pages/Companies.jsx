@@ -3,7 +3,7 @@ import { Building2, Save, CheckCircle2 } from 'lucide-react'
 import { useCompany } from '../hooks/useCompany.js'
 
 export default function Companies() {
-  const { companies, updateCompany, loading } = useCompany()
+  const { companies, updateCompany } = useCompany()
 
   const [activeTab, setActiveTab] = useState('benaa') // 'benaa' | 'majd'
   const [formData, setFormData] = useState({})

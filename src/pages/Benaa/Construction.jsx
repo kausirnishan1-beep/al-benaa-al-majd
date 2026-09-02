@@ -1,4 +1,4 @@
-import { Building2, CheckCircle2, Shield, HardHat } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'

@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
   Layers,
   ShoppingBag,
@@ -7,10 +7,7 @@ import {
   FileText,
   Plus,
   ArrowUpRight,
-  Clock,
   CheckCircle2,
-  Building2,
-  TrendingUp,
 } from 'lucide-react'
 import { useProjects } from '../hooks/useProjects.js'
 import { useProducts } from '../hooks/useProducts.js'

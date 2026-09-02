@@ -1,10 +1,16 @@
-import { companies } from '../../data/companies.js'
+import { useCompanies } from '../../hooks/useCompanies.js'
 import Container from '../common/Container.jsx'
 import SectionTitle from '../common/SectionTitle.jsx'
 import BenaaCard from '../companies/BenaaCard.jsx'
 import MajdCard from '../companies/MajdCard.jsx'
 
 export default function Companies() {
+  const { companies, getCompany } = useCompanies()
+  const benaa = getCompany('benaa') || companies[0]
+  const majd = getCompany('majd') || companies[1]
+
+  if (companies.length === 0) return null
+
   return (
     <section className="section-container py-20">
       <Container>
@@ -17,8 +23,8 @@ export default function Companies() {
           subtitleAr="تعرف على شركاتنا المتخصصة في مجالات المقاولات الإنشائية والتجارة واللوجستيات الدولية."
         />
         <div className="grid md:grid-cols-2 gap-8 mt-10">
-          <BenaaCard data={companies[0]} />
-          <MajdCard data={companies[1]} />
+          {benaa && <BenaaCard data={benaa} />}
+          {majd && <MajdCard data={majd} />}
         </div>
       </Container>
     </section>

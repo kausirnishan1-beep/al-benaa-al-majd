@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Building2, Globe2, ArrowRight } from 'lucide-react'
+import { Building2, Globe2 } from 'lucide-react'
 import Container from '../common/Container.jsx'
 import Button from '../common/Button.jsx'
 

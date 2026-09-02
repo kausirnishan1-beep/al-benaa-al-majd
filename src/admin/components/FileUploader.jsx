@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { UploadCloud, FileText, X, Check, Link2 } from 'lucide-react'
+import { UploadCloud, FileText, X, Check } from 'lucide-react'
 import { supabase } from '../../utils/supabaseClient.js'
 
 export default function FileUploader({

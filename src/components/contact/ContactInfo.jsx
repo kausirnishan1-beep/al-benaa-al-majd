@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, Clock, Building2 } from 'lucide-react'
+import { Phone, Mail, MapPin, Clock } from 'lucide-react'
 import { CONTACT_INFO } from '../../utils/constants.js'
 import { useSettings } from '../../admin/hooks/useSettings.js'
 

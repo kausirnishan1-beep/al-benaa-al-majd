@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { UploadCloud, Image as ImageIcon, X, Link2, Check } from 'lucide-react'
+import { UploadCloud, X, Check } from 'lucide-react'
 import { supabase } from '../../utils/supabaseClient.js'
 
 export default function ImageUploader({ value, onChange, label = 'Image / الصورة' }) {

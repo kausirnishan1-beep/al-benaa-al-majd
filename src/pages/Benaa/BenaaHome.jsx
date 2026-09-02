@@ -1,10 +1,15 @@
-import { Building2, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { Building2, ChevronRight } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
-import { benaaServices } from '../../data/services.js'
+import { usePublicServices } from '../../hooks/usePublicServices.js'
+import { useCompanies } from '../../hooks/useCompanies.js'
 import { Link } from 'react-router-dom'
 
 export default function BenaaHome() {
+  const { benaaServices } = usePublicServices()
+  const { getCompany } = useCompanies()
+  const company = getCompany('benaa')
+
   return (
     <>
       <section className="bg-gradient-to-br from-benaa via-benaa-dark to-[#06241b] text-white py-24">
@@ -15,16 +20,16 @@ export default function BenaaHome() {
               <span>General Contracting Division</span>
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
-              AL BENAA AL RAHAB CONTRACTING EST.
+              {company?.name || 'AL BENAA AL RAHAB CONTRACTING EST.'}
             </h1>
             <p className="text-xl md:text-2xl font-bold text-white/90 mt-2 font-arabic leading-snug">
-              مؤسسة البناء الرحاب للمقاولات
+              {company?.nameAr || 'مؤسسة البناء الرحاب للمقاولات'}
             </p>
             <p className="mt-6 text-white/80 text-base md:text-lg max-w-2xl leading-relaxed">
-              Specializing in premium residential compounds, commercial towers, structural rehabilitation, and full-lifecycle project management across Saudi Arabia.
+              {company?.description || 'Specializing in premium residential compounds, commercial towers, structural rehabilitation, and full-lifecycle project management across Saudi Arabia.'}
             </p>
             <p className="mt-2 text-white/60 text-sm font-arabic max-w-2xl leading-relaxed">
-              متخصصون في تنفيذ المشاريع السكنية والتجارية، أعمال التجديد والترميم، الصيانة الوقائية وإدارة المشاريع الهندسية المتكاملة.
+              {company?.descriptionAr || 'متخصصون في تنفيذ المشاريع السكنية والتجارية، أعمال التجديد والترميم، الصيانة الوقائية وإدارة المشاريع الهندسية المتكاملة.'}
             </p>
           </div>
         </Container>
@@ -40,35 +45,42 @@ export default function BenaaHome() {
             subtitle="Explore our comprehensive engineering disciplines delivering precision, safety, and longevity."
             subtitleAr="تعرف على نطاق خدماتنا الهندسية المتميزة بأعلى معايير الجودة والسلامة المهنية."
           />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-            {benaaServices.map((s) => (
-              <Link
-                key={s.id}
-                to={s.path}
-                className="block p-7 bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-benaa/10 text-benaa flex items-center justify-center mb-5 group-hover:bg-benaa group-hover:text-white transition-colors">
-                  <Building2 className="w-6 h-6" />
-                </div>
-                <h3 className="font-extrabold text-benaa text-lg group-hover:text-majd transition-colors">
-                  {s.title}
-                </h3>
-                <p className="font-bold text-sm text-gray-700 font-arabic mt-0.5">
-                  {s.titleAr}
-                </p>
-                <p className="text-xs text-gray-600 mt-3 leading-relaxed">
-                  {s.description}
-                </p>
-                <p className="text-[11px] text-gray-500 font-arabic mt-1 leading-relaxed">
-                  {s.descriptionAr}
-                </p>
-                <div className="mt-5 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-benaa group-hover:text-majd transition-colors">
-                  <span>Learn more</span>
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
-            ))}
-          </div>
+          {benaaServices.length === 0 ? (
+            <div className="py-16 text-center bg-white rounded-3xl border border-dashed border-gray-200 mt-10 shadow-sm">
+              <p className="text-gray-600 font-bold text-sm">No contracting services currently listed.</p>
+              <p className="text-gray-400 text-xs font-arabic mt-1">لا توجد خدمات مقاولات مضافة حالياً.</p>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+              {benaaServices.map((s) => (
+                <Link
+                  key={s.id}
+                  to={s.path}
+                  className="block p-7 bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-benaa/10 text-benaa flex items-center justify-center mb-5 group-hover:bg-benaa group-hover:text-white transition-colors">
+                    <Building2 className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-extrabold text-benaa text-lg group-hover:text-majd transition-colors">
+                    {s.title}
+                  </h3>
+                  <p className="font-bold text-sm text-gray-700 font-arabic mt-0.5">
+                    {s.titleAr}
+                  </p>
+                  <p className="text-xs text-gray-600 mt-3 leading-relaxed">
+                    {s.description}
+                  </p>
+                  <p className="text-[11px] text-gray-500 font-arabic mt-1 leading-relaxed">
+                    {s.descriptionAr}
+                  </p>
+                  <div className="mt-5 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-benaa group-hover:text-majd transition-colors">
+                    <span>Learn more</span>
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </Container>
       </section>
     </>

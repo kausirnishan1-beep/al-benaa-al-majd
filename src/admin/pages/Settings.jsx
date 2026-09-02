@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Settings as SettingsIcon, Save, CheckCircle2, Phone, MapPin, Share2, BarChart3, Globe } from 'lucide-react'
+import { Save, CheckCircle2, Phone, Share2, BarChart3, Globe } from 'lucide-react'
 import { useSettings } from '../hooks/useSettings.js'
 
 export default function Settings() {
-  const { settings, updateSettingGroup, loading } = useSettings()
+  const { settings, updateSettingGroup } = useSettings()
 
   const [activeTab, setActiveTab] = useState('stats') // 'stats' | 'contact' | 'social' | 'general'
   const [formData, setFormData] = useState({ ...settings })

@@ -5,7 +5,7 @@ import { supabase } from '../../utils/supabaseClient.js'
 
 export default function ContactForm() {
   const [status, setStatus] = useState('idle')
-  const [lastSubmitTime, setLastSubmitTime] = useState(0)
+  const [errorMessage, setErrorMessage] = useState('')
   const {
     register,
     handleSubmit,
@@ -22,6 +22,8 @@ export default function ContactForm() {
   })
 
   const onSubmit = async (data) => {
+    setErrorMessage('')
+
     // 1. Honeypot check (if filled by bot, fake success & drop)
     if (data.website_hp) {
       console.warn('Bot submission caught via honeypot')
@@ -30,10 +32,14 @@ export default function ContactForm() {
       return
     }
 
-    // 2. Client-side Rate Limit check (10 seconds between submissions)
+    // 2. Persistent Rate Limit check (60 seconds between submissions across page refreshes)
+    const lastSubmitTime = parseInt(localStorage.getItem('albenaa_last_contact_submit') || '0', 10)
     const now = Date.now()
-    if (now - lastSubmitTime < 10000) {
-      alert('Please wait a few seconds before submitting another message. / يرجى الانتظار بضع ثوانٍ قبل الإرسال مرة أخرى')
+    const elapsedSeconds = Math.floor((now - lastSubmitTime) / 1000)
+    if (elapsedSeconds < 60) {
+      const waitTime = 60 - elapsedSeconds
+      setErrorMessage(`Please wait ${waitTime} seconds before submitting another inquiry. / يرجى الانتظار ${waitTime} ثانية قبل إرسال رسالة أخرى`)
+      setStatus('error')
       return
     }
 
@@ -47,12 +53,19 @@ export default function ContactForm() {
           message: data.message.trim().substring(0, 2000),
         },
       ])
-      if (error) throw error
-      setLastSubmitTime(Date.now())
+      if (error) {
+        if (error.message?.includes('Rate limit exceeded')) {
+          throw new Error('Rate limit exceeded. Please wait 60 seconds before submitting another inquiry. / تم تجاوز الحد المسموح. يرجى الانتظار 60 ثانية.')
+        }
+        throw error
+      }
+
+      localStorage.setItem('albenaa_last_contact_submit', now.toString())
       setStatus('success')
       reset()
     } catch (err) {
       console.error('Supabase contact form submission error:', err)
+      setErrorMessage(err.message || 'Error sending message. Please try again. / حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.')
       setStatus('error')
     }
   }
@@ -191,7 +204,7 @@ export default function ContactForm() {
         <div className="p-4 bg-red-50 border border-red-200 text-red-800 rounded-xl flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
           <div>
-            <p className="font-bold text-sm">Error sending message. Please try again.</p>
+            <p className="font-bold text-sm">{errorMessage || 'Error sending message. Please try again.'}</p>
             <p className="text-xs font-arabic text-red-700 mt-0.5">حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى أو الاتصال بنا مباشرة.</p>
           </div>
         </div>

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
 
@@ -13,7 +14,7 @@ export function AdminAuthProvider({ children }) {
       try {
         const { data: { session } } = await supabase.auth.getSession()
         if (session?.user) {
-          // Verify with public.admins
+          // Strictly verify against public.admins table
           const { data: adminRecord, error: adminErr } = await supabase
             .from('admins')
             .select('id, full_name, role, is_active')
@@ -30,15 +31,10 @@ export function AdminAuthProvider({ children }) {
             setUser(u)
             localStorage.setItem('albenaa_admin_user', JSON.stringify(u))
           } else {
-            // Fallback for primary auth user if admins table has not finished populating
-            const u = {
-              id: session.user.id,
-              email: session.user.email,
-              name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Admin',
-              role: 'admin',
-            }
-            setUser(u)
-            localStorage.setItem('albenaa_admin_user', JSON.stringify(u))
+            // Unauthorized or inactive user: do NOT grant fallback admin role
+            setUser(null)
+            localStorage.removeItem('albenaa_admin_user')
+            await supabase.auth.signOut()
           }
         } else {
           setUser(null)
@@ -46,6 +42,8 @@ export function AdminAuthProvider({ children }) {
         }
       } catch (err) {
         console.warn('Supabase auth session check:', err)
+        setUser(null)
+        localStorage.removeItem('albenaa_admin_user')
       } finally {
         setLoading(false)
       }
@@ -56,20 +54,25 @@ export function AdminAuthProvider({ children }) {
     // Listen to Supabase Auth state changes
     const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
-        const { data: adminRecord } = await supabase
+        const { data: adminRecord, error: adminErr } = await supabase
           .from('admins')
           .select('id, full_name, role, is_active')
           .eq('id', session.user.id)
           .single()
 
-        const u = {
-          id: session.user.id,
-          email: session.user.email,
-          name: adminRecord?.full_name || session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Admin',
-          role: adminRecord?.role || 'admin',
+        if (!adminErr && adminRecord && adminRecord.is_active !== false) {
+          const u = {
+            id: session.user.id,
+            email: session.user.email,
+            name: adminRecord.full_name || session.user.user_metadata?.full_name || 'Admin',
+            role: adminRecord.role || 'admin',
+          }
+          setUser(u)
+          localStorage.setItem('albenaa_admin_user', JSON.stringify(u))
+        } else {
+          setUser(null)
+          localStorage.removeItem('albenaa_admin_user')
         }
-        setUser(u)
-        localStorage.setItem('albenaa_admin_user', JSON.stringify(u))
       } else {
         setUser(null)
         localStorage.removeItem('albenaa_admin_user')
@@ -96,26 +99,28 @@ export function AdminAuthProvider({ children }) {
       }
 
       if (data?.user) {
-        // Query public.admins table
+        // Strictly query public.admins table
         const { data: adminRecord, error: adminErr } = await supabase
           .from('admins')
           .select('id, full_name, role, is_active')
           .eq('id', data.user.id)
           .single()
 
-        if (adminRecord && adminRecord.is_active === false) {
+        if (adminErr || !adminRecord || adminRecord.is_active === false) {
           await supabase.auth.signOut()
+          setUser(null)
+          localStorage.removeItem('albenaa_admin_user')
           return {
             success: false,
-            error: 'Account has been deactivated. Please contact support. / هذا الحساب معطل حالياً',
+            error: 'Your account is not authorized for admin access. / ليس لديك صلاحيات للوصول إلى لوحة الإدارة',
           }
         }
 
         const u = {
           id: data.user.id,
           email: data.user.email,
-          name: adminRecord?.full_name || data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'Admin',
-          role: adminRecord?.role || 'admin',
+          name: adminRecord.full_name || data.user.user_metadata?.full_name || 'Admin',
+          role: adminRecord.role || 'admin',
         }
         setUser(u)
         localStorage.setItem('albenaa_admin_user', JSON.stringify(u))

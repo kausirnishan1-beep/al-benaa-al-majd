@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { Plus, Edit2, Trash2, FileText, Download, ShieldCheck, CheckCircle2 } from 'lucide-react'
+import { Plus, Edit2, Trash2, FileText, Download } from 'lucide-react'
 import { useDocuments } from '../hooks/useDocuments.js'
 import DataTable from '../components/DataTable.jsx'
 import FileUploader from '../components/FileUploader.jsx'
 import ConfirmDialog from '../components/ConfirmDialog.jsx'
 
 export default function Documents() {
-  const { documents, addDocument, updateDocument, deleteDocument, loading } = useDocuments()
+  const { documents, addDocument, updateDocument, deleteDocument } = useDocuments()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingDoc, setEditingDoc] = useState(null)

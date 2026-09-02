@@ -2,9 +2,13 @@ import Container from '../components/common/Container.jsx'
 import SectionTitle from '../components/common/SectionTitle.jsx'
 import BenaaCard from '../components/companies/BenaaCard.jsx'
 import MajdCard from '../components/companies/MajdCard.jsx'
-import { companies } from '../data/companies.js'
+import { useCompanies } from '../hooks/useCompanies.js'
 
 export default function CompaniesPage() {
+  const { companies, getCompany } = useCompanies()
+  const benaa = getCompany('benaa') || companies[0]
+  const majd = getCompany('majd') || companies[1]
+
   return (
     <div className="py-16 md:py-24">
       <Container>
@@ -16,10 +20,17 @@ export default function CompaniesPage() {
           subtitle="Specialized market leaders operating synchronously to provide complete contracting and global supply chain execution."
           subtitleAr="شركتان رائدتان تعملان بتكامل لتقديم حلول إنشائية وتجارية ولوجستية متكاملة."
         />
-        <div className="grid md:grid-cols-2 gap-8 mt-10">
-          <BenaaCard data={companies[0]} />
-          <MajdCard data={companies[1]} />
-        </div>
+        {companies.length === 0 ? (
+          <div className="py-20 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-200 mt-10">
+            <p className="text-gray-600 font-bold text-sm">Company profiles are currently being updated.</p>
+            <p className="text-gray-400 text-xs font-arabic mt-1">جاري تحديث ملفات الشركات حالياً.</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-8 mt-10">
+            {benaa && <BenaaCard data={benaa} />}
+            {majd && <MajdCard data={majd} />}
+          </div>
+        )}
       </Container>
     </div>
   )

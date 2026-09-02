@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { Plus, Edit2, Trash2, Layers, ExternalLink, Image as ImageIcon, CheckCircle2 } from 'lucide-react'
+import { Plus, Edit2, Trash2 } from 'lucide-react'
 import { useProjects } from '../hooks/useProjects.js'
 import DataTable from '../components/DataTable.jsx'
 import ImageUploader from '../components/ImageUploader.jsx'
 import ConfirmDialog from '../components/ConfirmDialog.jsx'
 
 export default function Projects() {
-  const { projects, addProject, updateProject, deleteProject, loading } = useProjects()
+  const { projects, addProject, updateProject, deleteProject } = useProjects()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProject, setEditingProject] = useState(null)

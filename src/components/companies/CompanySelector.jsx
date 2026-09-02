@@ -1,9 +1,13 @@
 import { Link } from 'react-router-dom'
-import { companies } from '../../data/companies.js'
+import { useCompanies } from '../../hooks/useCompanies.js'
 
 export default function CompanySelector({ active }) {
+  const { companies } = useCompanies()
+
+  if (!companies || companies.length === 0) return null
+
   return (
-    <div className="flex justify-center gap-4 mb-10">
+    <div className="flex justify-center gap-4 mb-10 flex-wrap">
       {companies.map((c) => (
         <Link
           key={c.id}
@@ -15,7 +19,7 @@ export default function CompanySelector({ active }) {
           }`}
         >
           <span>{c.name}</span>
-          <span className="text-xs font-arabic opacity-80 block text-center font-normal">{c.nameAr}</span>
+          {c.nameAr && <span className="text-xs font-arabic opacity-80 block text-center font-normal">{c.nameAr}</span>}
         </Link>
       ))}
     </div>

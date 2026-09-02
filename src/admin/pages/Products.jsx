@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Edit2, Trash2, ShoppingBag, CheckCircle2, Image as ImageIcon } from 'lucide-react'
+import { Plus, Edit2, Trash2 } from 'lucide-react'
 import { useProducts } from '../hooks/useProducts.js'
 import DataTable from '../components/DataTable.jsx'
 import ImageUploader from '../components/ImageUploader.jsx'
@@ -13,7 +13,7 @@ const categories = [
 ]
 
 export default function Products() {
-  const { products, addProduct, updateProduct, deleteProduct, loading } = useProducts()
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)

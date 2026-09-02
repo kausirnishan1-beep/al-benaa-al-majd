@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Building, ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 
 export default function ProjectCard({ project }) {
   return (
