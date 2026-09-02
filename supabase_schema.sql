@@ -1,241 +1,1082 @@
--- ==============================================================================
--- AL-BENAA & AL-MAJD GROUP - SUPABASE DATABASE SCHEMA & SEED DATA
--- ==============================================================================
+-- ============================================================
+-- AL BENAA AL RAHAB + AL MAJD LINES
+-- FINAL SUPABASE DATABASE SCHEMA (MERGED / UPGRADED)
+-- Matched to the uploaded React/Vite project
+-- ============================================================
 
--- 1. COMPANIES TABLE
-CREATE TABLE IF NOT EXISTS public.companies (
-  id TEXT PRIMARY KEY, -- 'benaa', 'majd'
-  name TEXT NOT NULL,
-  name_ar TEXT NOT NULL,
-  tagline TEXT,
-  tagline_ar TEXT,
-  description TEXT,
-  description_ar TEXT,
-  color TEXT DEFAULT 'benaa',
-  logo TEXT,
-  path TEXT,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+
+-- ============================================================
+-- 1. EXTENSION
+-- ============================================================
+
+create extension if not exists "uuid-ossp";
+
+
+-- ============================================================
+-- 2. REMOVE OLD APPLICATION TABLES
+--
+-- IMPORTANT:
+-- This does NOT delete Supabase Auth users.
+-- This DOES delete any data currently in these tables.
+-- ============================================================
+
+drop table if exists public.contact_messages cascade;
+drop table if exists public.documents cascade;
+drop table if exists public.products cascade;
+drop table if exists public.projects cascade;
+drop table if exists public.services cascade;
+drop table if exists public.site_settings cascade;
+drop table if exists public.companies cascade;
+drop table if exists public.admins cascade;
+
+
+-- ============================================================
+-- 3. ADMINS
+-- ============================================================
+
+create table public.admins (
+    id uuid primary key
+        references auth.users(id)
+        on delete cascade,
+
+    full_name text,
+
+    role text not null default 'admin'
+        check (role in ('admin', 'editor')),
+
+    is_active boolean not null default true,
+
+    created_at timestamptz not null default now(),
+
+    updated_at timestamptz not null default now()
 );
 
--- 2. SERVICES TABLE
-CREATE TABLE IF NOT EXISTS public.services (
-  id TEXT PRIMARY KEY,
-  company_id TEXT NOT NULL, -- 'benaa' or 'majd'
-  title TEXT NOT NULL,
-  title_ar TEXT NOT NULL,
-  description TEXT,
-  description_ar TEXT,
-  path TEXT,
-  icon TEXT,
-  is_active BOOLEAN DEFAULT true,
-  sort_order INT DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+
+-- ============================================================
+-- 3b. ADD YOURSELF AS ADMIN
+-- ============================================================
+
+insert into public.admins (id, full_name, role)
+values ('a516a327-6b04-4553-9bc5-362dbafd7056', 'Kausir', 'admin')
+on conflict (id) do nothing;
+
+
+-- ============================================================
+-- 4. ADMIN CHECK FUNCTION
+--
+-- SECURITY DEFINER prevents RLS recursion.
+-- ============================================================
+
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+    select exists (
+        select 1
+        from public.admins
+        where id = auth.uid()
+          and is_active = true
+          and role in ('admin', 'editor')
+    );
+$$;
+
+
+-- ============================================================
+-- 5. COMPANIES
+--
+-- IMPORTANT:
+-- id is TEXT because the React project uses:
+-- "benaa" and "majd"
+-- ============================================================
+
+create table public.companies (
+    id text primary key,
+
+    slug text unique not null,
+
+    name text not null,
+
+    name_ar text,
+
+    tagline text,
+
+    tagline_ar text,
+
+    description text,
+
+    description_ar text,
+
+    color text,
+
+    logo text,
+
+    path text not null,
+
+    sort_order integer not null default 0,
+
+    created_at timestamptz not null default now(),
+
+    updated_at timestamptz not null default now()
 );
 
--- 3. PROJECTS TABLE
-CREATE TABLE IF NOT EXISTS public.projects (
-  id BIGSERIAL PRIMARY KEY,
-  title TEXT NOT NULL,
-  title_ar TEXT,
-  company TEXT NOT NULL, -- 'benaa' or 'majd'
-  category TEXT NOT NULL, -- 'construction', 'renovation', 'import-export', 'logistics'
-  badge TEXT,
-  badge_ar TEXT,
-  image TEXT NOT NULL,
-  description TEXT,
-  description_ar TEXT,
-  location TEXT DEFAULT 'Riyadh, Saudi Arabia',
-  location_ar TEXT DEFAULT 'الرياض، المملكة العربية السعودية',
-  year TEXT DEFAULT '2026',
-  is_featured BOOLEAN DEFAULT true,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+
+-- ============================================================
+-- 6. SERVICES
+--
+-- IMPORTANT:
+-- id is TEXT because the current Admin code creates IDs like:
+-- companyId-Date.now()
+-- ============================================================
+
+create table public.services (
+    id text primary key,
+
+    company_id text not null
+        references public.companies(id)
+        on update cascade
+        on delete cascade,
+
+    slug text,
+
+    title text not null,
+
+    title_ar text,
+
+    description text,
+
+    description_ar text,
+
+    path text,
+
+    icon text,
+
+    is_active boolean not null default true,
+
+    sort_order integer not null default 0,
+
+    created_at timestamptz not null default now(),
+
+    updated_at timestamptz not null default now()
 );
 
--- 4. PRODUCTS TABLE
-CREATE TABLE IF NOT EXISTS public.products (
-  id BIGSERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  name_ar TEXT,
-  category TEXT NOT NULL, -- 'construction-materials', 'industrial-equipment', etc.
-  image TEXT NOT NULL,
-  description TEXT,
-  description_ar TEXT,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+
+-- ============================================================
+-- 7. PROJECTS
+-- ============================================================
+
+create table public.projects (
+    id uuid primary key default uuid_generate_v4(),
+
+    title text not null,
+
+    title_ar text,
+
+    company text not null
+        references public.companies(id)
+        on update cascade
+        on delete cascade,
+
+    category text,
+
+    badge text,
+
+    badge_ar text,
+
+    image text,
+
+    description text,
+
+    description_ar text,
+
+    location text,
+
+    location_ar text,
+
+    year text,
+
+    is_featured boolean not null default true,
+
+    created_at timestamptz not null default now(),
+
+    updated_at timestamptz not null default now()
 );
 
--- 5. CONTACT_MESSAGES TABLE
-CREATE TABLE IF NOT EXISTS public.contact_messages (
-  id BIGSERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  phone TEXT,
-  message TEXT NOT NULL,
-  is_read BOOLEAN DEFAULT false,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+
+-- ============================================================
+-- 8. PRODUCTS
+-- ============================================================
+
+create table public.products (
+    id uuid primary key default uuid_generate_v4(),
+
+    name text not null,
+
+    name_ar text,
+
+    category text,
+
+    image text,
+
+    description text,
+
+    description_ar text,
+
+    is_active boolean not null default true,
+
+    created_at timestamptz not null default now(),
+
+    updated_at timestamptz not null default now()
 );
 
--- 6. DOCUMENTS TABLE (Compliance & Profile)
-CREATE TABLE IF NOT EXISTS public.documents (
-  id BIGSERIAL PRIMARY KEY,
-  title TEXT NOT NULL,
-  title_ar TEXT,
-  description TEXT,
-  description_ar TEXT,
-  file_url TEXT NOT NULL,
-  tag TEXT DEFAULT 'Document',
-  sort_order INT DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+
+-- ============================================================
+-- 9. DOCUMENTS
+-- ============================================================
+
+create table public.documents (
+    id uuid primary key default uuid_generate_v4(),
+
+    title text not null,
+
+    title_ar text,
+
+    description text,
+
+    description_ar text,
+
+    file_url text not null default '#',
+
+    tag text,
+
+    sort_order integer not null default 0,
+
+    created_at timestamptz not null default now(),
+
+    updated_at timestamptz not null default now()
 );
 
--- 7. SITE_SETTINGS TABLE
-CREATE TABLE IF NOT EXISTS public.site_settings (
-  key TEXT PRIMARY KEY,
-  value JSONB NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+
+-- ============================================================
+-- 10. SITE SETTINGS
+--
+-- JSONB is intentional.
+-- The React project stores:
+-- general
+-- contact
+-- stats
+-- social
+-- ============================================================
+
+create table public.site_settings (
+    key text primary key,
+
+    value jsonb not null default '{}'::jsonb,
+
+    updated_at timestamptz not null default now()
 );
 
--- ==============================================================================
--- INITIAL SEED DATA
--- ==============================================================================
 
--- Seed Companies
-INSERT INTO public.companies (id, name, name_ar, tagline, tagline_ar, description, description_ar, color, logo, path)
-VALUES 
-  ('benaa', 'AL BENAA AL RAHAB CONTRACTING EST.', 'مؤسسة البناء الرحاب للمقاولات', 'General Contracting, Construction, Renovation & Project Management', 'إنشاءات، تجديد، صيانة، وإدارة مشاريع', 'Leading Saudi contracting company executing high-end residential, commercial, and industrial construction projects with uncompromised quality standards.', 'مؤسسة مقاولات سعودية رائدة تنفذ المشاريع السكنية والتجارية والصناعية بأعلى معايير الجودة العالمية.', 'benaa', '/logo/al-benaa-logo.svg', '/benaa'),
-  ('majd', 'AL MAJD LINES FOR TRADE & IMPORT', 'مؤسسة خطوط المجد للتجارة والاستيراد', 'Import & Export, Global Product Sourcing & Logistics Solutions', 'استيراد وتصدير، تجارة عامة، وحلول لوجستية', 'Premier international trading arm connecting global markets with high-grade construction materials, industrial equipment, and supply chain excellence.', 'ذراع تجاري دولي يربط الأسواق العالمية بأجود مواد البناء والمعدات الصناعية والحلول اللوجستية المتكاملة.', 'majd', '/logo/al-majd-logo.svg', '/majd')
-ON CONFLICT (id) DO NOTHING;
+-- ============================================================
+-- 11. CONTACT MESSAGES
+-- ============================================================
 
--- Seed Services
-INSERT INTO public.services (id, company_id, title, title_ar, description, description_ar, path, is_active, sort_order)
-VALUES
-  ('construction', 'benaa', 'General Construction & Building', 'الإنشاءات والمقاولات العامة', 'Turnkey execution of premium residential complexes, commercial towers, and industrial facilities in Saudi Arabia.', 'تنفيذ متكامل للمشاريع السكنية والأبراج التجارية والمنشآت الصناعية في المملكة العربية السعودية.', '/benaa/construction', true, 1),
-  ('renovation', 'benaa', 'Renovation & Architectural Restoration', 'التجديد والترميم المعماري', 'Modernizing, upgrading, and structurally rehabilitating existing structures to world-class architectural standards.', 'تحديث وترميم وإعادة تأهيل المباني القائمة وفق أحدث المواصفات والمعايير الهندسية.', '/benaa/renovation', true, 2),
-  ('maintenance', 'benaa', 'Facility Maintenance & Operations', 'الصيانة الدورية والتشغيل', 'Scheduled preventive maintenance, MEP services, and emergency facility management operations.', 'خدمات الصيانة الوقائية الدورية والأعمال الكهروميكانيكية وإدارة المرافق والمنشآت.', '/benaa/maintenance', true, 3),
-  ('project-management', 'benaa', 'Engineering Project Management', 'إدارة المشاريع الهندسية', 'End-to-end project lifecycle oversight, cost engineering, quality assurance, and timeline compliance.', 'إدارة احترافية شاملة لدورة حياة المشروع وضبط التكاليف وضمان الجودة والالتزام بالجداول الزمنية.', '/benaa/project-management', true, 4),
-  ('import-export', 'majd', 'International Import & Export', 'الاستيراد والتصدير الدولي', 'Seamless cross-border trading solutions linking global manufacturers with Saudi and regional markets.', 'حلول تجارية دولية متكاملة تربط كبار المصنعين العالميين بالأسواق السعودية والإقليمية.', '/majd/import-export', true, 5),
-  ('general-trading', 'majd', 'General Trading & Supply', 'التجارة العامة والتوريدات', 'Diverse multi-sector commercial trade covering building essentials, commodities, and industrial supplies.', 'تجارة تجزئة وجملة وتوريدات شاملة لمختلف القطاعات ومواد البناء والمستلزمات الصناعية.', '/majd/general-trading', true, 6),
-  ('product-sourcing', 'majd', 'Global Product Sourcing', 'توريد المنتجات العالمية', 'Identifying, vetting, and procurement of premium certified materials from verified global suppliers.', 'البحث والتعاقد وتوريد المنتجات المعتمدة من أفضل الموردين والمصانع الموثوقة حول العالم.', '/majd/product-sourcing', true, 7),
-  ('logistics', 'majd', 'Supply Chain & Logistics', 'الخدمات اللوجستية وسلاسل الإمداد', 'Comprehensive freight forwarding, customs clearance, and secure warehousing distribution across KSA.', 'خدمات الشحن الدولي والتخليص الجمركي والتخزين وإدارة سلاسل الإمداد في كافة مناطق المملكة.', '/majd/logistics', true, 8)
-ON CONFLICT (id) DO NOTHING;
+create table public.contact_messages (
+    id bigint generated by default as identity primary key,
 
--- Seed Projects
-INSERT INTO public.projects (id, title, title_ar, company, category, badge, badge_ar, image, description, description_ar, location, location_ar, year, is_featured)
-VALUES
-  (1, 'Luxury Residential Compound - Riyadh', 'مجمع سكني فاخر - الرياض', 'benaa', 'construction', 'AL BENAA AL RAHAB CONTRACTING EST.', 'مؤسسة البناء الرحاب للمقاولات', 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80', 'Turnkey execution of a premier modern residential community spanning 12,000 m² built to Saudi Building Code specifications.', 'تنفيذ مجمع سكني متكامل ومطابق لأعلى مواصفات البناء الحديثة وكود البناء السعودي بمساحة 12,000 م².', 'Riyadh, Saudi Arabia', 'الرياض، المملكة العربية السعودية', '2026', true),
-  (2, 'Corporate Headquarters Modernization', 'تجديد وتطوير مقر إداري وتجاري', 'benaa', 'renovation', 'AL BENAA AL RAHAB CONTRACTING EST.', 'مؤسسة البناء الرحاب للمقاولات', 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80', 'Comprehensive architectural, structural, and smart energy modernization for prime commercial premises.', 'إعادة تأهيل وتجديد معماري وإنشائي كامل للمقر الرئيسي ودمج أنظمة الطاقة الذكية.', 'Riyadh, Saudi Arabia', 'الرياض، المملكة العربية السعودية', '2025', true),
-  (3, 'Building Materials Supply Contract', 'توريد مواد بناء ومعدات هندسية', 'majd', 'import-export', 'AL MAJD LINES FOR TRADE & IMPORT', 'مؤسسة خطوط المجد للتجارة والاستيراد', 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80', 'Procurement and direct site delivery of high-tensile structural steel and waterproofing membranes from top global mills.', 'توريد حديد التسليح عالي المقاومة والمواد العازلة ومستلزمات الإنشاءات من كبرى المصانع العالمية.', 'Dammam / Jubail Ports', 'موانئ الدمام والجبيل', '2026', true),
-  (4, 'Commercial Plaza Fit-Out & MEP', 'تجهيز وتشطيب مجمع تجاري متكامل', 'benaa', 'construction', 'AL BENAA AL RAHAB CONTRACTING EST.', 'مؤسسة البناء الرحاب للمقاولات', 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80', 'Advanced electromechanical works, safety systems, and bespoke interior finishes for commercial retail spaces.', 'أعمال البنية التحتية والتشطيبات الكهروميكانيكية وأنظمة السلامة المتكاملة بمستوى عالمي.', 'Jeddah, Saudi Arabia', 'جدة، المملكة العربية السعودية', '2025', true),
-  (5, 'Global Supply Chain & Freight Solutions', 'خدمات لوجستية وتوريد وشحن دولي', 'majd', 'logistics', 'AL MAJD LINES FOR TRADE & IMPORT', 'مؤسسة خطوط المجد للتجارة والاستيراد', 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80', 'End-to-end multimodal cargo shipping, bonded warehousing, and rapid customs clearance across GCC entry ports.', 'إدارة سلاسل الإمداد والشحن البحري والجوي والتخليص الجمركي السريع عبر كافة منافذ المملكة.', 'GCC & Saudi Ports', 'كافة المنافذ والموانئ', '2026', true)
-ON CONFLICT (id) DO NOTHING;
+    name text not null,
 
--- Seed Products
-INSERT INTO public.products (id, name, name_ar, category, image, description, description_ar, is_active)
-VALUES
-  (1, 'Certified Construction Materials', 'مواد بناء معتمدة', 'construction-materials', 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80', 'High-grade Portland cement, rebar steel, structural timber, and thermal insulation compliant with Saudi Building Code (SBC).', 'أسمنت، حديد تسليح، أخشاب إنشائية، ومواد عزل حراري ومائي مطابقة لكود البناء السعودي.', true),
-  (2, 'Industrial Machinery & Heavy Equipment', 'معدات ومكائن صناعية ثقيلة', 'industrial-equipment', 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80', 'Imported specialized manufacturing tools, heavy excavation machines, and power generators from leading certified global brands.', 'معدات ومكائن صناعية، آليات حفر ثقيلة، ومولدات طاقة مستوردة من كبرى العلامات المعتمدة عالمياً.', true),
-  (3, 'MEP & Electrical Supplies', 'مستلزمات الكهرباء والكهروميكانيك', 'mep-supplies', 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80', 'High-voltage cables, transformers, smart distribution panels, and commercial HVAC piping systems.', 'كابلات الضغط العالي، محولات، لوحات توزيع كهربائية ذكية، وأنظمة تكييف مركزي متطورة.', true),
-  (4, 'Architectural Finishing & Ceramics', 'مواد التشطيب المعماري والسيراميك', 'finishing', 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80', 'Luxury porcelain, natural marble, precision fixtures, and specialized decorative coatings for luxury projects.', 'بورسلين فاخر، رخام طبيعي، إكسسوارات معمارية دقيقة ودهانات متخصصة للمشاريع الراقية.', true)
-ON CONFLICT (id) DO NOTHING;
+    email text not null,
 
--- Seed Documents
-INSERT INTO public.documents (id, title, title_ar, description, description_ar, file_url, tag, sort_order)
-VALUES
-  (1, 'Comprehensive Corporate Profile & Qualifications', 'الملف التعريفي الشامل وسابقة الأعمال للمجموعة', 'Download our official company credentials, completed projects portfolio, and technical capabilities brochure.', 'تحميل البروفايل الرسمي الشامل وسجل المشاريع المنجزة والقدرات الفنية والتنفيذية.', '/documents/company-profile.pdf', 'PDF Brochure', 1),
-  (2, 'Saudi Commercial Registration (CR) & Licensing', 'السجل التجاري والتراخيص النظامية بالمملكة', 'Fully accredited and certified by the Saudi Ministry of Commerce for contracting, general trading, and import/export.', 'تراخيص معتمدة وسارية من وزارة التجارة والاستثمار للمقاولات العامة والتجارة والاستيراد.', '#', 'Certified License', 2),
-  (3, 'Saudi Contractors Authority (SCA) Membership', 'عضوية الهيئة السعودية للمقاولين', 'Classified commercial contractor complying with high industry classification and technical governance standards.', 'عضوية وتصنيف معتمد لدى الهيئة السعودية للمقاولين لمشاريع البناء والتشييد.', '#', 'Accreditation', 3),
-  (4, 'ZATCA Tax & VAT Compliance Certificate', 'شهادة الالتزام الضريبي والزكاة (هيئة الزكاة والضريبة والجمارك)', 'Full tax, customs, and electronic invoicing compliance certified by ZATCA.', 'شهادة تسجيل وضريبة القيمة المضافة والفوترة الإلكترونية المعتمدة.', '#', 'Tax Compliance', 4)
-ON CONFLICT (id) DO NOTHING;
+    phone text,
 
--- Seed Site Settings
-INSERT INTO public.site_settings (key, value)
-VALUES
-  ('general', '{"siteNameEn": "Al-Benaa & Al-Majd Group", "siteNameAr": "مجموعة البناء والمجد", "taglineEn": "Building the Future, Connecting Global Markets", "taglineAr": "نبني المستقبل، ونربط الأسواق العالمية"}'::jsonb),
-  ('contact', '{"phone": "+966 11 456 7890", "phoneAlt": "+966 50 123 4567", "email": "info@albenaa-almajd.com", "addressEn": "King Fahd Road, Al Olaya, Riyadh, Kingdom of Saudi Arabia", "addressAr": "طريق الملك فهد، حي العليا، الرياض، المملكة العربية السعودية", "workingHoursEn": "Sunday - Thursday: 8:00 AM - 5:00 PM", "workingHoursAr": "الأحد - الخميس: 8:00 ص - 5:00 م", "mapEmbedUrl": "https://www.google.com/maps?q=Riyadh,Saudi+Arabia&output=embed"}'::jsonb),
-  ('stats', '{"yearsExperience": "15+", "completedProjects": "150+", "tradePartners": "45+", "exportHubs": "12+"}'::jsonb),
-  ('social', '{"facebook": "https://facebook.com", "linkedin": "https://linkedin.com", "instagram": "https://instagram.com", "twitter": "https://twitter.com"}'::jsonb)
-ON CONFLICT (key) DO NOTHING;
+    message text not null,
 
--- Enable Row Level Security (RLS) & Allow public read access, authenticated write
-ALTER TABLE public.companies ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.services ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+    is_read boolean not null default false,
 
--- Public Read Policies
-DO  BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read companies') THEN
-    CREATE POLICY "Public read companies" ON public.companies FOR SELECT USING (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read services') THEN
-    CREATE POLICY "Public read services" ON public.services FOR SELECT USING (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read projects') THEN
-    CREATE POLICY "Public read projects" ON public.projects FOR SELECT USING (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read products') THEN
-    CREATE POLICY "Public read products" ON public.products FOR SELECT USING (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read documents') THEN
-    CREATE POLICY "Public read documents" ON public.documents FOR SELECT USING (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read site_settings') THEN
-    CREATE POLICY "Public read site_settings" ON public.site_settings FOR SELECT USING (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public insert contact_messages') THEN
-    CREATE POLICY "Public insert contact_messages" ON public.contact_messages FOR INSERT WITH CHECK (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Full access for all on contact_messages') THEN
-    CREATE POLICY "Full access for all on contact_messages" ON public.contact_messages FOR ALL USING (true) WITH CHECK (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Full access for all on companies') THEN
-    CREATE POLICY "Full access for all on companies" ON public.companies FOR ALL USING (true) WITH CHECK (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Full access for all on services') THEN
-    CREATE POLICY "Full access for all on services" ON public.services FOR ALL USING (true) WITH CHECK (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Full access for all on projects') THEN
-    CREATE POLICY "Full access for all on projects" ON public.projects FOR ALL USING (true) WITH CHECK (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Full access for all on products') THEN
-    CREATE POLICY "Full access for all on products" ON public.products FOR ALL USING (true) WITH CHECK (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Full access for all on documents') THEN
-    CREATE POLICY "Full access for all on documents" ON public.documents FOR ALL USING (true) WITH CHECK (true);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Full access for all on site_settings') THEN
-    CREATE POLICY "Full access for all on site_settings" ON public.site_settings FOR ALL USING (true) WITH CHECK (true);
-  END IF;
-END $$;
+    created_at timestamptz not null default now()
+);
 
--- ==============================================================================
--- 8. STORAGE BUCKETS (images & documents)
--- ==============================================================================
-INSERT INTO storage.buckets (id, name, public)
-VALUES 
-  ('images', 'images', true),
-  ('documents', 'documents', true)
-ON CONFLICT (id) DO UPDATE SET public = true;
 
--- Storage Policies for Public Reading and Authenticated/Public Uploads
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Access Images') THEN
-    CREATE POLICY "Public Access Images" ON storage.objects FOR SELECT USING (bucket_id = 'images');
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Upload Access Images') THEN
-    CREATE POLICY "Upload Access Images" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'images');
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public Access Documents') THEN
-    CREATE POLICY "Public Access Documents" ON storage.objects FOR SELECT USING (bucket_id = 'documents');
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Upload Access Documents') THEN
-    CREATE POLICY "Upload Access Documents" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'documents');
-  END IF;
-END $$;
+-- ============================================================
+-- 12. INDEXES
+-- ============================================================
+
+create index idx_companies_sort_order
+on public.companies(sort_order);
+
+create index idx_services_company_id
+on public.services(company_id);
+
+create index idx_services_sort_order
+on public.services(sort_order);
+
+create index idx_projects_company
+on public.projects(company);
+
+create index idx_projects_featured
+on public.projects(is_featured);
+
+create index idx_products_category
+on public.products(category);
+
+create index idx_products_active
+on public.products(is_active);
+
+create index idx_documents_sort_order
+on public.documents(sort_order);
+
+create index idx_contact_messages_read
+on public.contact_messages(is_read);
+
+create index idx_contact_messages_created
+on public.contact_messages(created_at desc);
+
+
+-- ============================================================
+-- 13. ENABLE ROW LEVEL SECURITY
+-- ============================================================
+
+alter table public.admins enable row level security;
+alter table public.companies enable row level security;
+alter table public.services enable row level security;
+alter table public.projects enable row level security;
+alter table public.products enable row level security;
+alter table public.documents enable row level security;
+alter table public.site_settings enable row level security;
+alter table public.contact_messages enable row level security;
+
+
+-- ============================================================
+-- 14. ADMINS RLS
+-- ============================================================
+
+create policy "admins_select_own"
+on public.admins
+for select
+to authenticated
+using (
+    id = auth.uid()
+);
+
+
+create policy "admins_manage"
+on public.admins
+for all
+to authenticated
+using (
+    public.is_admin()
+)
+with check (
+    public.is_admin()
+);
+
+
+-- ============================================================
+-- 15. COMPANIES RLS
+-- ============================================================
+
+create policy "companies_public_read"
+on public.companies
+for select
+to anon, authenticated
+using (
+    true
+);
+
+
+create policy "companies_admin_manage"
+on public.companies
+for all
+to authenticated
+using (
+    public.is_admin()
+)
+with check (
+    public.is_admin()
+);
+
+
+-- ============================================================
+-- 16. SERVICES RLS
+-- ============================================================
+
+create policy "services_public_read"
+on public.services
+for select
+to anon, authenticated
+using (
+    is_active = true
+);
+
+
+create policy "services_admin_manage"
+on public.services
+for all
+to authenticated
+using (
+    public.is_admin()
+)
+with check (
+    public.is_admin()
+);
+
+
+-- ============================================================
+-- 17. PROJECTS RLS
+-- ============================================================
+
+create policy "projects_public_read"
+on public.projects
+for select
+to anon, authenticated
+using (
+    true
+);
+
+
+create policy "projects_admin_manage"
+on public.projects
+for all
+to authenticated
+using (
+    public.is_admin()
+)
+with check (
+    public.is_admin()
+);
+
+
+-- ============================================================
+-- 18. PRODUCTS RLS
+-- ============================================================
+
+create policy "products_public_read"
+on public.products
+for select
+to anon, authenticated
+using (
+    is_active = true
+);
+
+
+create policy "products_admin_manage"
+on public.products
+for all
+to authenticated
+using (
+    public.is_admin()
+)
+with check (
+    public.is_admin()
+);
+
+
+-- ============================================================
+-- 19. DOCUMENTS RLS
+-- ============================================================
+
+create policy "documents_public_read"
+on public.documents
+for select
+to anon, authenticated
+using (
+    true
+);
+
+
+create policy "documents_admin_manage"
+on public.documents
+for all
+to authenticated
+using (
+    public.is_admin()
+)
+with check (
+    public.is_admin()
+);
+
+
+-- ============================================================
+-- 20. SITE SETTINGS RLS
+-- ============================================================
+
+create policy "settings_public_read"
+on public.site_settings
+for select
+to anon, authenticated
+using (
+    true
+);
+
+
+create policy "settings_admin_manage"
+on public.site_settings
+for all
+to authenticated
+using (
+    public.is_admin()
+)
+with check (
+    public.is_admin()
+);
+
+
+-- ============================================================
+-- 21. CONTACT MESSAGE RLS
+-- ============================================================
+
+-- Website visitors can send messages.
+create policy "messages_public_insert"
+on public.contact_messages
+for insert
+to anon, authenticated
+with check (
+    true
+);
+
+
+-- Only admins can read messages.
+create policy "messages_admin_select"
+on public.contact_messages
+for select
+to authenticated
+using (
+    public.is_admin()
+);
+
+
+-- Only admins can update messages.
+create policy "messages_admin_update"
+on public.contact_messages
+for update
+to authenticated
+using (
+    public.is_admin()
+)
+with check (
+    public.is_admin()
+);
+
+
+-- Only admins can delete messages.
+create policy "messages_admin_delete"
+on public.contact_messages
+for delete
+to authenticated
+using (
+    public.is_admin()
+);
+
+
+-- ============================================================
+-- 22. UPDATED_AT FUNCTION
+-- ============================================================
+
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+    new.updated_at = now();
+    return new;
+end;
+$$;
+
+
+-- ============================================================
+-- 23. UPDATED_AT TRIGGERS
+-- ============================================================
+
+create trigger trg_admins_updated_at
+before update on public.admins
+for each row
+execute function public.set_updated_at();
+
+
+create trigger trg_companies_updated_at
+before update on public.companies
+for each row
+execute function public.set_updated_at();
+
+
+create trigger trg_services_updated_at
+before update on public.services
+for each row
+execute function public.set_updated_at();
+
+
+create trigger trg_projects_updated_at
+before update on public.projects
+for each row
+execute function public.set_updated_at();
+
+
+create trigger trg_products_updated_at
+before update on public.products
+for each row
+execute function public.set_updated_at();
+
+
+create trigger trg_documents_updated_at
+before update on public.documents
+for each row
+execute function public.set_updated_at();
+
+
+create trigger trg_site_settings_updated_at
+before update on public.site_settings
+for each row
+execute function public.set_updated_at();
+
+
+-- ============================================================
+-- 24. INSERT THE TWO COMPANIES
+--
+-- Real descriptions/contact details are intentionally blank.
+-- Client will add them later from Admin.
+-- ============================================================
+
+insert into public.companies (
+    id,
+    slug,
+    name,
+    name_ar,
+    tagline,
+    tagline_ar,
+    description,
+    description_ar,
+    color,
+    logo,
+    path,
+    sort_order
+)
+values
+
+(
+    'benaa',
+    'benaa',
+    'AL BENAA AL RAHAB CONTRACTING EST.',
+    '',
+    'Construction • Renovation • Maintenance • Project Management',
+    '',
+    '',
+    '',
+    'benaa',
+    '/logo/al-benaa-logo.svg',
+    '/benaa',
+    1
+),
+
+(
+    'majd',
+    'majd',
+    'AL MAJD LINES FOR TRADE & IMPORT',
+    '',
+    'Import & Export • General Trading • Product Sourcing • Logistics Solutions',
+    '',
+    '',
+    '',
+    'majd',
+    '/logo/al-majd-logo.svg',
+    '/majd',
+    2
+);
+
+
+-- ============================================================
+-- 25. DEFAULT SERVICES
+-- ============================================================
+
+insert into public.services (
+    id,
+    company_id,
+    slug,
+    title,
+    title_ar,
+    description,
+    description_ar,
+    path,
+    icon,
+    is_active,
+    sort_order
+)
+values
+
+(
+    'benaa-construction',
+    'benaa',
+    'construction',
+    'Construction',
+    '',
+    '',
+    '',
+    '/benaa/construction',
+    'Building2',
+    true,
+    1
+),
+
+(
+    'benaa-renovation',
+    'benaa',
+    'renovation',
+    'Renovation',
+    '',
+    '',
+    '',
+    '/benaa/renovation',
+    'Hammer',
+    true,
+    2
+),
+
+(
+    'benaa-maintenance',
+    'benaa',
+    'maintenance',
+    'Maintenance',
+    '',
+    '',
+    '',
+    '/benaa/maintenance',
+    'Wrench',
+    true,
+    3
+),
+
+(
+    'benaa-project-management',
+    'benaa',
+    'project-management',
+    'Project Management',
+    '',
+    '',
+    '',
+    '/benaa/project-management',
+    'ClipboardCheck',
+    true,
+    4
+),
+
+(
+    'majd-import-export',
+    'majd',
+    'import-export',
+    'Import & Export',
+    '',
+    '',
+    '',
+    '/majd/import-export',
+    'Globe2',
+    true,
+    1
+),
+
+(
+    'majd-general-trading',
+    'majd',
+    'general-trading',
+    'General Trading',
+    '',
+    '',
+    '',
+    '/majd/general-trading',
+    'ShoppingBag',
+    true,
+    2
+),
+
+(
+    'majd-product-sourcing',
+    'majd',
+    'product-sourcing',
+    'Product Sourcing',
+    '',
+    '',
+    '',
+    '/majd/product-sourcing',
+    'PackageSearch',
+    true,
+    3
+),
+
+(
+    'majd-logistics',
+    'majd',
+    'logistics',
+    'Logistics Solutions',
+    '',
+    '',
+    '',
+    '/majd/logistics',
+    'Truck',
+    true,
+    4
+);
+
+
+-- ============================================================
+-- 26. DEFAULT SITE SETTINGS
+-- ============================================================
+--
+-- IMPORTANT:
+-- These are safe neutral values.
+-- Do NOT put fake company phone/statistics/social links here.
+-- ============================================================
+
+insert into public.site_settings (key, value)
+values
+
+(
+    'general',
+    '{
+        "siteNameEn": "AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT",
+        "siteNameAr": "",
+        "taglineEn": "Building. Trading. Connecting.",
+        "taglineAr": ""
+    }'::jsonb
+),
+
+(
+    'contact',
+    '{
+        "phone": "",
+        "phoneAlt": "",
+        "email": "",
+        "addressEn": "",
+        "addressAr": "",
+        "workingHoursEn": "",
+        "workingHoursAr": "",
+        "mapEmbedUrl": ""
+    }'::jsonb
+),
+
+(
+    'stats',
+    '{
+        "yearsExperience": "",
+        "completedProjects": "",
+        "tradePartners": "",
+        "exportHubs": ""
+    }'::jsonb
+),
+
+(
+    'social',
+    '{
+        "facebook": "",
+        "linkedin": "",
+        "instagram": "",
+        "twitter": ""
+    }'::jsonb
+);
+
+
+-- ============================================================
+-- 27. STORAGE BUCKETS
+-- ============================================================
+
+insert into storage.buckets (
+    id,
+    name,
+    public
+)
+values
+(
+    'images',
+    'images',
+    true
+),
+(
+    'documents',
+    'documents',
+    true
+)
+on conflict (id)
+do update set
+    public = excluded.public;
+
+
+-- ============================================================
+-- 28. REMOVE OLD STORAGE POLICIES IF THEY EXIST
+-- ============================================================
+
+drop policy if exists "Public can view images"
+on storage.objects;
+
+drop policy if exists "Admins can upload images"
+on storage.objects;
+
+drop policy if exists "Admins can update images"
+on storage.objects;
+
+drop policy if exists "Admins can delete images"
+on storage.objects;
+
+drop policy if exists "Public can view documents"
+on storage.objects;
+
+drop policy if exists "Admins can upload documents"
+on storage.objects;
+
+drop policy if exists "Admins can update documents"
+on storage.objects;
+
+drop policy if exists "Admins can delete documents"
+on storage.objects;
+
+
+-- ============================================================
+-- 29. STORAGE RLS - IMAGES
+-- ============================================================
+
+create policy "Public can view images"
+on storage.objects
+for select
+to public
+using (
+    bucket_id = 'images'
+);
+
+
+create policy "Admins can upload images"
+on storage.objects
+for insert
+to authenticated
+with check (
+    bucket_id = 'images'
+    and public.is_admin()
+);
+
+
+create policy "Admins can update images"
+on storage.objects
+for update
+to authenticated
+using (
+    bucket_id = 'images'
+    and public.is_admin()
+)
+with check (
+    bucket_id = 'images'
+    and public.is_admin()
+);
+
+
+create policy "Admins can delete images"
+on storage.objects
+for delete
+to authenticated
+using (
+    bucket_id = 'images'
+    and public.is_admin()
+);
+
+
+-- ============================================================
+-- 30. STORAGE RLS - DOCUMENTS
+-- ============================================================
+
+create policy "Public can view documents"
+on storage.objects
+for select
+to public
+using (
+    bucket_id = 'documents'
+);
+
+
+create policy "Admins can upload documents"
+on storage.objects
+for insert
+to authenticated
+with check (
+    bucket_id = 'documents'
+    and public.is_admin()
+);
+
+
+create policy "Admins can update documents"
+on storage.objects
+for update
+to authenticated
+using (
+    bucket_id = 'documents'
+    and public.is_admin()
+)
+with check (
+    bucket_id = 'documents'
+    and public.is_admin()
+);
+
+
+create policy "Admins can delete documents"
+on storage.objects
+for delete
+to authenticated
+using (
+    bucket_id = 'documents'
+    and public.is_admin()
+);
+
+
+-- ============================================================
+-- 31. FINAL VERIFICATION
+-- ============================================================
+
+select
+    'companies' as table_name,
+    count(*) as rows
+from public.companies
+
+union all
+
+select
+    'services',
+    count(*)
+from public.services
+
+union all
+
+select
+    'projects',
+    count(*)
+from public.projects
+
+union all
+
+select
+    'products',
+    count(*)
+from public.products
+
+union all
+
+select
+    'documents',
+    count(*)
+from public.documents
+
+union all
+
+select
+    'site_settings',
+    count(*)
+from public.site_settings
+
+union all
+
+select
+    'contact_messages',
+    count(*)
+from public.contact_messages
+
+union all
+
+select
+    'admins',
+    count(*)
+from public.admins;
