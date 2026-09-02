@@ -51,7 +51,23 @@ export function useSettings() {
           const merged = { ...prev }
           data.forEach((row) => {
             if (row.key && row.value) {
-              merged[row.key] = typeof row.value === 'string' ? JSON.parse(row.value) : row.value
+              const val = typeof row.value === 'string' ? JSON.parse(row.value) : row.value
+              merged[row.key] = {
+                ...prev[row.key],
+                ...val,
+              }
+              if (row.key === 'contact') {
+                merged.contact = {
+                  ...prev.contact,
+                  ...val,
+                  phone: val.phone || prev.contact.phone || '+966 11 456 7890',
+                  phoneAlt: val.phoneAlt || prev.contact.phoneAlt || '+966 50 123 4567',
+                  whatsapp: val.whatsapp || val.phoneAlt || val.phone || prev.contact.whatsapp || '+966501234567',
+                  email: val.email || prev.contact.email || 'info@albenaa-almajd.com',
+                  addressEn: val.addressEn || prev.contact.addressEn || 'King Fahd Road, Al Olaya, Riyadh, Kingdom of Saudi Arabia',
+                  addressAr: val.addressAr || prev.contact.addressAr || 'طريق الملك فهد، حي العليا، الرياض، المملكة العربية السعودية',
+                }
+              }
             }
           })
           return merged
