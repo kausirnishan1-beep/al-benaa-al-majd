@@ -2,13 +2,32 @@ import { MessageCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useSettings } from '../../admin/hooks/useSettings.js'
 
+function formatWhatsAppNumber(phone) {
+  if (!phone) return ''
+  let clean = phone.toString().replace(/[^0-9]/g, '')
+
+  // Strip international calling prefix '00'
+  if (clean.startsWith('00')) {
+    clean = clean.slice(2)
+  }
+
+  // If Saudi local format (e.g. 0501234567), convert 05 -> 9665
+  if (clean.startsWith('05') && clean.length === 10) {
+    clean = '966' + clean.slice(1)
+  } else if (clean.startsWith('5') && clean.length === 9) {
+    clean = '966' + clean
+  }
+
+  return clean
+}
+
 export default function WhatsAppButton() {
   const { settings } = useSettings()
   const rawNumber = settings?.contact?.whatsapp || settings?.contact?.phoneAlt || settings?.contact?.phone || '966501234567'
-  const cleanNumber = rawNumber.replace(/[^0-9]/g, '') || '966501234567'
+  const cleanNumber = formatWhatsAppNumber(rawNumber) || '966501234567'
 
   const defaultMsg = encodeURIComponent('Hello, I would like to inquire about your services. / مرحباً، أود الاستفسار عن خدماتكم.')
-  const whatsappUrl = `https://wa.me/${cleanNumber}?text=${defaultMsg}`
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanNumber}&text=${defaultMsg}`
 
   return (
     <motion.a
