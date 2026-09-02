@@ -19,13 +19,31 @@ export default function FileUploader({
     const file = e.target.files?.[0]
     if (!file) return
 
+    // 1. File type & extension validation
+    const allowedExts = ['pdf', 'doc', 'docx']
+    const fileExt = file.name.split('.').pop()?.toLowerCase() || ''
+
+    if (!allowedExts.includes(fileExt)) {
+      setUploadError('Invalid document format. Only PDF, DOC, and DOCX files are allowed. / يرجى رفع ملف بصيغة PDF أو DOC')
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+
+    // 2. File size validation (Max 15MB)
+    const MAX_SIZE = 15 * 1024 * 1024
+    if (file.size > MAX_SIZE) {
+      setUploadError('Document size exceeds 15MB limit. Please upload a smaller file. / حجم الملف يتجاوز 15 ميجابايت')
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+
     setFileName(file.name)
     setIsUploading(true)
     setUploadError('')
 
     try {
-      const fileExt = file.name.split('.').pop()
-      const cleanFileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
+      const sanitizedBase = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30)
+      const cleanFileName = `${Date.now()}-${sanitizedBase}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
       const filePath = `documents/${cleanFileName}`
 
       const { data, error } = await supabase.storage
@@ -53,6 +71,8 @@ export default function FileUploader({
       console.error('Document storage upload error:', err)
       setUploadError(err.message || 'Document upload failed. Ensure the "documents" bucket exists in Supabase Storage with public access.')
       setIsUploading(false)
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
 

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
-import { projects as fallbackProjects } from '../../data/projects.js'
 
 export function useProjects() {
   const [projects, setProjects] = useState([])
@@ -22,26 +21,26 @@ export function useProjects() {
         const mapped = data.map((p) => ({
           id: p.id,
           title: p.title,
-          titleAr: p.title_ar || p.titleAr,
+          titleAr: p.title_ar || p.titleAr || '',
           company: p.company,
           category: p.category,
           badge: p.badge,
-          badgeAr: p.badge_ar || p.badgeAr,
+          badgeAr: p.badge_ar || p.badgeAr || '',
           image: p.image,
           description: p.description,
-          descriptionAr: p.description_ar || p.descriptionAr,
+          descriptionAr: p.description_ar || p.descriptionAr || '',
           location: p.location,
-          locationAr: p.location_ar || p.locationAr,
+          locationAr: p.location_ar || p.locationAr || '',
           year: p.year,
           isFeatured: p.is_featured ?? true,
         }))
         setProjects(mapped)
       } else {
-        setProjects(fallbackProjects)
+        setProjects([])
       }
     } catch (err) {
-      console.warn('Supabase projects fetch failed, using fallback data:', err)
-      setProjects(fallbackProjects)
+      console.error('Supabase projects fetch error:', err)
+      setProjects([])
       setError(err.message)
     } finally {
       setLoading(false)

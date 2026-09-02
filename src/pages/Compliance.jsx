@@ -1,4 +1,4 @@
-import { FileText, ShieldCheck, Download, ExternalLink, Award } from 'lucide-react'
+import { ShieldCheck, Download } from 'lucide-react'
 import Container from '../components/common/Container.jsx'
 import SectionTitle from '../components/common/SectionTitle.jsx'
 import { useDocuments } from '../admin/hooks/useDocuments.js'
@@ -18,7 +18,13 @@ export default function Compliance() {
           subtitleAr="نعمل وفق التزام تام بالقوانين والأنظمة المعمول بها ومعايير الجودة والسلامة في المملكة العربية السعودية."
         />
 
-        <div className="max-w-3xl mx-auto space-y-5 mt-10">
+        {documents.length === 0 ? (
+          <div className="max-w-3xl mx-auto py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200 mt-10 shadow-sm">
+            <p className="text-gray-600 font-bold text-sm">No compliance certificates or documents currently published.</p>
+            <p className="text-gray-400 text-xs font-arabic mt-1">لا توجد مستندات أو شهادات منشورة حالياً.</p>
+          </div>
+        ) : (
+          <div className="max-w-3xl mx-auto space-y-5 mt-10">
           {documents.map((item) => (
             <div
               key={item.id || item.title}
@@ -59,6 +65,7 @@ export default function Compliance() {
             </div>
           ))}
         </div>
+        )}
       </Container>
     </div>
   )

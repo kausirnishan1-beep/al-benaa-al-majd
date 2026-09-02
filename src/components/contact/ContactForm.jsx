@@ -5,6 +5,7 @@ import { supabase } from '../../utils/supabaseClient.js'
 
 export default function ContactForm() {
   const [status, setStatus] = useState('idle')
+  const [lastSubmitTime, setLastSubmitTime] = useState(0)
   const {
     register,
     handleSubmit,
@@ -16,21 +17,38 @@ export default function ContactForm() {
       email: '',
       phone: '',
       message: '',
+      website_hp: '', // Honeypot field for bot protection
     },
   })
 
   const onSubmit = async (data) => {
+    // 1. Honeypot check (if filled by bot, fake success & drop)
+    if (data.website_hp) {
+      console.warn('Bot submission caught via honeypot')
+      setStatus('success')
+      reset()
+      return
+    }
+
+    // 2. Client-side Rate Limit check (10 seconds between submissions)
+    const now = Date.now()
+    if (now - lastSubmitTime < 10000) {
+      alert('Please wait a few seconds before submitting another message. / يرجى الانتظار بضع ثوانٍ قبل الإرسال مرة أخرى')
+      return
+    }
+
     setStatus('loading')
     try {
       const { error } = await supabase.from('contact_messages').insert([
         {
-          name: data.name,
-          email: data.email,
-          phone: data.phone || null,
-          message: data.message,
+          name: data.name.trim().substring(0, 100),
+          email: data.email.trim().toLowerCase().substring(0, 150),
+          phone: data.phone ? data.phone.trim().substring(0, 30) : null,
+          message: data.message.trim().substring(0, 2000),
         },
       ])
       if (error) throw error
+      setLastSubmitTime(Date.now())
       setStatus('success')
       reset()
     } catch (err) {
@@ -41,6 +59,15 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white p-8 rounded-3xl border border-gray-100 shadow-xl">
+      {/* Honeypot field (hidden from human visitors) */}
+      <div className="hidden" aria-hidden="true">
+        <input
+          type="text"
+          tabIndex="-1"
+          autoComplete="off"
+          {...register('website_hp')}
+        />
+      </div>
       <div>
         <label className="block mb-1 font-bold text-gray-800 text-sm">
           Full Name <span className="text-red-500">*</span>

@@ -7,11 +7,13 @@ export default function BusinessOverview() {
   const sData = settings?.stats || {}
 
   const stats = [
-    { value: sData.yearsExperience || '15+', label: 'Years of Experience', labelAr: 'سنوات خبرة عريقة' },
-    { value: sData.completedProjects || '150+', label: 'Completed Projects', labelAr: 'مشروع منجز بنجاح' },
-    { value: sData.tradePartners || '45+', label: 'Global Trade Partners', labelAr: 'شريك تجاري عالمي' },
-    { value: sData.exportHubs || '12+', label: 'Import/Export Hubs', labelAr: 'دولة ووجهة تصدير' },
-  ]
+    { value: sData.yearsExperience, label: 'Years of Experience', labelAr: 'سنوات خبرة عريقة' },
+    { value: sData.completedProjects, label: 'Completed Projects', labelAr: 'مشروع منجز بنجاح' },
+    { value: sData.tradePartners, label: 'Global Trade Partners', labelAr: 'شريك تجاري عالمي' },
+    { value: sData.exportHubs, label: 'Import/Export Hubs', labelAr: 'دولة ووجهة تصدير' },
+  ].filter((s) => s.value && s.value.trim() !== '')
+
+  if (stats.length === 0) return null
 
   return (
     <section className="bg-benaa-dark text-white border-y border-majd/20">

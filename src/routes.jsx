@@ -1,41 +1,51 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
-import { Home as HomeIcon, AlertCircle } from 'lucide-react'
+import { Home as HomeIcon, AlertCircle, Loader2 } from 'lucide-react'
 
-// Public Pages
-import Home from './pages/Home.jsx'
-import About from './pages/About.jsx'
-import Companies from './pages/Companies.jsx'
-import Projects from './pages/Projects.jsx'
-import Compliance from './pages/Compliance.jsx'
-import Contact from './pages/Contact.jsx'
+// Public Pages (Lazy Loaded for performance & code-splitting)
+const Home = lazy(() => import('./pages/Home.jsx'))
+const About = lazy(() => import('./pages/About.jsx'))
+const Companies = lazy(() => import('./pages/Companies.jsx'))
+const Projects = lazy(() => import('./pages/Projects.jsx'))
+const Compliance = lazy(() => import('./pages/Compliance.jsx'))
+const Contact = lazy(() => import('./pages/Contact.jsx'))
 
 // Al-Benaa Contracting Sub-pages
-import BenaaHome from './pages/Benaa/BenaaHome.jsx'
-import Construction from './pages/Benaa/Construction.jsx'
-import Renovation from './pages/Benaa/Renovation.jsx'
-import Maintenance from './pages/Benaa/Maintenance.jsx'
-import ProjectManagement from './pages/Benaa/ProjectManagement.jsx'
-import BenaaProjects from './pages/Benaa/BenaaProjects.jsx'
+const BenaaHome = lazy(() => import('./pages/Benaa/BenaaHome.jsx'))
+const Construction = lazy(() => import('./pages/Benaa/Construction.jsx'))
+const Renovation = lazy(() => import('./pages/Benaa/Renovation.jsx'))
+const Maintenance = lazy(() => import('./pages/Benaa/Maintenance.jsx'))
+const ProjectManagement = lazy(() => import('./pages/Benaa/ProjectManagement.jsx'))
+const BenaaProjects = lazy(() => import('./pages/Benaa/BenaaProjects.jsx'))
 
 // Al-Majd Trading Sub-pages
-import MajdHome from './pages/Majd/MajdHome.jsx'
-import ImportExport from './pages/Majd/ImportExport.jsx'
-import GeneralTrading from './pages/Majd/GeneralTrading.jsx'
-import ProductSourcing from './pages/Majd/ProductSourcing.jsx'
-import Logistics from './pages/Majd/Logistics.jsx'
-import Products from './pages/Majd/Products.jsx'
+const MajdHome = lazy(() => import('./pages/Majd/MajdHome.jsx'))
+const ImportExport = lazy(() => import('./pages/Majd/ImportExport.jsx'))
+const GeneralTrading = lazy(() => import('./pages/Majd/GeneralTrading.jsx'))
+const ProductSourcing = lazy(() => import('./pages/Majd/ProductSourcing.jsx'))
+const Logistics = lazy(() => import('./pages/Majd/Logistics.jsx'))
+const Products = lazy(() => import('./pages/Majd/Products.jsx'))
 
 // Admin Portal Pages & Layout
-import AdminLayout from './admin/components/AdminLayout.jsx'
-import Login from './admin/pages/Login.jsx'
-import Dashboard from './admin/pages/Dashboard.jsx'
-import AdminCompanies from './admin/pages/Companies.jsx'
-import AdminServices from './admin/pages/Services.jsx'
-import AdminProjects from './admin/pages/Projects.jsx'
-import AdminProducts from './admin/pages/Products.jsx'
-import AdminMessages from './admin/pages/Messages.jsx'
-import AdminDocuments from './admin/pages/Documents.jsx'
-import AdminSettings from './admin/pages/Settings.jsx'
+const AdminLayout = lazy(() => import('./admin/components/AdminLayout.jsx'))
+const Login = lazy(() => import('./admin/pages/Login.jsx'))
+const Dashboard = lazy(() => import('./admin/pages/Dashboard.jsx'))
+const AdminCompanies = lazy(() => import('./admin/pages/Companies.jsx'))
+const AdminServices = lazy(() => import('./admin/pages/Services.jsx'))
+const AdminProjects = lazy(() => import('./admin/pages/Projects.jsx'))
+const AdminProducts = lazy(() => import('./admin/pages/Products.jsx'))
+const AdminMessages = lazy(() => import('./admin/pages/Messages.jsx'))
+const AdminDocuments = lazy(() => import('./admin/pages/Documents.jsx'))
+const AdminSettings = lazy(() => import('./admin/pages/Settings.jsx'))
+
+function RouteFallback() {
+  return (
+    <div className="min-h-[50vh] flex flex-col items-center justify-center py-20">
+      <Loader2 className="w-8 h-8 text-benaa animate-spin mb-3" />
+      <p className="text-xs font-bold text-gray-500 font-arabic tracking-wide">جاري التحميل...</p>
+    </div>
+  )
+}
 
 function NotFound() {
   return (
@@ -63,49 +73,51 @@ function NotFound() {
 
 export default function AppRoutes() {
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<Home />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/companies" element={<Companies />} />
-      <Route path="/projects" element={<Projects />} />
-      <Route path="/compliance" element={<Compliance />} />
-      <Route path="/contact" element={<Contact />} />
+    <Suspense fallback={<RouteFallback />}>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/companies" element={<Companies />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/compliance" element={<Compliance />} />
+        <Route path="/contact" element={<Contact />} />
 
-      {/* Al-Benaa Contracting */}
-      <Route path="/benaa" element={<BenaaHome />} />
-      <Route path="/benaa/construction" element={<Construction />} />
-      <Route path="/benaa/renovation" element={<Renovation />} />
-      <Route path="/benaa/maintenance" element={<Maintenance />} />
-      <Route path="/benaa/project-management" element={<ProjectManagement />} />
-      <Route path="/benaa/projects" element={<BenaaProjects />} />
+        {/* Al-Benaa Contracting */}
+        <Route path="/benaa" element={<BenaaHome />} />
+        <Route path="/benaa/construction" element={<Construction />} />
+        <Route path="/benaa/renovation" element={<Renovation />} />
+        <Route path="/benaa/maintenance" element={<Maintenance />} />
+        <Route path="/benaa/project-management" element={<ProjectManagement />} />
+        <Route path="/benaa/projects" element={<BenaaProjects />} />
 
-      {/* Al-Majd Trading */}
-      <Route path="/majd" element={<MajdHome />} />
-      <Route path="/majd/import-export" element={<ImportExport />} />
-      <Route path="/majd/general-trading" element={<GeneralTrading />} />
-      <Route path="/majd/product-sourcing" element={<ProductSourcing />} />
-      <Route path="/majd/logistics" element={<Logistics />} />
-      <Route path="/majd/products" element={<Products />} />
+        {/* Al-Majd Trading */}
+        <Route path="/majd" element={<MajdHome />} />
+        <Route path="/majd/import-export" element={<ImportExport />} />
+        <Route path="/majd/general-trading" element={<GeneralTrading />} />
+        <Route path="/majd/product-sourcing" element={<ProductSourcing />} />
+        <Route path="/majd/logistics" element={<Logistics />} />
+        <Route path="/majd/products" element={<Products />} />
 
-      {/* Admin Portal Authentication */}
-      <Route path="/admin/login" element={<Login />} />
+        {/* Admin Portal Authentication */}
+        <Route path="/admin/login" element={<Login />} />
 
-      {/* Admin Protected Dashboard Routes */}
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="companies" element={<AdminCompanies />} />
-        <Route path="services" element={<AdminServices />} />
-        <Route path="projects" element={<AdminProjects />} />
-        <Route path="products" element={<AdminProducts />} />
-        <Route path="messages" element={<AdminMessages />} />
-        <Route path="documents" element={<AdminDocuments />} />
-        <Route path="settings" element={<AdminSettings />} />
-      </Route>
+        {/* Admin Protected Dashboard Routes */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="companies" element={<AdminCompanies />} />
+          <Route path="services" element={<AdminServices />} />
+          <Route path="projects" element={<AdminProjects />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="messages" element={<AdminMessages />} />
+          <Route path="documents" element={<AdminDocuments />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
 
-      {/* 404 Fallback */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        {/* 404 Fallback */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
   )
 }
 

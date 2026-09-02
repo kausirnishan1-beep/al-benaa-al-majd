@@ -1,4 +1,4 @@
-import { PackageCheck, ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
@@ -20,7 +20,13 @@ export default function Products() {
           subtitleAr="مستوردة مباشرة ومطابقة لأعلى المواصفات القياسية السعودية ومعتمدة لكبرى المشاريع."
         />
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+        {activeProducts.length === 0 ? (
+          <div className="py-20 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-200 mt-10">
+            <p className="text-gray-600 font-bold text-sm">No products currently listed in the catalog.</p>
+            <p className="text-gray-400 text-xs font-arabic mt-1">لا توجد منتجات مضافة حالياً في الكتالوج.</p>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
           {activeProducts.map((p) => (
             <div
               key={p.id}
@@ -64,6 +70,7 @@ export default function Products() {
             </div>
           ))}
         </div>
+        )}
 
         <div className="mt-14 p-8 bg-majd/5 border border-majd/20 rounded-3xl text-center max-w-3xl mx-auto">
           <h4 className="font-extrabold text-majd-dark text-lg mb-1">Looking for a custom product or bulk material import?</h4>

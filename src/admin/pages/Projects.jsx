@@ -29,6 +29,9 @@ export default function Projects() {
     isFeatured: true,
   })
 
+  const [formError, setFormError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+
   const handleOpenAdd = () => {
     setEditingProject(null)
     setFormError('')

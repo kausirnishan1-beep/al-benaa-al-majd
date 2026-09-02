@@ -12,6 +12,7 @@ export function useSettings() {
     contact: {
       phone: '+966 11 456 7890',
       phoneAlt: '+966 50 123 4567',
+      whatsapp: '+966501234567',
       email: 'info@albenaa-almajd.com',
       addressEn: 'King Fahd Road, Al Olaya, Riyadh, Kingdom of Saudi Arabia',
       addressAr: 'طريق الملك فهد، حي العليا، الرياض، المملكة العربية السعودية',
@@ -20,16 +21,16 @@ export function useSettings() {
       mapEmbedUrl: 'https://www.google.com/maps?q=Riyadh,Saudi+Arabia&output=embed',
     },
     stats: {
-      yearsExperience: '15+',
-      completedProjects: '150+',
-      tradePartners: '45+',
-      exportHubs: '12+',
+      yearsExperience: '',
+      completedProjects: '',
+      tradePartners: '',
+      exportHubs: '',
     },
     social: {
-      facebook: 'https://facebook.com',
-      linkedin: 'https://linkedin.com',
-      instagram: 'https://instagram.com',
-      twitter: 'https://twitter.com',
+      facebook: '',
+      linkedin: '',
+      instagram: '',
+      twitter: '',
     },
   })
   const [loading, setLoading] = useState(true)

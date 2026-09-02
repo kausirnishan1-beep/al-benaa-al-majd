@@ -13,12 +13,31 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
     const file = e.target.files?.[0]
     if (!file) return
 
+    // 1. File type & MIME validation
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
+    const allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg']
+    const fileExt = file.name.split('.').pop()?.toLowerCase() || ''
+
+    if (!allowedTypes.includes(file.type) && !allowedExts.includes(fileExt)) {
+      setUploadError('Invalid file type. Please upload a valid image (JPG, PNG, WEBP, SVG, GIF). / صيغة الملف غير مدعومة')
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+
+    // 2. File size validation (Max 5MB)
+    const MAX_SIZE = 5 * 1024 * 1024
+    if (file.size > MAX_SIZE) {
+      setUploadError('File size exceeds 5MB limit. Please upload a smaller image. / حجم الصورة يتجاوز 5 ميجابايت')
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+
     setIsUploading(true)
     setUploadError('')
 
     try {
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
+      const sanitizedBase = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30)
+      const fileName = `${Date.now()}-${sanitizedBase}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
       const filePath = `uploads/${fileName}`
 
       const { data, error } = await supabase.storage
@@ -46,6 +65,8 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
       console.error('Storage upload error:', err)
       setUploadError(err.message || 'Image upload failed. Ensure the "images" bucket exists in Supabase Storage with public access.')
       setIsUploading(false)
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
 

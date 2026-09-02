@@ -1,8 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
-import { benaaServices, majdServices } from '../../data/services.js'
-
-const defaultServices = [...benaaServices, ...majdServices]
 
 export function useServices() {
   const [services, setServices] = useState([])
@@ -23,11 +20,11 @@ export function useServices() {
       if (data && data.length > 0) {
         const mapped = data.map((s) => ({
           id: s.id,
-          companyId: s.company_id || s.companyId,
+          companyId: s.company_id || s.companyId || (s.id.startsWith('majd') ? 'majd' : 'benaa'),
           title: s.title,
-          titleAr: s.title_ar || s.titleAr,
-          description: s.description,
-          descriptionAr: s.description_ar || s.descriptionAr,
+          titleAr: s.title_ar || s.titleAr || '',
+          description: s.description || '',
+          descriptionAr: s.description_ar || s.descriptionAr || '',
           path: s.path,
           icon: s.icon,
           isActive: s.is_active ?? true,
@@ -35,11 +32,11 @@ export function useServices() {
         }))
         setServices(mapped)
       } else {
-        setServices(defaultServices)
+        setServices([])
       }
     } catch (err) {
-      console.warn('Supabase services fetch error, using fallback:', err)
-      setServices(defaultServices)
+      console.error('Supabase services fetch error:', err)
+      setServices([])
       setError(err.message)
     } finally {
       setLoading(false)

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
-import { products as fallbackProducts } from '../../data/products.js'
 
 export function useProducts() {
   const [products, setProducts] = useState([])
@@ -22,20 +21,20 @@ export function useProducts() {
         const mapped = data.map((p) => ({
           id: p.id,
           name: p.name,
-          nameAr: p.name_ar || p.nameAr,
+          nameAr: p.name_ar || p.nameAr || '',
           category: p.category,
           image: p.image,
           description: p.description,
-          descriptionAr: p.description_ar || p.descriptionAr,
+          descriptionAr: p.description_ar || p.descriptionAr || '',
           isActive: p.is_active ?? true,
         }))
         setProducts(mapped)
       } else {
-        setProducts(fallbackProducts)
+        setProducts([])
       }
     } catch (err) {
-      console.warn('Supabase products fetch failed, using fallback:', err)
-      setProducts(fallbackProducts)
+      console.error('Supabase products fetch error:', err)
+      setProducts([])
       setError(err.message)
     } finally {
       setLoading(false)

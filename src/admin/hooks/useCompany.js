@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
-import { companies as fallbackCompanies } from '../../data/companies.js'
 
 export function useCompany() {
   const [companies, setCompanies] = useState([])
@@ -14,29 +13,30 @@ export function useCompany() {
       const { data, error: fetchErr } = await supabase
         .from('companies')
         .select('*')
+        .order('id', { ascending: true })
 
       if (fetchErr) throw fetchErr
 
       if (data && data.length > 0) {
         const mapped = data.map((c) => ({
           id: c.id,
-          name: c.name,
-          nameAr: c.name_ar || c.nameAr,
-          tagline: c.tagline,
-          taglineAr: c.tagline_ar || c.taglineAr,
-          description: c.description,
-          descriptionAr: c.description_ar || c.descriptionAr,
+          name: c.name || (c.id === 'benaa' ? 'AL BENAA AL RAHAB CONTRACTING EST.' : 'AL MAJD LINES FOR TRADE & IMPORT'),
+          nameAr: c.name_ar || c.nameAr || '',
+          tagline: c.tagline || '',
+          taglineAr: c.tagline_ar || c.taglineAr || '',
+          description: c.description || '',
+          descriptionAr: c.description_ar || c.descriptionAr || '',
           color: c.color || (c.id === 'benaa' ? 'benaa' : 'majd'),
           logo: c.logo || (c.id === 'benaa' ? '/logo/al-benaa-logo.svg' : '/logo/al-majd-logo.svg'),
           path: c.path || `/${c.id}`,
         }))
         setCompanies(mapped)
       } else {
-        setCompanies(fallbackCompanies)
+        setCompanies([])
       }
     } catch (err) {
-      console.warn('Supabase companies fetch error, using fallback:', err)
-      setCompanies(fallbackCompanies)
+      console.error('Supabase companies fetch error:', err)
+      setCompanies([])
       setError(err.message)
     } finally {
       setLoading(false)
