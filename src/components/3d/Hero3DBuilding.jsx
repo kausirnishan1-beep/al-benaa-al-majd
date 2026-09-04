@@ -1,449 +1,260 @@
-import { useEffect, useRef } from 'react'
-import * as THREE from 'three'
-import { THREE_COLORS } from '../../utils/three-colors.js'
-import {
-  THREE_TIMING,
-  isReducedMotion,
-  isMobileDevice,
-  createViewportObserver,
-  disposeObject3D,
-} from '../../utils/three-performance.js'
+import { useState, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Building2, Layers, ShieldCheck, Sparkles } from 'lucide-react'
 
 export default function Hero3DBuilding() {
   const containerRef = useRef(null)
+  const [tilt, setTilt] = useState({ x: 0, y: 0 })
+  const [glarePos, setGlarePos] = useState({ x: 50, y: 50 })
+  const [activeLayer, setActiveLayer] = useState('both') // 'photo' | 'blueprint' | 'both'
+  const [isHovered, setIsHovered] = useState(false)
+  const [activePin, setActivePin] = useState(null)
 
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
+  // Architectural Metadata Pins
+  const pins = [
+    {
+      id: 'crown',
+      x: '52%',
+      y: '16%',
+      label: 'Sky Lounge & Spire',
+      labelAr: 'قمة البرج والواجهة العلوية',
+      spec: 'Reinforced Architectural Steel Framing',
+    },
+    {
+      id: 'facade',
+      x: '38%',
+      y: '42%',
+      label: 'Low-E Solar Glazing',
+      labelAr: 'واجهات زجاجية عازلة للطاقة',
+      spec: 'Double-glazed thermal acoustic curtain walls',
+    },
+    {
+      id: 'core',
+      x: '64%',
+      y: '68%',
+      label: 'Structural Core & MEP',
+      labelAr: 'الهيكل الإنشائي والأنظمة الذكية',
+      spec: 'Post-tensioned concrete & smart building automation',
+    },
+  ]
 
-    const reducedMotion = isReducedMotion()
-    const isMobile = isMobileDevice()
+  const handleMouseMove = (e) => {
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
 
-    // 1. Scene, Camera, Renderer
-    const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(
-      40,
-      container.clientWidth / container.clientHeight,
-      0.1,
-      1000
-    )
-    camera.position.set(0, 3.5, 17)
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
 
-    const renderer = new THREE.WebGLRenderer({
-      alpha: true,
-      antialias: !isMobile,
-      powerPreference: 'high-performance',
+    const rotX = -((y - centerY) / centerY) * 10
+    const rotY = ((x - centerX) / centerX) * 12
+
+    setTilt({ x: rotX, y: rotY })
+    setGlarePos({
+      x: (x / rect.width) * 100,
+      y: (y / rect.height) * 100,
     })
-    renderer.setSize(container.clientWidth, container.clientHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2))
-    renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.3
-    container.appendChild(renderer.domElement)
+  }
 
-    // Master Architectural Hierarchy
-    const masterBuilding = new THREE.Group()
-    scene.add(masterBuilding)
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+    setTilt({ x: 0, y: 0 })
+    setActivePin(null)
+  }
 
-    // ----------------------------------------------------------------
-    // 2. High-End Architectural Materials
-    // ----------------------------------------------------------------
-    // Luxury Deep Green Reflective Architectural Glass
-    const luxGlassMat = new THREE.MeshPhysicalMaterial({
-      color: THREE_COLORS.BENAA.glass,
-      emissive: THREE_COLORS.BENAA.deepDark,
-      metalness: 0.92,
-      roughness: 0.12,
-      transparent: true,
-      opacity: 0.9,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.08,
-      reflectivity: 0.95,
-    })
-
-    // Glowing Warm Gold Interior Office Lighting
-    const illuminatedFloorMat = new THREE.MeshStandardMaterial({
-      color: THREE_COLORS.MAJD.light,
-      emissive: THREE_COLORS.MAJD.light,
-      emissiveIntensity: 0.8,
-      metalness: 0.5,
-      roughness: 0.2,
-      transparent: true,
-      opacity: 0.95,
-    })
-
-    // High-Tech Holographic Structural Blueprint Wireframe
-    const blueprintWireMat = new THREE.LineBasicMaterial({
-      color: THREE_COLORS.TEAL.primary,
-      transparent: true,
-      opacity: 0.7,
-    })
-
-    // Polished Champagne Gold Architectural Mullions / Vertical Fins
-    const goldMullionMat = new THREE.MeshStandardMaterial({
-      color: THREE_COLORS.MAJD.light,
-      metalness: 0.95,
-      roughness: 0.25,
-      emissive: THREE_COLORS.MAJD.spire,
-      emissiveIntensity: 0.4,
-    })
-
-    // Dark Basalt Concrete Podium
-    const podiumMat = new THREE.MeshStandardMaterial({
-      color: THREE_COLORS.NEUTRALS.podium,
-      roughness: 0.7,
-      metalness: 0.3,
-    })
-
-    // ----------------------------------------------------------------
-    // 3. Foundation Podium & Blueprint Construction Grid
-    // ----------------------------------------------------------------
-    const podiumGroup = new THREE.Group()
-    podiumGroup.position.set(0, -3.2, 0)
-    masterBuilding.add(podiumGroup)
-
-    // Tiered Stepped Plinth
-    const plinth1 = new THREE.Mesh(new THREE.CylinderGeometry(4.4, 4.8, 0.4, 32), podiumMat)
-    plinth1.position.y = 0.2
-    podiumGroup.add(plinth1)
-
-    const plinth2 = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 4.0, 0.5, 32), podiumMat)
-    plinth2.position.y = 0.65
-    podiumGroup.add(plinth2)
-
-    // Holographic Base Blueprint Grid
-    const baseGrid = new THREE.GridHelper(
-      12,
-      isMobile ? 16 : 24,
-      THREE_COLORS.MAJD.light,
-      THREE_COLORS.BENAA.light
-    )
-    baseGrid.position.y = 0.91
-    podiumGroup.add(baseGrid)
-
-    // ----------------------------------------------------------------
-    // 4. Iconic Twisted Spiral Skyscraper (Tower 1 - Primary Icon)
-    // ----------------------------------------------------------------
-    const towerGroup = new THREE.Group()
-    towerGroup.position.set(-0.6, -2.2, 0)
-    masterBuilding.add(towerGroup)
-
-    const floorCount = isMobile ? 16 : 22
-    const floorHeight = 0.34
-    const baseRadius = 1.9
-
-    for (let i = 0; i < floorCount; i++) {
-      const progress = i / floorCount
-      // Taper and dynamic architectural twist angle
-      const taper = 1 - progress * 0.38
-      const twistAngle = progress * Math.PI * 0.45 // Elegant 80-degree aerodynamic twist
-      const y = i * floorHeight + floorHeight / 2
-      const radius = baseRadius * taper
-
-      // Custom faceted elliptical floor slab
-      const floorGeo = new THREE.CylinderGeometry(
-        radius * 0.95,
-        radius,
-        floorHeight * 0.88,
-        isMobile ? 8 : 12
-      )
-      const floorMesh = new THREE.Mesh(floorGeo, luxGlassMat)
-      floorMesh.position.y = y
-      floorMesh.rotation.y = twistAngle
-      towerGroup.add(floorMesh)
-
-      // Blueprint edge lines
-      const edgeGeo = new THREE.EdgesGeometry(floorGeo)
-      const edgeLine = new THREE.LineSegments(edgeGeo, blueprintWireMat)
-      edgeLine.position.y = y
-      edgeLine.rotation.y = twistAngle
-      towerGroup.add(edgeLine)
-
-      // Interior illuminated warm core (selective glowing floors like Reference 1)
-      if (i % 2 === 0 || i === 5 || i === 11 || i === 17) {
-        const coreGeo = new THREE.CylinderGeometry(
-          radius * 0.65,
-          radius * 0.7,
-          floorHeight * 0.6,
-          isMobile ? 8 : 12
-        )
-        const coreMesh = new THREE.Mesh(coreGeo, illuminatedFloorMat)
-        coreMesh.position.y = y
-        coreMesh.rotation.y = twistAngle
-        towerGroup.add(coreMesh)
-      }
-    }
-
-    // Vertical Golden Facade Spines / Aerodynamic Fins
-    const finCount = 6
-    const totalHeight = floorCount * floorHeight
-
-    for (let f = 0; f < finCount; f++) {
-      const finPoints = []
-      for (let i = 0; i <= floorCount; i++) {
-        const progress = i / floorCount
-        const taper = 1 - progress * 0.38
-        const twistAngle = progress * Math.PI * 0.45
-        const angle = (f * Math.PI * 2) / finCount + twistAngle
-        const r = (baseRadius * taper) + 0.05
-        const x = Math.cos(angle) * r
-        const z = Math.sin(angle) * r
-        const y = i * floorHeight
-        finPoints.push(new THREE.Vector3(x, y, z))
-      }
-
-      const finCurve = new THREE.CatmullRomCurve3(finPoints)
-      const finTubeGeo = new THREE.TubeGeometry(finCurve, isMobile ? 24 : 40, 0.035, 6, false)
-      const finMesh = new THREE.Mesh(finTubeGeo, goldMullionMat)
-      towerGroup.add(finMesh)
-    }
-
-    // ----------------------------------------------------------------
-    // 5. Crown Sky-Lounge & Glass Observation Dome (Reference 1)
-    // ----------------------------------------------------------------
-    const crownY = totalHeight
-    const domeRadius = baseRadius * (1 - 0.38) * 0.9
-
-    // Circular Sky-Deck Ring
-    const skyDeckGeo = new THREE.CylinderGeometry(domeRadius * 1.15, domeRadius * 1.05, 0.25, 24)
-    const skyDeck = new THREE.Mesh(skyDeckGeo, goldMullionMat)
-    skyDeck.position.y = crownY + 0.12
-    towerGroup.add(skyDeck)
-
-    // Glass Observation Dome
-    const domeGeo = new THREE.SphereGeometry(
-      domeRadius,
-      isMobile ? 16 : 24,
-      isMobile ? 12 : 16,
-      0,
-      Math.PI * 2,
-      0,
-      Math.PI / 2
-    )
-    const domeMesh = new THREE.Mesh(domeGeo, luxGlassMat)
-    domeMesh.position.y = crownY + 0.25
-    towerGroup.add(domeMesh)
-
-    const domeEdgeGeo = new THREE.EdgesGeometry(domeGeo)
-    const domeEdge = new THREE.LineSegments(domeEdgeGeo, blueprintWireMat)
-    domeEdge.position.y = crownY + 0.25
-    towerGroup.add(domeEdge)
-
-    // Architectural Spire Peak with Pulsing Diamond
-    const spireGeo = new THREE.ConeGeometry(0.08, 2.2, 16)
-    const spire = new THREE.Mesh(spireGeo, goldMullionMat)
-    spire.position.y = crownY + 1.35
-    towerGroup.add(spire)
-
-    const beaconGeo = new THREE.OctahedronGeometry(0.12)
-    const beaconMat = new THREE.MeshBasicMaterial({ color: 0x2dd4bf })
-    const beacon = new THREE.Mesh(beaconGeo, beaconMat)
-    beacon.position.y = crownY + 2.5
-    towerGroup.add(beacon)
-
-    // ----------------------------------------------------------------
-    // 6. Secondary Cascading Modern Wing (Tower 2 - Reference 2 & 3)
-    // ----------------------------------------------------------------
-    const wingGroup = new THREE.Group()
-    wingGroup.position.set(2.4, -2.2, 0.8)
-    masterBuilding.add(wingGroup)
-
-    const wingFloorCount = isMobile ? 10 : 13
-    for (let w = 0; w < wingFloorCount; w++) {
-      const wy = w * floorHeight + floorHeight / 2
-      const wWidth = 2.0 - (w / wingFloorCount) * 0.4
-      const wDepth = 1.6
-
-      const wingGeo = new THREE.BoxGeometry(wWidth, floorHeight * 0.9, wDepth)
-      const wingMesh = new THREE.Mesh(wingGeo, luxGlassMat)
-      wingMesh.position.y = wy
-      wingMesh.rotation.y = -Math.PI / 8
-      wingGroup.add(wingMesh)
-
-      const wingEdgeGeo = new THREE.EdgesGeometry(wingGeo)
-      const wingEdge = new THREE.LineSegments(wingEdgeGeo, blueprintWireMat)
-      wingEdge.position.y = wy
-      wingEdge.rotation.y = -Math.PI / 8
-      wingGroup.add(wingEdge)
-
-      if (w % 3 === 0) {
-        const wingCoreGeo = new THREE.BoxGeometry(wWidth * 0.6, floorHeight * 0.6, wDepth * 0.6)
-        const wingCore = new THREE.Mesh(wingCoreGeo, illuminatedFloorMat)
-        wingCore.position.y = wy
-        wingCore.rotation.y = -Math.PI / 8
-        wingGroup.add(wingCore)
-      }
-    }
-
-    // ----------------------------------------------------------------
-    // 7. Rotating Holographic Lens / Focus Ring (Reference 3)
-    // ----------------------------------------------------------------
-    const focalRingGeo = new THREE.TorusGeometry(3.8, 0.02, 16, isMobile ? 40 : 80)
-    const focalRingMat = new THREE.MeshBasicMaterial({
-      color: THREE_COLORS.MAJD.light,
-      transparent: true,
-      opacity: 0.6,
-    })
-    const focalRing = new THREE.Mesh(focalRingGeo, focalRingMat)
-    focalRing.rotation.x = Math.PI / 2.3
-    focalRing.position.y = 2.2
-    masterBuilding.add(focalRing)
-
-    const subRingGeo = new THREE.TorusGeometry(4.2, 0.015, 16, isMobile ? 40 : 80)
-    const subRingMat = new THREE.MeshBasicMaterial({
-      color: THREE_COLORS.TEAL.primary,
-      transparent: true,
-      opacity: 0.45,
-    })
-    const subRing = new THREE.Mesh(subRingGeo, subRingMat)
-    subRing.rotation.x = -Math.PI / 2.6
-    subRing.position.y = 3.5
-    masterBuilding.add(subRing)
-
-    // ----------------------------------------------------------------
-    // 8. Subtle Floating Stardust Particles
-    // ----------------------------------------------------------------
-    const particleCount = isMobile ? 40 : 90
-    const pGeo = new THREE.BufferGeometry()
-    const pPositions = new Float32Array(particleCount * 3)
-    const pColors = new Float32Array(particleCount * 3)
-    const colTeal = new THREE.Color(THREE_COLORS.TEAL.primary)
-    const colGold = new THREE.Color(THREE_COLORS.MAJD.light)
-
-    for (let p = 0; p < particleCount; p++) {
-      pPositions[p * 3] = (Math.random() - 0.5) * 16
-      pPositions[p * 3 + 1] = Math.random() * 12 - 2
-      pPositions[p * 3 + 2] = (Math.random() - 0.5) * 14
-
-      const c = Math.random() > 0.5 ? colTeal : colGold
-      pColors[p * 3] = c.r
-      pColors[p * 3 + 1] = c.g
-      pColors[p * 3 + 2] = c.b
-    }
-
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3))
-    pGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3))
-
-    const pMat = new THREE.PointsMaterial({
-      size: 0.065,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.75,
-      blending: THREE.AdditiveBlending,
-    })
-    const particles = new THREE.Points(pGeo, pMat)
-    scene.add(particles)
-
-    // ----------------------------------------------------------------
-    // 9. Premium Architectural Lighting Setup
-    // ----------------------------------------------------------------
-    scene.add(new THREE.AmbientLight(THREE_COLORS.LIGHTS.ambient, 0.9))
-
-    const mainSun = new THREE.DirectionalLight(THREE_COLORS.LIGHTS.sun, 2.4)
-    mainSun.position.set(8, 14, 10)
-    scene.add(mainSun)
-
-    const benaaGlow = new THREE.PointLight(THREE_COLORS.BENAA.light, 3.5, 25)
-    benaaGlow.position.set(-6, 6, 5)
-    scene.add(benaaGlow)
-
-    const majdGlow = new THREE.PointLight(THREE_COLORS.MAJD.light, 3.0, 25)
-    majdGlow.position.set(6, 4, -4)
-    scene.add(majdGlow)
-
-    const cyanRim = new THREE.PointLight(THREE_COLORS.TEAL.primary, 2.0, 15)
-    cyanRim.position.set(0, 8, 4)
-    scene.add(cyanRim)
-
-    // ----------------------------------------------------------------
-    // 10. Smooth Parallax & Viewport Observer
-    // ----------------------------------------------------------------
-    let mouseX = 0
-    let mouseY = 0
-    let targetRotY = 0.35
-    let targetRotX = 0.05
-    let isVisible = true
-
-    const onMouseMove = (e) => {
-      if (reducedMotion) return
-      const rect = container.getBoundingClientRect()
-      const x = ((e.clientX - rect.left) / rect.width) * 2 - 1
-      const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1)
-      mouseX = x
-      mouseY = y
-      targetRotY = 0.35 + mouseX * 0.4
-      targetRotX = 0.05 - mouseY * 0.2
-    }
-
-    window.addEventListener('mousemove', onMouseMove, { passive: true })
-
-    const viewportObserver = createViewportObserver(container, (visible) => {
-      isVisible = visible
-    })
-
-    // ----------------------------------------------------------------
-    // 11. Render Loop
-    // ----------------------------------------------------------------
-    let animId
-    const clock = new THREE.Clock()
-
-    const animate = () => {
-      animId = requestAnimationFrame(animate)
-      if (!isVisible) return
-
-      const t = clock.getElapsedTime()
-
-      if (!reducedMotion) {
-        masterBuilding.rotation.y += (targetRotY - masterBuilding.rotation.y) * THREE_TIMING.DAMPING_FACTOR
-        masterBuilding.rotation.x += (targetRotX - masterBuilding.rotation.x) * THREE_TIMING.DAMPING_FACTOR
-
-        focalRing.rotation.z = t * 0.06
-        subRing.rotation.z = -t * 0.04
-        particles.rotation.y = t * 0.012
-      }
-
-      beacon.rotation.y = t * 2
-      beaconMat.color.setHex(Math.sin(t * 3) > 0 ? THREE_COLORS.TEAL.primary : THREE_COLORS.MAJD.light)
-
-      renderer.render(scene, camera)
-    }
-
-    animate()
-
-    // ----------------------------------------------------------------
-    // 12. Responsive Resize
-    // ----------------------------------------------------------------
-    const resizeObserver = new ResizeObserver(() => {
-      if (!container) return
-      const w = container.clientWidth
-      const h = container.clientHeight
-      camera.aspect = w / h
-      camera.updateProjectionMatrix()
-      renderer.setSize(w, h)
-    })
-    resizeObserver.observe(container)
-
-    // ----------------------------------------------------------------
-    // Cleanup
-    // ----------------------------------------------------------------
-    return () => {
-      cancelAnimationFrame(animId)
-      window.removeEventListener('mousemove', onMouseMove)
-      viewportObserver.disconnect()
-      resizeObserver.disconnect()
-
-      disposeObject3D(scene)
-      renderer.dispose()
-      if (container && renderer.domElement) {
-        container.removeChild(renderer.domElement)
-      }
-    }
-  }, [])
+  // Real ultra-HD modern skyscraper photograph (Riyadh / international commercial luxury high-rise)
+  const realBuildingImg =
+    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=85'
 
   return (
     <div
       ref={containerRef}
-      className="w-full h-full min-h-[400px] lg:min-h-[540px] relative pointer-events-auto cursor-grab active:cursor-grabbing"
-      aria-hidden="true"
-    />
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative w-full h-full min-h-[420px] lg:min-h-[500px] flex items-center justify-center select-none"
+      style={{ perspective: 1200 }}
+    >
+      {/* 3D Tilted Card Wrapper */}
+      <motion.div
+        animate={{
+          rotateX: tilt.x,
+          rotateY: tilt.y,
+          scale: isHovered ? 1.02 : 1,
+        }}
+        transition={{ type: 'spring', stiffness: 200, damping: 20, mass: 0.5 }}
+        className="relative w-full h-[400px] sm:h-[460px] lg:h-[490px] rounded-3xl overflow-hidden border border-white/20 shadow-2xl bg-slate-900 group"
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        {/* Layer 1: REAL Photorealistic Modern Skyscraper */}
+        <div
+          className={`absolute inset-0 transition-opacity duration-700 ${
+            activeLayer === 'blueprint' ? 'opacity-25' : 'opacity-100'
+          }`}
+        >
+          <img
+            src={realBuildingImg}
+            alt="AL BENAA Modern Architectural Commercial Skyscraper"
+            className="w-full h-full object-cover object-center scale-105 group-hover:scale-110 transition-transform duration-1000 ease-out"
+          />
+          {/* Subtle Real Glass Tint & Vignette */}
+          <div className="absolute inset-0 bg-gradient-to-t from-benaa-dark/90 via-transparent to-black/30 mix-blend-multiply"></div>
+        </div>
+
+        {/* Layer 2: 3D Holographic CAD Blueprint Grid Overlay (Reference 2 style) */}
+        <div
+          className={`absolute inset-0 pointer-events-none transition-opacity duration-700 ${
+            activeLayer === 'photo' ? 'opacity-0' : 'opacity-100'
+          }`}
+        >
+          {/* Blueprint SVG Vector Mesh */}
+          <svg className="w-full h-full opacity-60 mix-blend-screen" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="cadGrid" width="28" height="28" patternUnits="userSpaceOnUse">
+                <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#2dd4bf" strokeWidth="0.6" strokeOpacity="0.4" />
+                <circle cx="0" cy="0" r="1.2" fill="#d4a017" fillOpacity="0.7" />
+              </pattern>
+              <linearGradient id="laserBeam" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#2dd4bf" stopOpacity="0" />
+                <stop offset="50%" stopColor="#2dd4bf" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#2dd4bf" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+
+            {/* Grid Pattern */}
+            <rect width="100%" height="100%" fill="url(#cadGrid)" />
+
+            {/* Structural Blueprint Diagonal Bracing Lines */}
+            <g stroke="#2dd4bf" strokeWidth="1.2" strokeOpacity="0.7" strokeDasharray="4,4">
+              <line x1="20%" y1="90%" x2="52%" y2="16%" />
+              <line x1="80%" y1="90%" x2="52%" y2="16%" />
+              <line x1="20%" y1="50%" x2="80%" y2="50%" />
+              <line x1="30%" y1="30%" x2="70%" y2="30%" />
+              <line x1="15%" y1="70%" x2="85%" y2="70%" />
+            </g>
+
+            {/* Scanning Laser Beam */}
+            <line
+              x1="0"
+              y1="40%"
+              x2="100%"
+              y2="40%"
+              stroke="url(#laserBeam)"
+              strokeWidth="4"
+              className="animate-pulse"
+            />
+          </svg>
+
+          {/* Holographic Particle Shimmer */}
+          <div className="absolute inset-0 bg-[radial-gradient(#2dd4bf_1px,transparent_1px)] [background-size:20px_20px] opacity-30"></div>
+        </div>
+
+        {/* Layer 3: Dynamic Specular Sunlight Glare moving with cursor */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-60 mix-blend-screen transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(circle 350px at ${glarePos.x}% ${glarePos.y}%, rgba(255, 255, 255, 0.45) 0%, rgba(45, 212, 191, 0.15) 45%, transparent 70%)`,
+          }}
+        />
+
+        {/* Layer 4: Interactive Architectural Metadata Pins */}
+        <div className="absolute inset-0 pointer-events-auto" style={{ transform: 'translateZ(30px)' }}>
+          {pins.map((pin) => (
+            <div
+              key={pin.id}
+              style={{ left: pin.x, top: pin.y }}
+              className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer"
+              onMouseEnter={() => setActivePin(pin.id)}
+              onMouseLeave={() => setActivePin(null)}
+            >
+              {/* Radar Pulsing Pin */}
+              <div className="relative flex items-center justify-center">
+                <span className="w-4 h-4 rounded-full bg-emerald-400/40 animate-ping absolute"></span>
+                <span className="w-3 h-3 rounded-full bg-majd-light border-2 border-white shadow-lg relative z-10 flex items-center justify-center">
+                  <span className="w-1 h-1 rounded-full bg-benaa-dark"></span>
+                </span>
+              </div>
+
+              {/* Tooltip Card on Hover */}
+              <AnimatePresence>
+                {activePin === pin.id && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute left-6 top-1/2 -translate-y-1/2 w-56 p-3 rounded-2xl bg-black/85 backdrop-blur-xl border border-emerald-500/30 text-white shadow-2xl z-30 pointer-events-none"
+                  >
+                    <div className="text-xs font-extrabold text-emerald-300 flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-majd-light" />
+                      <span>{pin.label}</span>
+                    </div>
+                    <div className="text-[10px] text-gray-300 font-arabic mt-0.5">{pin.labelAr}</div>
+                    <div className="text-[10px] text-gray-400 mt-1 leading-snug border-t border-white/10 pt-1">
+                      {pin.spec}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+
+        {/* Top Header Tag */}
+        <div className="absolute top-4 left-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white text-xs font-semibold shadow-lg">
+          <Building2 className="w-3.5 h-3.5 text-majd-light" />
+          <span>Real Project Architecture</span>
+          <span className="text-white/40">|</span>
+          <span className="text-emerald-300 text-[10px] font-mono">BIM 3D Model</span>
+        </div>
+
+        {/* Bottom Interactive Layer Mode Switcher (Photo / Blueprint / Hybrid) */}
+        <div className="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between">
+          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-black/65 backdrop-blur-xl border border-white/15 shadow-xl">
+            <button
+              type="button"
+              onClick={() => setActiveLayer('photo')}
+              className={`px-3 py-1 rounded-xl text-[11px] font-semibold transition-all ${
+                activeLayer === 'photo'
+                  ? 'bg-benaa text-white shadow'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Real Photo
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveLayer('both')}
+              className={`px-3 py-1 rounded-xl text-[11px] font-semibold transition-all flex items-center gap-1 ${
+                activeLayer === 'both'
+                  ? 'bg-gradient-to-r from-benaa to-majd text-white shadow'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Sparkles className="w-3 h-3 text-amber-300" />
+              <span>3D Hybrid</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveLayer('blueprint')}
+              className={`px-3 py-1 rounded-xl text-[11px] font-semibold transition-all flex items-center gap-1 ${
+                activeLayer === 'blueprint'
+                  ? 'bg-cyan-600 text-white shadow'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Layers className="w-3 h-3" />
+              <span>Blueprint</span>
+            </button>
+          </div>
+
+          <div className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-[10px] text-white/80 font-mono hidden sm:flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>3D Tilt Active</span>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   )
 }
