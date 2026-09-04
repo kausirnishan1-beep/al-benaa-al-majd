@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Mail, Trash2, Eye, MessageSquare } from 'lucide-react'
+import { Mail, Trash2, Eye, MessageSquare, Copy, Check, ExternalLink } from 'lucide-react'
 import { useMessages } from '../hooks/useMessages.js'
 import DataTable from '../components/DataTable.jsx'
 import ConfirmDialog from '../components/ConfirmDialog.jsx'
@@ -9,6 +9,14 @@ export default function Messages() {
 
   const [selectedMessage, setSelectedMessage] = useState(null)
   const [deleteTargetId, setDeleteTargetId] = useState(null)
+  const [copiedEmail, setCopiedEmail] = useState(false)
+
+  const handleCopyEmail = (email) => {
+    if (!email) return
+    navigator.clipboard.writeText(email)
+    setCopiedEmail(true)
+    setTimeout(() => setCopiedEmail(false), 2000)
+  }
 
   const handleOpenDetail = (msg) => {
     setSelectedMessage(msg)
@@ -167,12 +175,29 @@ export default function Messages() {
 
                 <div>
                   <span className="block font-bold text-gray-400 text-[10px] uppercase">Email Address</span>
-                  <a
-                    href={`mailto:${selectedMessage.email}`}
-                    className="font-bold text-benaa hover:underline text-xs mt-0.5 block truncate"
-                  >
-                    {selectedMessage.email}
-                  </a>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <a
+                      href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(selectedMessage.email)}&su=${encodeURIComponent('Inquiry Response - Al-Benaa & Al-Majd Group')}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-bold text-benaa hover:underline text-xs block truncate"
+                      title="Open in Gmail Web"
+                    >
+                      {selectedMessage.email}
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyEmail(selectedMessage.email)}
+                      className="text-gray-400 hover:text-benaa p-1 rounded-md hover:bg-gray-100 transition-colors"
+                      title="Copy Email Address"
+                    >
+                      {copiedEmail ? (
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 <div>
@@ -199,26 +224,50 @@ export default function Messages() {
                 </div>
               </div>
 
-              {/* Action Buttons: Email or WhatsApp */}
-              <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-gray-100">
+              {/* Action Buttons: WhatsApp & Direct Webmail Compose */}
+              <div className="flex flex-wrap items-center gap-2.5 pt-4 border-t border-gray-100">
                 {selectedMessage.phone && (
                   <a
                     href={`https://wa.me/${selectedMessage.phone.replace(/[^0-9]/g, '')}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all shadow-sm active:scale-95"
                   >
                     <MessageSquare className="w-4 h-4" />
                     <span>WhatsApp Client</span>
                   </a>
                 )}
 
+                {/* Direct Gmail Web Compose */}
                 <a
-                  href={`mailto:${selectedMessage.email}?subject=Inquiry Response - Al-Benaa & Al-Majd Group`}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-benaa text-white font-bold text-xs hover:bg-benaa-light transition-colors"
+                  href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+                    selectedMessage.email
+                  )}&su=${encodeURIComponent(
+                    'Inquiry Response - Al-Benaa & Al-Majd Group'
+                  )}&body=${encodeURIComponent(
+                    `Dear ${selectedMessage.name},\n\nThank you for contacting Al-Benaa & Al-Majd Group.\n\nRegarding your inquiry:\n"${selectedMessage.message}"\n\nKind regards,\nCustomer Relations Team\nAl-Benaa & Al-Majd Group`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-benaa text-white font-bold text-xs hover:bg-benaa-light transition-all shadow-sm active:scale-95"
+                  title="Open directly in Gmail Web Compose"
                 >
                   <Mail className="w-4 h-4" />
-                  <span>Reply via Email</span>
+                  <span>Reply via Gmail</span>
+                  <ExternalLink className="w-3 h-3 opacity-70" />
+                </a>
+
+                {/* Default Mail Client (Outlook/Windows Mail) */}
+                <a
+                  href={`mailto:${selectedMessage.email}?subject=${encodeURIComponent(
+                    'Inquiry Response - Al-Benaa & Al-Majd Group'
+                  )}&body=${encodeURIComponent(
+                    `Dear ${selectedMessage.name},\n\nThank you for contacting Al-Benaa & Al-Majd Group.\n\nRegarding your inquiry:\n"${selectedMessage.message}"\n\n`
+                  )}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-bold text-xs hover:bg-gray-200 transition-colors"
+                  title="Open in System Default Mail Client"
+                >
+                  <span>Default Mail App</span>
                 </a>
 
                 <button

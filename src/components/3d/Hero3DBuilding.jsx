@@ -25,7 +25,7 @@ export default function Hero3DBuilding() {
     // ----------------------------------------------------------------
     const scene = new THREE.Scene()
 
-    // Majestic architectural camera angle (low angle looking up at the skyscraper)
+    // Majestic low-angle architectural perspective
     const camera = new THREE.PerspectiveCamera(
       38,
       container.clientWidth / container.clientHeight,
@@ -95,9 +95,9 @@ export default function Hero3DBuilding() {
     scene.environment = envMapTarget.texture
 
     // ----------------------------------------------------------------
-    // 3. Premium Architectural Materials
+    // 3. Premium Natural Architectural Materials (Previous Classic Scheme)
     // ----------------------------------------------------------------
-    // Double-glazed reflective curtain wall glass
+    // Double-glazed reflective solar curtain wall glass
     const towerGlassMat = new THREE.MeshPhysicalMaterial({
       color: 0x93c5fd,
       emissive: THREE_COLORS.BENAA.deepDark,

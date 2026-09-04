@@ -12,17 +12,14 @@ export default function ContactInfo() {
   return (
     <div className="space-y-6 bg-white p-8 rounded-3xl border border-gray-100 shadow-xl overflow-hidden">
       {/* 3D Location Beacon */}
-      <div className="w-full h-44 rounded-2xl bg-gradient-to-br from-benaa-dark via-[#06241b] to-black relative overflow-hidden flex items-center justify-center border border-white/10 shadow-inner">
+      <div className="w-full h-52 md:h-60 rounded-2xl bg-gradient-to-br from-[#021812] via-[#06241b] to-[#041320] relative overflow-hidden flex items-center justify-center border border-white/10 shadow-inner">
         <Suspense
           fallback={
-            <div className="text-white/40 text-xs animate-pulse">Loading 3D Radar Beacon...</div>
+            <div className="text-white/40 text-xs animate-pulse">Loading 3D Headquarters...</div>
           }
         >
           <Contact3DPin />
         </Suspense>
-        <div className="absolute bottom-2 right-3 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-[9px] text-emerald-300 font-mono">
-          Riyadh HQ • 3D Radar
-        </div>
       </div>
 
       <div className="border-b border-gray-100 pb-4 mb-4">
