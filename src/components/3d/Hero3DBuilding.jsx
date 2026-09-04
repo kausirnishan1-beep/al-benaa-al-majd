@@ -36,7 +36,6 @@ function createRoundedSlabGeometry(width, height, depth, radius, smoothness = 8)
 
   const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings)
   geometry.center()
-  // Rotate so extrude height is along Y axis
   geometry.rotateX(Math.PI / 2)
   return geometry
 }
@@ -58,13 +57,13 @@ export default function Hero3DBuilding() {
 
     // Low-angle perspective camera for powerful architectural presence
     const camera = new THREE.PerspectiveCamera(
-      42,
+      40,
       container.clientWidth / container.clientHeight,
       0.1,
       1000
     )
-    const defaultCameraZ = isMobile ? 13.5 : 11.2
-    camera.position.set(2.8, 1.2, defaultCameraZ)
+    const defaultCameraZ = isMobile ? 13.5 : 11.0
+    camera.position.set(2.6, 1.1, defaultCameraZ)
     camera.lookAt(0, 0.4, 0)
 
     const renderer = new THREE.WebGLRenderer({
@@ -75,72 +74,125 @@ export default function Hero3DBuilding() {
     renderer.setSize(container.clientWidth, container.clientHeight)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2))
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.15
+    renderer.toneMappingExposure = 1.2
     container.appendChild(renderer.domElement)
 
     // Master Pivot Group
     const buildingMaster = new THREE.Group()
     scene.add(buildingMaster)
-
-    // Center pivot slightly
     buildingMaster.position.set(0, -0.6, 0)
 
     // ----------------------------------------------------------------
-    // 2. Realistic Architectural Materials
+    // 2. Natural Sky & Environment Map for Photorealistic Glass Reflection
     // ----------------------------------------------------------------
-    // High-specular reflective curved architectural glass
+    const pmremGenerator = new THREE.PMREMGenerator(renderer)
+    pmremGenerator.compileEquirectangularShader()
+
+    const envCanvas = document.createElement('canvas')
+    envCanvas.width = 512
+    envCanvas.height = 256
+    const ctx = envCanvas.getContext('2d')
+
+    // Natural daylight sky gradient: Deep blue -> Sky blue -> Horizon haze -> Trees / Ground
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, 256)
+    skyGrad.addColorStop(0.0, '#1e3a8a') // Zenith deep azure
+    skyGrad.addColorStop(0.28, '#3b82f6') // Sky blue
+    skyGrad.addColorStop(0.50, '#93c5fd') // Soft sky
+    skyGrad.addColorStop(0.56, '#e0f2fe') // Horizon light
+    skyGrad.addColorStop(0.59, '#2d5a27') // Natural green tree line
+    skyGrad.addColorStop(0.70, '#475569') // Courtyard stone pavement
+    skyGrad.addColorStop(1.0, '#1e293b') // Ground shadow
+    ctx.fillStyle = skyGrad
+    ctx.fillRect(0, 0, 512, 256)
+
+    // Natural Sunlight Flare in reflection
+    const sunGrad = ctx.createRadialGradient(360, 65, 0, 360, 65, 55)
+    sunGrad.addColorStop(0, '#ffffff')
+    sunGrad.addColorStop(0.2, '#fffbeb')
+    sunGrad.addColorStop(0.7, 'rgba(254, 240, 138, 0.4)')
+    sunGrad.addColorStop(1, 'rgba(254, 240, 138, 0)')
+    ctx.fillStyle = sunGrad
+    ctx.fillRect(300, 10, 120, 110)
+
+    // Subtle soft white cloud streaks
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)'
+    ctx.beginPath()
+    ctx.ellipse(160, 80, 90, 16, -0.05, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.beginPath()
+    ctx.ellipse(340, 100, 120, 20, 0.04, 0, Math.PI * 2)
+    ctx.fill()
+
+    const envTexture = new THREE.CanvasTexture(envCanvas)
+    envTexture.mapping = THREE.EquirectangularReflectionMapping
+    const envMapTarget = pmremGenerator.fromEquirectangular(envTexture)
+    scene.environment = envMapTarget.texture
+
+    // ----------------------------------------------------------------
+    // 3. Realistic Natural Architectural Materials
+    // ----------------------------------------------------------------
+    // Natural Sky Blue Double-Glazed Architectural Glass (with clear reflection)
     const glassMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x2dd4bf,
-      emissive: 0x06241b,
-      emissiveIntensity: 0.25,
-      metalness: 0.95,
-      roughness: 0.04,
-      transmission: 0.65,
-      thickness: 1.2,
+      color: 0xcfe2f3,
+      emissive: 0x0c2333,
+      emissiveIntensity: 0.12,
+      metalness: 0.92,
+      roughness: 0.02,
+      transmission: 0.55,
+      thickness: 1.0,
       ior: 1.52,
       transparent: true,
-      opacity: 0.88,
-      reflectivity: 0.98,
+      opacity: 0.92,
+      reflectivity: 1.0,
+      clearcoat: 0.8,
+      clearcoatRoughness: 0.04,
     })
 
-    // Matte dark ribbed metal louvers / architectural fascia band
+    // Natural Dark Charcoal / Anthracite Architectural Metal Cladding
     const darkMetalFasciaMat = new THREE.MeshStandardMaterial({
-      color: 0x111827,
-      metalness: 0.85,
-      roughness: 0.32,
+      color: 0x1f242b,
+      metalness: 0.72,
+      roughness: 0.38,
     })
 
-    // Architectural reinforced concrete for pilotis/stilts
+    // Authentic Fair-Faced Reinforced Concrete for Pilotis / Columns
     const concreteMat = new THREE.MeshStandardMaterial({
-      color: 0xe5e7eb,
-      roughness: 0.82,
+      color: 0xd8dbdf,
+      roughness: 0.86,
+      metalness: 0.04,
+    })
+
+    // Natural Warm Interior Ceiling & Floor Slabs (Warm 3000K Lighting)
+    const interiorFloorMat = new THREE.MeshStandardMaterial({
+      color: 0xfaf5ee,
+      emissive: 0xd4a017,
+      emissiveIntensity: 0.16,
+      roughness: 0.45,
+    })
+
+    // Black Anodized Aluminum Mullions
+    const mullionMat = new THREE.MeshStandardMaterial({
+      color: 0x242930,
+      metalness: 0.88,
+      roughness: 0.3,
+    })
+
+    // Natural Slate Paved Courtyard
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0x28303b,
+      roughness: 0.88,
       metalness: 0.08,
     })
 
-    // Warm interior ceiling slab with architectural lighting
-    const interiorFloorMat = new THREE.MeshStandardMaterial({
-      color: 0xfef3c7,
-      emissive: 0xd4a017,
-      emissiveIntensity: 0.35,
-      roughness: 0.4,
-    })
-
-    // Architectural window mullions (black aluminum)
-    const mullionMat = new THREE.MeshStandardMaterial({
-      color: 0x1f2937,
-      metalness: 0.9,
-      roughness: 0.25,
-    })
-
-    // Ground paved courtyard slab
-    const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x1f2937,
-      roughness: 0.9,
-      metalness: 0.1,
+    // Natural Green Lawn / Landscaping Border
+    const grassMat = new THREE.MeshStandardMaterial({
+      color: 0x2d4f29,
+      roughness: 0.95,
+      metalness: 0.0,
     })
 
     // ----------------------------------------------------------------
-    // 3. Ground Paved Plaza & Shadow
+    // 4. Ground Plaza, Landscaping & Soft Shadow
     // ----------------------------------------------------------------
     const groundGeo = new THREE.PlaneGeometry(16, 16)
     const ground = new THREE.Mesh(groundGeo, groundMat)
@@ -148,9 +200,16 @@ export default function Hero3DBuilding() {
     ground.position.y = -1.65
     buildingMaster.add(ground)
 
-    // Ground Pavement Grid Markings
-    const plazaGrid = new THREE.GridHelper(14, 14, 0x374151, 0x111827)
-    plazaGrid.position.y = -1.64
+    // Side Natural Grass Landscaping Mound (Like the reference photo)
+    const grassGeo = new THREE.PlaneGeometry(5.5, 14)
+    const grassMesh = new THREE.Mesh(grassGeo, grassMat)
+    grassMesh.rotation.x = -Math.PI / 2
+    grassMesh.position.set(-5.5, -1.64, 0)
+    buildingMaster.add(grassMesh)
+
+    // Ground Pavement Line Markings
+    const plazaGrid = new THREE.GridHelper(14, 14, 0x475569, 0x1f2937)
+    plazaGrid.position.y = -1.63
     buildingMaster.add(plazaGrid)
 
     // Soft Contact Shadow Plane under pilotis
@@ -159,32 +218,32 @@ export default function Hero3DBuilding() {
     shadowCanvas.height = 128
     const sCtx = shadowCanvas.getContext('2d')
     const gradient = sCtx.createRadialGradient(64, 64, 10, 64, 64, 64)
-    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.7)')
+    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.75)')
     gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.35)')
     gradient.addColorStop(1, 'rgba(0, 0, 0, 0)')
     sCtx.fillStyle = gradient
     sCtx.fillRect(0, 0, 128, 128)
 
     const shadowTex = new THREE.CanvasTexture(shadowCanvas)
-    const shadowGeo = new THREE.PlaneGeometry(8.5, 6.5)
+    const shadowGeo = new THREE.PlaneGeometry(8.8, 6.6)
     const shadowMat = new THREE.MeshBasicMaterial({
       map: shadowTex,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.62,
       depthWrite: false,
     })
     const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat)
     shadowMesh.rotation.x = -Math.PI / 2
-    shadowMesh.position.set(0.4, -1.63, 0)
+    shadowMesh.position.set(0.4, -1.62, 0)
     buildingMaster.add(shadowMesh)
 
     // ----------------------------------------------------------------
-    // 4. Concrete Pilotis (Stilts supporting the elevated pavilion)
+    // 5. Concrete Pilotis (Stilts supporting the elevated pavilion)
     // ----------------------------------------------------------------
     const pilotisGroup = new THREE.Group()
     buildingMaster.add(pilotisGroup)
 
-    const columnGeo = new THREE.CylinderGeometry(0.12, 0.12, 1.45, 16)
+    const columnGeo = new THREE.CylinderGeometry(0.12, 0.12, 1.45, 20)
     const columnPositions = [
       // Front row
       [-2.4, -0.92, 1.4],
@@ -219,7 +278,7 @@ export default function Hero3DBuilding() {
     pilotisGroup.add(coreMesh)
 
     // ----------------------------------------------------------------
-    // 5. Cantilevered Pavilion Architecture (Rounded Curved Glass Volumes)
+    // 6. Cantilevered Pavilion Architecture (Rounded Curved Glass Volumes)
     // ----------------------------------------------------------------
     const pavilionGroup = new THREE.Group()
     buildingMaster.add(pavilionGroup)
@@ -303,43 +362,41 @@ export default function Hero3DBuilding() {
       pavilionGroup.add(roofRib)
     }
 
-    // Subtle Brand Accent Beacon on Top Right
-    const beaconGeo = new THREE.SphereGeometry(0.08, 12, 12)
-    const beaconMat = new THREE.MeshBasicMaterial({ color: THREE_COLORS.MAJD.light })
-    const beacon = new THREE.Mesh(beaconGeo, beaconMat)
-    beacon.position.set(2.6, 3.25, 1.4)
-    pavilionGroup.add(beacon)
-
     // ----------------------------------------------------------------
-    // 6. Natural Outdoor HDRI & Directional Lighting
+    // 7. Natural Outdoor Sunlight & Atmosphere Lighting
     // ----------------------------------------------------------------
-    // Sky Ambient Light (Natural Daylight)
-    const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x1e293b, 1.4)
+    // Sky Ambient Daylight
+    const hemiLight = new THREE.HemisphereLight(0xbfdbfe, 0x334155, 1.5)
     scene.add(hemiLight)
 
-    // Directional Sun Light (High Angle)
-    const sunLight = new THREE.DirectionalLight(0xfffaed, 2.4)
-    sunLight.position.set(6, 10, 8)
+    // Direct Warm Natural Sunlight
+    const sunLight = new THREE.DirectionalLight(0xfffaed, 2.6)
+    sunLight.position.set(7, 11, 8)
     scene.add(sunLight)
 
-    // Back Sun Rim Light (for glass edge sparkle)
-    const rimLight = new THREE.DirectionalLight(0xa5f3fc, 1.8)
-    rimLight.position.set(-8, 6, -6)
+    // Natural Sky Fill Light
+    const skyFillLight = new THREE.DirectionalLight(0x93c5fd, 1.4)
+    skyFillLight.position.set(-6, 8, 6)
+    scene.add(skyFillLight)
+
+    // Back Glass Rim Sparkle
+    const rimLight = new THREE.DirectionalLight(0xe0f2fe, 1.6)
+    rimLight.position.set(-8, 6, -7)
     scene.add(rimLight)
 
-    // Brand Soft Ambient Bounce Lights
-    const benaaBounce = new THREE.PointLight(0x0f4c3a, 2.0, 15)
-    benaaBounce.position.set(-3, -0.5, 3)
+    // Subtle Brand Architectural Accent Lighting
+    const benaaBounce = new THREE.PointLight(0x0f4c3a, 1.4, 14)
+    benaaBounce.position.set(-3, -0.4, 3)
     scene.add(benaaBounce)
 
-    const majdBounce = new THREE.PointLight(0xd4a017, 1.6, 15)
+    const majdBounce = new THREE.PointLight(0xd4a017, 1.2, 14)
     majdBounce.position.set(4, 2, 2)
     scene.add(majdBounce)
 
     // ----------------------------------------------------------------
-    // 7. Interaction: Mouse Parallax, Scroll Zoom & Raycasting
+    // 8. Interaction: Mouse Parallax, Scroll Zoom & Raycasting
     // ----------------------------------------------------------------
-    let targetRotY = -0.35 // Initial angled view of the curved corner
+    let targetRotY = -0.35 // Initial angled perspective view
     let targetRotX = 0.06
     let targetCameraZ = defaultCameraZ
     let isVisible = true
@@ -356,7 +413,7 @@ export default function Hero3DBuilding() {
       mouse.x = x
       mouse.y = y
 
-      // Subtle rotation around building
+      // Smooth multi-axis rotation
       targetRotY = -0.35 + x * 0.42
       targetRotX = 0.06 - y * 0.18
     }
@@ -364,7 +421,6 @@ export default function Hero3DBuilding() {
     const onScroll = () => {
       if (reducedMotion) return
       const scrollPercent = Math.min(window.scrollY / 600, 1)
-      // Slight dolly zoom in on scroll down
       targetCameraZ = defaultCameraZ - scrollPercent * 1.5
     }
 
@@ -376,7 +432,7 @@ export default function Hero3DBuilding() {
     })
 
     // ----------------------------------------------------------------
-    // 8. Animation Render Loop (60 FPS Target)
+    // 9. Animation Render Loop (60 FPS Target)
     // ----------------------------------------------------------------
     let animId
     const clock = new THREE.Clock()
@@ -388,29 +444,25 @@ export default function Hero3DBuilding() {
       const t = clock.getElapsedTime()
 
       if (!reducedMotion) {
-        // Smooth rotational physics interpolation
+        // Smooth rotational physics
         buildingMaster.rotation.y +=
           (targetRotY - buildingMaster.rotation.y) * THREE_TIMING.DAMPING_FACTOR
         buildingMaster.rotation.x +=
           (targetRotX - buildingMaster.rotation.x) * THREE_TIMING.DAMPING_FACTOR
 
-        // Idle micro-float floating breath
-        buildingMaster.position.y = -0.6 + Math.sin(t * 0.8) * 0.04
+        // Idle organic floating motion
+        buildingMaster.position.y = -0.6 + Math.sin(t * 0.8) * 0.035
 
         // Camera dolly zoom smoothing
         camera.position.z += (targetCameraZ - camera.position.z) * 0.06
 
-        // Beacon pulsing
-        const pulse = (Math.sin(t * 3.0) + 1) / 2
-        beaconMat.color.setRGB(0.83 + pulse * 0.17, 0.63 + pulse * 0.25, 0.09)
-
-        // Raycasting for subtle glass glint response
+        // Raycasting for subtle glass glint highlight
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects([l1Glass, l2Glass])
         if (intersects.length > 0) {
-          glassMaterial.emissiveIntensity = 0.45
+          glassMaterial.emissiveIntensity = 0.28
         } else {
-          glassMaterial.emissiveIntensity = 0.25
+          glassMaterial.emissiveIntensity = 0.12
         }
       }
 
@@ -419,7 +471,7 @@ export default function Hero3DBuilding() {
     animate()
 
     // ----------------------------------------------------------------
-    // 9. Resize Handling & Responsive Canvas
+    // 10. Resize Handling & Responsive Canvas
     // ----------------------------------------------------------------
     const ro = new ResizeObserver(() => {
       if (!container) return
@@ -430,7 +482,7 @@ export default function Hero3DBuilding() {
     ro.observe(container)
 
     // ----------------------------------------------------------------
-    // 10. Complete Resource Cleanup on Unmount
+    // 11. Complete Resource Cleanup on Unmount
     // ----------------------------------------------------------------
     return () => {
       cancelAnimationFrame(animId)
@@ -439,6 +491,9 @@ export default function Hero3DBuilding() {
       viewportObserver.disconnect()
       ro.disconnect()
 
+      pmremGenerator.dispose()
+      envMapTarget.dispose()
+      envTexture.dispose()
       disposeObject3D(scene)
       renderer.dispose()
       if (container && renderer.domElement) {
@@ -460,7 +515,7 @@ export default function Hero3DBuilding() {
       {/* 3D WebGL Canvas Container */}
       <div
         ref={containerRef}
-        className="w-full h-[400px] sm:h-[460px] lg:h-[490px] rounded-3xl overflow-hidden border border-white/20 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65)] bg-slate-950/80 backdrop-blur-[2px] relative pointer-events-auto cursor-grab active:cursor-grabbing"
+        className="w-full h-[400px] sm:h-[460px] lg:h-[490px] rounded-3xl overflow-hidden border border-white/20 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65)] bg-slate-950/85 backdrop-blur-[2px] relative pointer-events-auto cursor-grab active:cursor-grabbing"
         aria-label="Interactive 3D Real Corporate Building Model"
       />
     </motion.div>
