@@ -17,7 +17,8 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.87.0",
     "react-router-dom": "^6.26.2",
-    "swiper": "^14.2.0"
+    "swiper": "^14.2.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",

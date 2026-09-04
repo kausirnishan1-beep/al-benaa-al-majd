@@ -17,6 +17,7 @@ export default defineConfig({
           'vendor-swiper': ['swiper'],
           'vendor-icons': ['lucide-react'],
           'vendor-supabase': ['@supabase/supabase-js'],
+          'vendor-three': ['three'],
         },
       },
     },

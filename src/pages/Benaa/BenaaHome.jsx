@@ -1,9 +1,12 @@
+import { lazy, Suspense } from 'react'
 import { Building2, ChevronRight } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import { usePublicServices } from '../../hooks/usePublicServices.js'
 import { useCompanies } from '../../hooks/useCompanies.js'
 import { Link } from 'react-router-dom'
+
+const Benaa3DScene = lazy(() => import('../../components/3d/Benaa3DScene.jsx'))
 
 export default function BenaaHome() {
   const { benaaServices } = usePublicServices()
@@ -12,25 +15,46 @@ export default function BenaaHome() {
 
   return (
     <>
-      <section className="bg-gradient-to-br from-benaa via-benaa-dark to-[#06241b] text-white py-24">
-        <Container>
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-bold text-majd-light uppercase tracking-wider mb-4">
-              <Building2 className="w-4 h-4" />
-              <span>General Contracting Division</span>
+      <section className="relative bg-gradient-to-br from-benaa via-benaa-dark to-[#06241b] text-white py-20 md:py-24 overflow-hidden">
+        {/* Ambient Glow */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+        <Container className="relative z-10">
+          <div className="grid lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-7 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-bold text-majd-light uppercase tracking-wider mb-4 border border-white/10">
+                <Building2 className="w-4 h-4" />
+                <span>General Contracting Division</span>
+              </div>
+              <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
+                {company?.name || 'AL BENAA AL RAHAB CONTRACTING EST.'}
+              </h1>
+              <p className="text-xl md:text-2xl font-bold text-white/90 mt-2 font-arabic leading-snug">
+                {company?.nameAr || 'مؤسسة البناء الرحاب للمقاولات'}
+              </p>
+              <p className="mt-6 text-white/80 text-base md:text-lg leading-relaxed">
+                {company?.description || 'Specializing in premium residential compounds, commercial towers, structural rehabilitation, and full-lifecycle project management across Saudi Arabia.'}
+              </p>
+              <p className="mt-2 text-white/60 text-sm font-arabic leading-relaxed">
+                {company?.descriptionAr || 'متخصصون في تنفيذ المشاريع السكنية والتجارية، أعمال التجديد والترميم، الصيانة الوقائية وإدارة المشاريع الهندسية المتكاملة.'}
+              </p>
             </div>
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
-              {company?.name || 'AL BENAA AL RAHAB CONTRACTING EST.'}
-            </h1>
-            <p className="text-xl md:text-2xl font-bold text-white/90 mt-2 font-arabic leading-snug">
-              {company?.nameAr || 'مؤسسة البناء الرحاب للمقاولات'}
-            </p>
-            <p className="mt-6 text-white/80 text-base md:text-lg max-w-2xl leading-relaxed">
-              {company?.description || 'Specializing in premium residential compounds, commercial towers, structural rehabilitation, and full-lifecycle project management across Saudi Arabia.'}
-            </p>
-            <p className="mt-2 text-white/60 text-sm font-arabic max-w-2xl leading-relaxed">
-              {company?.descriptionAr || 'متخصصون في تنفيذ المشاريع السكنية والتجارية، أعمال التجديد والترميم، الصيانة الوقائية وإدارة المشاريع الهندسية المتكاملة.'}
-            </p>
+
+            <div className="lg:col-span-5 relative w-full h-[320px] sm:h-[380px] flex items-center justify-center">
+              <div className="absolute inset-0 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-[2px] pointer-events-none"></div>
+              <Suspense
+                fallback={
+                  <div className="w-full h-full flex items-center justify-center text-white/40 text-xs">
+                    <span className="animate-pulse">Loading 3D Architecture...</span>
+                  </div>
+                }
+              >
+                <Benaa3DScene />
+              </Suspense>
+              <div className="absolute bottom-3 right-4 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[10px] text-emerald-300 pointer-events-none font-mono">
+                3D Blueprint Matrix
+              </div>
+            </div>
           </div>
         </Container>
       </section>
