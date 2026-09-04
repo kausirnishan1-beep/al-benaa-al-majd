@@ -1,5 +1,13 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { THREE_COLORS } from '../../utils/three-colors.js'
+import {
+  THREE_TIMING,
+  isReducedMotion,
+  isMobileDevice,
+  createViewportObserver,
+  disposeObject3D,
+} from '../../utils/three-performance.js'
 
 export default function Hero3DBuilding() {
   const containerRef = useRef(null)
@@ -7,6 +15,9 @@ export default function Hero3DBuilding() {
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
+
+    const reducedMotion = isReducedMotion()
+    const isMobile = isMobileDevice()
 
     // 1. Scene, Camera, Renderer
     const scene = new THREE.Scene()
@@ -20,29 +31,29 @@ export default function Hero3DBuilding() {
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
+      antialias: !isMobile,
       powerPreference: 'high-performance',
     })
     renderer.setSize(container.clientWidth, container.clientHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2))
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.2
+    renderer.toneMappingExposure = 1.15
     container.appendChild(renderer.domElement)
 
     // Master Group for Mouse & Scroll Interaction
     const buildingMaster = new THREE.Group()
     scene.add(buildingMaster)
 
-    // Materials
+    // Materials using centralized single source of truth
     const concretePodiumMat = new THREE.MeshStandardMaterial({
-      color: 0x14201c,
+      color: THREE_COLORS.NEUTRALS.podium,
       roughness: 0.6,
       metalness: 0.2,
     })
 
     const glassMat = new THREE.MeshPhysicalMaterial({
-      color: 0x0e3a2f,
-      emissive: 0x041a14,
+      color: THREE_COLORS.BENAA.glass,
+      emissive: THREE_COLORS.BENAA.emissive,
       metalness: 0.85,
       roughness: 0.15,
       transparent: true,
@@ -52,23 +63,23 @@ export default function Hero3DBuilding() {
     })
 
     const goldRibMat = new THREE.MeshStandardMaterial({
-      color: 0xd4a017,
+      color: THREE_COLORS.MAJD.light,
       metalness: 0.9,
       roughness: 0.3,
-      emissive: 0x5a4103,
-      emissiveIntensity: 0.6,
+      emissive: THREE_COLORS.MAJD.spire,
+      emissiveIntensity: 0.5,
     })
 
-    const cyanEdgeMat = new THREE.LineBasicMaterial({
-      color: 0x2dd4bf,
+    const tealEdgeMat = new THREE.LineBasicMaterial({
+      color: THREE_COLORS.TEAL.primary,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.65,
     })
 
     const windowLightMat = new THREE.MeshBasicMaterial({
-      color: 0xffe8a3,
+      color: THREE_COLORS.NEUTRALS.ivory,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.85,
     })
 
     // ----------------------------------------------------------------
@@ -85,12 +96,17 @@ export default function Hero3DBuilding() {
     towerGroup.add(podiumMesh)
 
     // Blueprint Grid at the Base
-    const baseGrid = new THREE.GridHelper(10, 20, 0xd4a017, 0x1b4d3e)
+    const baseGrid = new THREE.GridHelper(
+      10,
+      isMobile ? 12 : 20,
+      THREE_COLORS.MAJD.light,
+      THREE_COLORS.BENAA.light
+    )
     baseGrid.position.y = 0.01
     towerGroup.add(baseGrid)
 
     // Multi-Tier Main Tower
-    const floorCount = 14
+    const floorCount = isMobile ? 10 : 14
     const floorHeight = 0.52
     const baseWidth = 2.4
 
@@ -108,19 +124,17 @@ export default function Hero3DBuilding() {
 
       // Wireframe contour lines
       const edgeGeo = new THREE.EdgesGeometry(floorGeo)
-      const edgeLine = new THREE.LineSegments(edgeGeo, cyanEdgeMat)
+      const edgeLine = new THREE.LineSegments(edgeGeo, tealEdgeMat)
       edgeLine.position.y = yPos
       towerGroup.add(edgeLine)
 
-      // Random glowing office windows inside floors
-      if (f % 2 === 0 || f === 1 || f === 7 || f === 11) {
+      // Selective glowing interior office windows
+      if (f % 3 === 0 || f === 1 || f === 7) {
         const windowGeo = new THREE.PlaneGeometry(0.35, 0.25)
-        // North face window
         const winN = new THREE.Mesh(windowGeo, windowLightMat)
         winN.position.set(0, yPos, d / 2 + 0.01)
         towerGroup.add(winN)
 
-        // South face window
         const winS = new THREE.Mesh(windowGeo, windowLightMat)
         winS.position.set(0.3, yPos, -d / 2 - 0.01)
         winS.rotation.y = Math.PI
@@ -151,9 +165,9 @@ export default function Hero3DBuilding() {
     spire.position.y = crownBaseY + 1.2
     towerGroup.add(spire)
 
-    // Pulsing Beacon Light on Top of Spire
+    // Subtle Beacon Light on Top of Spire
     const beaconGeo = new THREE.SphereGeometry(0.12, 16, 16)
-    const beaconMat = new THREE.MeshBasicMaterial({ color: 0xff3b30 })
+    const beaconMat = new THREE.MeshBasicMaterial({ color: THREE_COLORS.NEUTRALS.beaconRed })
     const beacon = new THREE.Mesh(beaconGeo, beaconMat)
     beacon.position.y = crownBaseY + 2.4
     towerGroup.add(beacon)
@@ -167,16 +181,16 @@ export default function Hero3DBuilding() {
     towerGroup.add(wingMesh)
 
     const wingEdgeGeo = new THREE.EdgesGeometry(wingGeo)
-    const wingEdgeLine = new THREE.LineSegments(wingEdgeGeo, cyanEdgeMat)
+    const wingEdgeLine = new THREE.LineSegments(wingEdgeGeo, tealEdgeMat)
     wingEdgeLine.position.set(2.2, 0.8 + 1.8, 0.6)
     towerGroup.add(wingEdgeLine)
 
     // Floating Golden Trade Halo around Building
-    const haloGeo = new THREE.TorusGeometry(3.6, 0.025, 16, 100)
+    const haloGeo = new THREE.TorusGeometry(3.6, 0.02, 16, 80)
     const haloMat = new THREE.MeshBasicMaterial({
-      color: 0xd4a017,
+      color: THREE_COLORS.MAJD.light,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.55,
     })
     const halo = new THREE.Mesh(haloGeo, haloMat)
     halo.rotation.x = Math.PI / 2.5
@@ -184,21 +198,21 @@ export default function Hero3DBuilding() {
     towerGroup.add(halo)
 
     // ----------------------------------------------------------------
-    // 4. Ambient Floating Dust / Construction Nodes
+    // 4. Ambient Restrained Particles (Subtle corporate dust)
     // ----------------------------------------------------------------
-    const particleCount = 160
+    const particleCount = isMobile ? 40 : 100
     const pGeo = new THREE.BufferGeometry()
     const pPositions = new Float32Array(particleCount * 3)
     const pColors = new Float32Array(particleCount * 3)
-    const colTeal = new THREE.Color(0x2dd4bf)
-    const colAmber = new THREE.Color(0xd4a017)
+    const colTeal = new THREE.Color(THREE_COLORS.TEAL.primary)
+    const colGold = new THREE.Color(THREE_COLORS.MAJD.light)
 
     for (let i = 0; i < particleCount; i++) {
       pPositions[i * 3] = (Math.random() - 0.5) * 16
       pPositions[i * 3 + 1] = Math.random() * 12 - 2
       pPositions[i * 3 + 2] = (Math.random() - 0.5) * 14
 
-      const c = Math.random() > 0.4 ? colTeal : colAmber
+      const c = Math.random() > 0.6 ? colTeal : colGold
       pColors[i * 3] = c.r
       pColors[i * 3 + 1] = c.g
       pColors[i * 3 + 2] = c.b
@@ -208,10 +222,10 @@ export default function Hero3DBuilding() {
     pGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3))
 
     const pMat = new THREE.PointsMaterial({
-      size: 0.08,
+      size: 0.07,
       vertexColors: true,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.75,
       blending: THREE.AdditiveBlending,
     })
     const particles = new THREE.Points(pGeo, pMat)
@@ -220,66 +234,67 @@ export default function Hero3DBuilding() {
     // ----------------------------------------------------------------
     // 5. Lighting
     // ----------------------------------------------------------------
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
+    const ambientLight = new THREE.AmbientLight(THREE_COLORS.LIGHTS.ambient, 0.85)
     scene.add(ambientLight)
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2)
+    const keyLight = new THREE.DirectionalLight(THREE_COLORS.LIGHTS.key, 2.0)
     keyLight.position.set(6, 12, 8)
     scene.add(keyLight)
 
-    const emeraldFillLight = new THREE.PointLight(0x2dd4bf, 3, 20)
-    emeraldFillLight.position.set(-6, 5, 4)
-    scene.add(emeraldFillLight)
+    const benaaFillLight = new THREE.PointLight(THREE_COLORS.BENAA.light, 2.2, 20)
+    benaaFillLight.position.set(-6, 5, 4)
+    scene.add(benaaFillLight)
 
-    const amberRimLight = new THREE.PointLight(0xd4a017, 3.5, 20)
-    amberRimLight.position.set(5, 7, -4)
-    scene.add(amberRimLight)
+    const majdRimLight = new THREE.PointLight(THREE_COLORS.MAJD.light, 2.5, 20)
+    majdRimLight.position.set(5, 7, -4)
+    scene.add(majdRimLight)
 
     // ----------------------------------------------------------------
-    // 6. Smooth Mouse Parallax & Scroll Integration
+    // 6. Interaction & Intersection Observer (Pause when off-screen)
     // ----------------------------------------------------------------
     let mouseX = 0
     let mouseY = 0
-    let targetRotY = 0.4 // subtle base angle
+    let targetRotY = 0.4
     let targetRotX = 0.05
-    let scrollOffset = 0
+    let isVisible = true
 
     const onMouseMove = (e) => {
+      if (reducedMotion) return
       const rect = container.getBoundingClientRect()
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1
       const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1)
       mouseX = x
       mouseY = y
-      targetRotY = 0.4 + mouseX * 0.45
-      targetRotX = 0.05 - mouseY * 0.25
-    }
-
-    const onScroll = () => {
-      scrollOffset = window.scrollY * 0.0008
+      targetRotY = 0.4 + mouseX * 0.35
+      targetRotX = 0.05 - mouseY * 0.18
     }
 
     window.addEventListener('mousemove', onMouseMove, { passive: true })
-    window.addEventListener('scroll', onScroll, { passive: true })
+
+    const viewportObserver = createViewportObserver(container, (visible) => {
+      isVisible = visible
+    })
 
     // ----------------------------------------------------------------
-    // 7. Render Loop
+    // 7. Render Loop with Standardized Timing
     // ----------------------------------------------------------------
     let animId
     const clock = new THREE.Clock()
 
     const animate = () => {
       animId = requestAnimationFrame(animate)
+      if (!isVisible) return
+
       const t = clock.getElapsedTime()
 
-      // Smooth inertia damping
-      buildingMaster.rotation.y += (targetRotY - buildingMaster.rotation.y) * 0.04
-      buildingMaster.rotation.x += (targetRotX - buildingMaster.rotation.x) * 0.04
-      buildingMaster.position.y = -scrollOffset * 0.5
+      if (!reducedMotion) {
+        buildingMaster.rotation.y += (targetRotY - buildingMaster.rotation.y) * THREE_TIMING.DAMPING_FACTOR
+        buildingMaster.rotation.x += (targetRotX - buildingMaster.rotation.x) * THREE_TIMING.DAMPING_FACTOR
+        halo.rotation.z = t * 0.08
+        particles.rotation.y = t * THREE_TIMING.FLOAT_SPEED
+      }
 
-      // Gentle building breathing & beacon flash
-      halo.rotation.z = t * 0.15
-      particles.rotation.y = t * 0.015
-      beaconMat.opacity = 0.5 + Math.sin(t * 5) * 0.5
+      beaconMat.opacity = 0.4 + Math.sin(t * THREE_TIMING.PULSE_SPEED) * 0.4
 
       renderer.render(scene, camera)
     }
@@ -305,26 +320,10 @@ export default function Hero3DBuilding() {
     return () => {
       cancelAnimationFrame(animId)
       window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('scroll', onScroll)
+      viewportObserver.disconnect()
       resizeObserver.disconnect()
 
-      podiumGeo.dispose()
-      spireGeo.dispose()
-      beaconGeo.dispose()
-      wingGeo.dispose()
-      wingEdgeGeo.dispose()
-      haloGeo.dispose()
-      pGeo.dispose()
-
-      concretePodiumMat.dispose()
-      glassMat.dispose()
-      goldRibMat.dispose()
-      cyanEdgeMat.dispose()
-      windowLightMat.dispose()
-      beaconMat.dispose()
-      haloMat.dispose()
-      pMat.dispose()
-
+      disposeObject3D(scene)
       renderer.dispose()
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement)

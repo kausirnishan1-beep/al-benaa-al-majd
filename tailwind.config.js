@@ -17,6 +17,18 @@ export default {
           light: '#d4a017',
           dark: '#8b6508',
         },
+        accent: {
+          teal: {
+            DEFAULT: '#2dd4bf',
+            light: '#5eead4',
+            dark: '#14b8a6',
+          },
+          amber: {
+            DEFAULT: '#f59e0b',
+            light: '#fbbf24',
+            dark: '#d97706',
+          },
+        },
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'Cairo', 'Tajawal', 'system-ui', 'sans-serif'],

@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
+import { THREE_COLORS } from '../../utils/three-colors.js'
+import {
+  THREE_TIMING,
+  isReducedMotion,
+  isMobileDevice,
+  createViewportObserver,
+  disposeObject3D,
+} from '../../utils/three-performance.js'
 
 export default function BenaaConstruction3D() {
   const containerRef = useRef(null)
@@ -14,6 +22,9 @@ export default function BenaaConstruction3D() {
     const container = containerRef.current
     if (!container) return
 
+    const reducedMotion = isReducedMotion()
+    const isMobile = isMobileDevice()
+
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(
       45,
@@ -25,11 +36,11 @@ export default function BenaaConstruction3D() {
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
+      antialias: !isMobile,
       powerPreference: 'high-performance',
     })
     renderer.setSize(container.clientWidth, container.clientHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2))
     container.appendChild(renderer.domElement)
 
     const siteMaster = new THREE.Group()
@@ -40,14 +51,19 @@ export default function BenaaConstruction3D() {
     // ----------------------------------------------------------------
     const foundationGeo = new THREE.BoxGeometry(6.5, 0.5, 6.5)
     const foundationMat = new THREE.MeshStandardMaterial({
-      color: 0x11211c,
+      color: THREE_COLORS.NEUTRALS.foundation,
       roughness: 0.8,
     })
     const foundation = new THREE.Mesh(foundationGeo, foundationMat)
     foundation.position.y = -2.2
     siteMaster.add(foundation)
 
-    const grid = new THREE.GridHelper(10, 20, 0x2dd4bf, 0x1b4d3e)
+    const grid = new THREE.GridHelper(
+      10,
+      isMobile ? 12 : 20,
+      THREE_COLORS.BENAA.light,
+      THREE_COLORS.BENAA.dark
+    )
     grid.position.y = -1.94
     siteMaster.add(grid)
 
@@ -58,13 +74,13 @@ export default function BenaaConstruction3D() {
     siteMaster.add(buildingGroup)
 
     const rawConcreteMat = new THREE.MeshStandardMaterial({
-      color: 0x24332e,
+      color: THREE_COLORS.NEUTRALS.concrete,
       roughness: 0.9,
     })
 
     const modernGlassMat = new THREE.MeshPhysicalMaterial({
-      color: 0x0c382e,
-      emissive: 0x06241b,
+      color: THREE_COLORS.BENAA.glass,
+      emissive: THREE_COLORS.BENAA.deepDark,
       metalness: 0.9,
       roughness: 0.1,
       transparent: true,
@@ -72,10 +88,10 @@ export default function BenaaConstruction3D() {
     })
 
     const steelWireMat = new THREE.MeshBasicMaterial({
-      color: 0x2dd4bf,
+      color: THREE_COLORS.BENAA.light,
       wireframe: true,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.75,
     })
 
     // Level 1 (Ground)
@@ -113,7 +129,7 @@ export default function BenaaConstruction3D() {
     siteMaster.add(craneGroup)
 
     const craneMat = new THREE.MeshStandardMaterial({
-      color: 0xd4a017,
+      color: THREE_COLORS.MAJD.light,
       metalness: 0.7,
       roughness: 0.3,
     })
@@ -142,7 +158,7 @@ export default function BenaaConstruction3D() {
 
     // Crane Cable & Load Block
     const cableGeo = new THREE.CylinderGeometry(0.01, 0.01, 2.2, 4)
-    const cableMat = new THREE.MeshBasicMaterial({ color: 0xffffff })
+    const cableMat = new THREE.MeshBasicMaterial({ color: THREE_COLORS.NEUTRALS.white })
     const cable = new THREE.Mesh(cableGeo, cableMat)
     cable.position.set(2.4, -1.1, 0)
     jibGroup.add(cable)
@@ -155,16 +171,16 @@ export default function BenaaConstruction3D() {
     // ----------------------------------------------------------------
     // 4. Lighting & Particles
     // ----------------------------------------------------------------
-    scene.add(new THREE.AmbientLight(0xffffff, 0.7))
-    const sunLight = new THREE.DirectionalLight(0xffffff, 2.0)
+    scene.add(new THREE.AmbientLight(THREE_COLORS.LIGHTS.ambient, 0.8))
+    const sunLight = new THREE.DirectionalLight(THREE_COLORS.LIGHTS.sun, 2.0)
     sunLight.position.set(5, 10, 7)
     scene.add(sunLight)
 
-    const tealLight = new THREE.PointLight(0x2dd4bf, 3, 20)
-    tealLight.position.set(-4, 4, 4)
-    scene.add(tealLight)
+    const benaaLight = new THREE.PointLight(THREE_COLORS.BENAA.light, 2.5, 20)
+    benaaLight.position.set(-4, 4, 4)
+    scene.add(benaaLight)
 
-    const pCount = 90
+    const pCount = isMobile ? 30 : 60
     const pGeo = new THREE.BufferGeometry()
     const pPos = new Float32Array(pCount * 3)
     for (let i = 0; i < pCount; i++) {
@@ -174,48 +190,58 @@ export default function BenaaConstruction3D() {
     }
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3))
     const pMat = new THREE.PointsMaterial({
-      color: 0x2dd4bf,
+      color: THREE_COLORS.BENAA.light,
       size: 0.05,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.65,
     })
     const particles = new THREE.Points(pGeo, pMat)
     scene.add(particles)
 
     // ----------------------------------------------------------------
-    // 5. Mouse Parallax & Animation Loop
+    // 5. Mouse Parallax & Viewport Observer
     // ----------------------------------------------------------------
     let targetRotY = 0.5
     let targetRotX = 0.1
+    let isVisible = true
+
     const onMouseMove = (e) => {
+      if (reducedMotion) return
       const rect = container.getBoundingClientRect()
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1
       const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1)
-      targetRotY = 0.5 + x * 0.4
-      targetRotX = 0.1 - y * 0.2
+      targetRotY = 0.5 + x * 0.3
+      targetRotX = 0.1 - y * 0.15
     }
     window.addEventListener('mousemove', onMouseMove, { passive: true })
+
+    const viewportObserver = createViewportObserver(container, (visible) => {
+      isVisible = visible
+    })
 
     let animId
     const clock = new THREE.Clock()
 
     const animate = () => {
       animId = requestAnimationFrame(animate)
+      if (!isVisible) return
+
       const t = clock.getElapsedTime()
 
-      siteMaster.rotation.y += (targetRotY - siteMaster.rotation.y) * 0.04
-      siteMaster.rotation.x += (targetRotX - siteMaster.rotation.x) * 0.04
+      if (!reducedMotion) {
+        siteMaster.rotation.y += (targetRotY - siteMaster.rotation.y) * THREE_TIMING.DAMPING_FACTOR
+        siteMaster.rotation.x += (targetRotX - siteMaster.rotation.x) * THREE_TIMING.DAMPING_FACTOR
 
-      // Rotate crane jib smoothly back and forth
-      jibGroup.rotation.y = Math.sin(t * 0.6) * 0.8 + 0.3
+        // Slow smooth crane rotation
+        jibGroup.rotation.y = Math.sin(t * 0.4) * 0.6 + 0.2
+        particles.rotation.y = t * 0.01
+      }
 
       // Dynamic Transition between Raw Construction & Modern Renovation
       const activeMat = modeRef.current ? modernGlassMat : rawConcreteMat
       l1Mesh.material = activeMat
       l2Mesh.material = activeMat
       l3Mesh.material = activeMat
-
-      particles.rotation.y = t * 0.02
 
       renderer.render(scene, camera)
     }
@@ -232,27 +258,10 @@ export default function BenaaConstruction3D() {
     return () => {
       cancelAnimationFrame(animId)
       window.removeEventListener('mousemove', onMouseMove)
+      viewportObserver.disconnect()
       ro.disconnect()
 
-      foundationGeo.dispose()
-      l1Geo.dispose()
-      l2Geo.dispose()
-      l3Geo.dispose()
-      mastGeo.dispose()
-      jibGeo.dispose()
-      counterGeo.dispose()
-      cableGeo.dispose()
-      hookLoadGeo.dispose()
-      pGeo.dispose()
-
-      foundationMat.dispose()
-      rawConcreteMat.dispose()
-      modernGlassMat.dispose()
-      steelWireMat.dispose()
-      craneMat.dispose()
-      cableMat.dispose()
-      pMat.dispose()
-
+      disposeObject3D(scene)
       renderer.dispose()
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement)
@@ -272,7 +281,7 @@ export default function BenaaConstruction3D() {
         <button
           type="button"
           onClick={() => setIsRenovated((prev) => !prev)}
-          className="px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md border border-emerald-400/30 text-xs font-semibold text-emerald-300 transition-all flex items-center gap-2 shadow-lg"
+          className="px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md border border-emerald-500/30 text-xs font-semibold text-emerald-300 transition-all flex items-center gap-2 shadow-lg"
         >
           <span className={`w-2 h-2 rounded-full ${isRenovated ? 'bg-cyan-400 animate-ping' : 'bg-amber-400'}`}></span>
           <span>{isRenovated ? 'Mode: Modern Renovation' : 'Mode: Active Construction'}</span>

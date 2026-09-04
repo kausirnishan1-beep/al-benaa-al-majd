@@ -1,5 +1,13 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { THREE_COLORS } from '../../utils/three-colors.js'
+import {
+  THREE_TIMING,
+  isReducedMotion,
+  isMobileDevice,
+  createViewportObserver,
+  disposeObject3D,
+} from '../../utils/three-performance.js'
 
 export default function Contact3DPin() {
   const containerRef = useRef(null)
@@ -7,6 +15,9 @@ export default function Contact3DPin() {
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
+
+    const reducedMotion = isReducedMotion()
+    const isMobile = isMobileDevice()
 
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(
@@ -19,11 +30,11 @@ export default function Contact3DPin() {
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
+      antialias: !isMobile,
       powerPreference: 'high-performance',
     })
     renderer.setSize(container.clientWidth, container.clientHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2))
     container.appendChild(renderer.domElement)
 
     const master = new THREE.Group()
@@ -32,11 +43,11 @@ export default function Contact3DPin() {
     // Base Terrain Radar Disc
     const discGeo = new THREE.CylinderGeometry(2.4, 2.4, 0.1, 32)
     const discMat = new THREE.MeshStandardMaterial({
-      color: 0x06241b,
+      color: THREE_COLORS.BENAA.deepDark,
       metalness: 0.8,
       roughness: 0.2,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.85,
     })
     const disc = new THREE.Mesh(discGeo, discMat)
     disc.position.y = -1.2
@@ -44,7 +55,12 @@ export default function Contact3DPin() {
 
     // Radar Rings
     const ringGeo1 = new THREE.RingGeometry(1.2, 1.25, 32)
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0x2dd4bf, side: THREE.DoubleSide, transparent: true, opacity: 0.7 })
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: THREE_COLORS.TEAL.primary,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.7,
+    })
     const radarRing1 = new THREE.Mesh(ringGeo1, ringMat)
     radarRing1.rotation.x = -Math.PI / 2
     radarRing1.position.y = -1.14
@@ -61,10 +77,10 @@ export default function Contact3DPin() {
     master.add(pinGroup)
 
     const pinMat = new THREE.MeshStandardMaterial({
-      color: 0xd4a017,
+      color: THREE_COLORS.MAJD.light,
       metalness: 0.9,
       roughness: 0.2,
-      emissive: 0x5a4103,
+      emissive: THREE_COLORS.MAJD.spire,
     })
 
     const headGeo = new THREE.SphereGeometry(0.55, 24, 24)
@@ -73,7 +89,7 @@ export default function Contact3DPin() {
     pinGroup.add(head)
 
     const innerHoleGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.8, 16)
-    const innerHoleMat = new THREE.MeshBasicMaterial({ color: 0x06241b })
+    const innerHoleMat = new THREE.MeshBasicMaterial({ color: THREE_COLORS.BENAA.deepDark })
     const innerHole = new THREE.Mesh(innerHoleGeo, innerHoleMat)
     innerHole.rotation.z = Math.PI / 2
     innerHole.position.y = 0.9
@@ -86,42 +102,51 @@ export default function Contact3DPin() {
     pinGroup.add(tip)
 
     // Pulsing Light at base of pin
-    const pulseLight = new THREE.PointLight(0x2dd4bf, 3, 10)
+    const pulseLight = new THREE.PointLight(THREE_COLORS.BENAA.light, 2.5, 10)
     pulseLight.position.set(0, -0.8, 0)
     master.add(pulseLight)
 
     // Lighting
-    scene.add(new THREE.AmbientLight(0xffffff, 0.8))
-    const dirLight = new THREE.DirectionalLight(0xffffff, 2)
+    scene.add(new THREE.AmbientLight(THREE_COLORS.LIGHTS.ambient, 0.85))
+    const dirLight = new THREE.DirectionalLight(THREE_COLORS.LIGHTS.key, 2.0)
     dirLight.position.set(4, 8, 5)
     scene.add(dirLight)
 
-    // Parallax
+    // Parallax & Viewport Observer
     let targetY = 0
     let targetX = 0
+    let isVisible = true
+
     const onMouseMove = (e) => {
+      if (reducedMotion) return
       const rect = container.getBoundingClientRect()
-      targetY = (((e.clientX - rect.left) / rect.width) * 2 - 1) * 0.4
-      targetX = -(((e.clientY - rect.top) / rect.height) * 2 - 1) * 0.2
+      targetY = (((e.clientX - rect.left) / rect.width) * 2 - 1) * 0.3
+      targetX = -(((e.clientY - rect.top) / rect.height) * 2 - 1) * 0.15
     }
     window.addEventListener('mousemove', onMouseMove, { passive: true })
 
+    const viewportObserver = createViewportObserver(container, (visible) => {
+      isVisible = visible
+    })
+
     let animId
     const clock = new THREE.Clock()
+
     const animate = () => {
       animId = requestAnimationFrame(animate)
+      if (!isVisible) return
+
       const t = clock.getElapsedTime()
 
-      master.rotation.y += (targetY - master.rotation.y) * 0.05 + 0.005
-      master.rotation.x += (targetX - master.rotation.x) * 0.05
+      if (!reducedMotion) {
+        master.rotation.y += (targetY - master.rotation.y) * THREE_TIMING.DAMPING_FACTOR + 0.003
+        master.rotation.x += (targetX - master.rotation.x) * THREE_TIMING.DAMPING_FACTOR
+        pinGroup.position.y = Math.sin(t * 1.5) * 0.1
+      }
 
-      // Gentle floating bob for the pin
-      pinGroup.position.y = Math.sin(t * 2) * 0.15
-
-      // Radar Pulse animation
-      const scale1 = 1 + (t * 0.5) % 1
+      const scale1 = 1 + (t * 0.4) % 1
       radarRing1.scale.set(scale1, scale1, scale1)
-      ringMat.opacity = 1 - (t * 0.5) % 1
+      ringMat.opacity = 0.8 * (1 - (t * 0.4) % 1)
 
       renderer.render(scene, camera)
     }
@@ -138,20 +163,10 @@ export default function Contact3DPin() {
     return () => {
       cancelAnimationFrame(animId)
       window.removeEventListener('mousemove', onMouseMove)
+      viewportObserver.disconnect()
       ro.disconnect()
 
-      discGeo.dispose()
-      ringGeo1.dispose()
-      ringGeo2.dispose()
-      headGeo.dispose()
-      innerHoleGeo.dispose()
-      tipGeo.dispose()
-
-      discMat.dispose()
-      ringMat.dispose()
-      pinMat.dispose()
-      innerHoleMat.dispose()
-
+      disposeObject3D(scene)
       renderer.dispose()
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement)
