@@ -21,12 +21,13 @@ export default function MajdTradeGlobe3D() {
 
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(
-      45,
+      42,
       container.clientWidth / container.clientHeight,
       0.1,
       1000
     )
-    camera.position.set(0, 1.8, 8.5)
+    camera.position.set(0, 0, 8.5)
+    camera.lookAt(0, 0, 0)
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -41,42 +42,42 @@ export default function MajdTradeGlobe3D() {
     scene.add(globeMaster)
 
     // ----------------------------------------------------------------
-    // 1. Dark Premium 3D Globe
+    // 1. Deep Oceanic Sapphire Blue 3D Globe (Scaled to fit within box)
     // ----------------------------------------------------------------
-    const globeRadius = 2.4
+    const globeRadius = 1.7
     const globeGeo = new THREE.SphereGeometry(
       globeRadius,
-      isMobile ? 20 : 36,
-      isMobile ? 20 : 36
+      isMobile ? 24 : 38,
+      isMobile ? 24 : 38
     )
     const globeMat = new THREE.MeshPhongMaterial({
-      color: THREE_COLORS.MAJD.core,
-      emissive: THREE_COLORS.MAJD.coreEmissive,
-      emissiveIntensity: 0.5,
-      shininess: 90,
+      color: 0x0a1e38, // Deep Royal Navy Blue
+      emissive: 0x051326,
+      emissiveIntensity: 0.6,
+      shininess: 95,
       transparent: true,
       opacity: 0.88,
     })
     const globeMesh = new THREE.Mesh(globeGeo, globeMat)
     globeMaster.add(globeMesh)
 
-    // Latitude & Longitude Wireframe Grid
+    // Latitude & Longitude Cyan/Blue Wireframe Grid
     const wireGeo = new THREE.SphereGeometry(
       globeRadius + 0.02,
-      isMobile ? 16 : 24,
-      isMobile ? 16 : 24
+      isMobile ? 18 : 26,
+      isMobile ? 18 : 26
     )
     const wireMat = new THREE.MeshBasicMaterial({
-      color: THREE_COLORS.MAJD.light,
+      color: 0x38bdf8, // Radiant Sky Blue / Cyan
       wireframe: true,
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.5,
     })
     const wireMesh = new THREE.Mesh(wireGeo, wireMat)
     globeMaster.add(wireMesh)
 
     // ----------------------------------------------------------------
-    // 2. Generic Global Trade Corridor Points
+    // 2. Global Trade Corridor Hubs
     // ----------------------------------------------------------------
     const latLngToVector3 = (lat, lng, radius) => {
       const phi = (90 - lat) * (Math.PI / 180)
@@ -95,27 +96,27 @@ export default function MajdTradeGlobe3D() {
       routeD: { lat: 1.3521, lng: 103.8198 },
     }
 
-    const pinGeo = new THREE.SphereGeometry(0.08, 12, 12)
+    const pinGeo = new THREE.SphereGeometry(0.065, 12, 12)
     const hubPositions = {}
 
     Object.entries(hubs).forEach(([key, info]) => {
-      const pos = latLngToVector3(info.lat, info.lng, globeRadius + 0.05)
+      const pos = latLngToVector3(info.lat, info.lng, globeRadius + 0.04)
       hubPositions[key] = pos
 
       const pinMat = new THREE.MeshBasicMaterial({
-        color: key === 'primaryHub' ? THREE_COLORS.NEUTRALS.white : THREE_COLORS.MAJD.light,
+        color: key === 'primaryHub' ? 0xffffff : 0x38bdf8,
       })
       const pin = new THREE.Mesh(pinGeo, pinMat)
       pin.position.copy(pos)
       globeMaster.add(pin)
 
       if (key === 'primaryHub') {
-        const ringGeo = new THREE.RingGeometry(0.12, 0.16, 24)
+        const ringGeo = new THREE.RingGeometry(0.09, 0.13, 24)
         const ringMat = new THREE.MeshBasicMaterial({
-          color: THREE_COLORS.TEAL.primary,
+          color: 0x60a5fa,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.8,
+          opacity: 0.85,
         })
         const ring = new THREE.Mesh(ringGeo, ringMat)
         ring.position.copy(pos)
@@ -125,19 +126,19 @@ export default function MajdTradeGlobe3D() {
     })
 
     // ----------------------------------------------------------------
-    // 3. Glowing Curved Trade Routes (Quadratic Bezier)
+    // 3. Glowing Blue & Cyan Curved Trade Routes
     // ----------------------------------------------------------------
     const createArc = (p1, p2, colorHex) => {
       const mid = p1.clone().add(p2).multiplyScalar(0.5)
       const distance = p1.distanceTo(p2)
-      mid.normalize().multiplyScalar(globeRadius + distance * 0.45)
+      mid.normalize().multiplyScalar(globeRadius + distance * 0.42)
 
       const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2)
-      const tubeGeo = new THREE.TubeGeometry(curve, isMobile ? 24 : 48, 0.025, 8, false)
+      const tubeGeo = new THREE.TubeGeometry(curve, isMobile ? 24 : 48, 0.02, 8, false)
       const tubeMat = new THREE.MeshBasicMaterial({
         color: colorHex,
         transparent: true,
-        opacity: 0.75,
+        opacity: 0.8,
       })
       const tubeMesh = new THREE.Mesh(tubeGeo, tubeMat)
       globeMaster.add(tubeMesh)
@@ -145,17 +146,17 @@ export default function MajdTradeGlobe3D() {
     }
 
     const tradeArcs = [
-      createArc(hubPositions.primaryHub, hubPositions.routeA, THREE_COLORS.AMBER.primary),
-      createArc(hubPositions.primaryHub, hubPositions.routeB, THREE_COLORS.BENAA.light),
-      createArc(hubPositions.primaryHub, hubPositions.routeC, THREE_COLORS.MAJD.light),
-      createArc(hubPositions.primaryHub, hubPositions.routeD, THREE_COLORS.AMBER.light),
+      createArc(hubPositions.primaryHub, hubPositions.routeA, 0x38bdf8),
+      createArc(hubPositions.primaryHub, hubPositions.routeB, 0x60a5fa),
+      createArc(hubPositions.primaryHub, hubPositions.routeC, 0x2dd4bf),
+      createArc(hubPositions.primaryHub, hubPositions.routeD, 0x93c5fd),
     ]
 
     // ----------------------------------------------------------------
     // 4. Moving Logistics Cargo Indicators
     // ----------------------------------------------------------------
-    const cargoGeo = new THREE.SphereGeometry(0.08, 10, 10)
-    const cargoMat = new THREE.MeshBasicMaterial({ color: THREE_COLORS.NEUTRALS.white })
+    const cargoGeo = new THREE.SphereGeometry(0.065, 10, 10)
+    const cargoMat = new THREE.MeshBasicMaterial({ color: 0xffffff })
     const movingCargo = tradeArcs.map((arc, index) => {
       const mesh = new THREE.Mesh(cargoGeo, cargoMat)
       globeMaster.add(mesh)
@@ -163,50 +164,55 @@ export default function MajdTradeGlobe3D() {
     })
 
     // ----------------------------------------------------------------
-    // 5. Orbital Golden Rings
+    // 5. Orbital Radiant Blue Rings (Strictly fitted within container)
     // ----------------------------------------------------------------
-    const ringGeo1 = new THREE.TorusGeometry(3.3, 0.02, 16, isMobile ? 40 : 80)
+    const ringGeo1 = new THREE.TorusGeometry(2.35, 0.016, 16, isMobile ? 40 : 80)
     const ringMat1 = new THREE.MeshBasicMaterial({
-      color: THREE_COLORS.MAJD.light,
+      color: 0x38bdf8,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.7,
     })
     const orbit1 = new THREE.Mesh(ringGeo1, ringMat1)
     orbit1.rotation.x = Math.PI / 3
     globeMaster.add(orbit1)
 
-    const ringGeo2 = new THREE.TorusGeometry(3.6, 0.018, 16, isMobile ? 40 : 80)
-    const orbit2 = new THREE.Mesh(ringGeo2, ringMat1)
+    const ringGeo2 = new THREE.TorusGeometry(2.55, 0.014, 16, isMobile ? 40 : 80)
+    const ringMat2 = new THREE.MeshBasicMaterial({
+      color: 0x60a5fa,
+      transparent: true,
+      opacity: 0.6,
+    })
+    const orbit2 = new THREE.Mesh(ringGeo2, ringMat2)
     orbit2.rotation.x = -Math.PI / 4
     orbit2.rotation.y = Math.PI / 4
     globeMaster.add(orbit2)
 
     // ----------------------------------------------------------------
-    // 6. Lighting & Cosmic Particles
+    // 6. Natural Blue Atmosphere Lighting & Cosmic Particles
     // ----------------------------------------------------------------
-    scene.add(new THREE.AmbientLight(THREE_COLORS.LIGHTS.ambient, 0.85))
-    const pGold = new THREE.PointLight(THREE_COLORS.MAJD.light, 3.0, 25)
-    pGold.position.set(5, 5, 5)
-    scene.add(pGold)
+    scene.add(new THREE.AmbientLight(THREE_COLORS.LIGHTS.ambient, 0.9))
+    const pBlueKey = new THREE.PointLight(0x38bdf8, 3.2, 25)
+    pBlueKey.position.set(5, 5, 5)
+    scene.add(pBlueKey)
 
-    const pTeal = new THREE.PointLight(THREE_COLORS.BENAA.light, 2.0, 20)
-    pTeal.position.set(-5, 4, -4)
-    scene.add(pTeal)
+    const pAzureFill = new THREE.PointLight(0x1d4ed8, 2.5, 20)
+    pAzureFill.position.set(-5, 4, -4)
+    scene.add(pAzureFill)
 
-    const pCount = isMobile ? 35 : 80
+    const pCount = isMobile ? 30 : 65
     const pGeo = new THREE.BufferGeometry()
     const pPos = new Float32Array(pCount * 3)
     for (let i = 0; i < pCount; i++) {
-      pPos[i * 3] = (Math.random() - 0.5) * 14
-      pPos[i * 3 + 1] = (Math.random() - 0.5) * 10
-      pPos[i * 3 + 2] = (Math.random() - 0.5) * 12
+      pPos[i * 3] = (Math.random() - 0.5) * 10
+      pPos[i * 3 + 1] = (Math.random() - 0.5) * 8
+      pPos[i * 3 + 2] = (Math.random() - 0.5) * 9
     }
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3))
     const pMat = new THREE.PointsMaterial({
-      color: THREE_COLORS.MAJD.light,
-      size: 0.05,
+      color: 0x7dd3fc,
+      size: 0.045,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.75,
     })
     const particles = new THREE.Points(pGeo, pMat)
     scene.add(particles)
@@ -223,8 +229,8 @@ export default function MajdTradeGlobe3D() {
       const rect = container.getBoundingClientRect()
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1
       const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1)
-      targetRotY = x * 0.3
-      targetRotX = -y * 0.15
+      targetRotY = x * 0.25
+      targetRotX = -y * 0.12
     }
     window.addEventListener('mousemove', onMouseMove, { passive: true })
 
@@ -286,7 +292,7 @@ export default function MajdTradeGlobe3D() {
   return (
     <div
       ref={containerRef}
-      className="w-full h-full min-h-[320px] lg:min-h-[420px] relative pointer-events-auto cursor-grab active:cursor-grabbing"
+      className="w-full h-full min-h-[320px] lg:min-h-[400px] relative pointer-events-auto cursor-grab active:cursor-grabbing"
       aria-hidden="true"
     />
   )

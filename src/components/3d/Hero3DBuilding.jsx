@@ -10,36 +10,6 @@ import {
   disposeObject3D,
 } from '../../utils/three-performance.js'
 
-/**
- * Helper to construct a rounded box/slab geometry with curved architectural corners
- */
-function createRoundedSlabGeometry(width, height, depth, radius, smoothness = 8) {
-  const shape = new THREE.Shape()
-  const eps = 0.00001
-  const halfW = width / 2 - radius
-  const halfD = depth / 2 - radius
-
-  shape.absarc(halfW, halfD, radius, 0, Math.PI / 2, false)
-  shape.absarc(-halfW, halfD, radius, Math.PI / 2, Math.PI, false)
-  shape.absarc(-halfW, -halfD, radius, Math.PI, Math.PI * 1.5, false)
-  shape.absarc(halfW, -halfD, radius, Math.PI * 1.5, Math.PI * 2, false)
-
-  const extrudeSettings = {
-    steps: 1,
-    depth: height - eps,
-    bevelEnabled: true,
-    bevelSegments: smoothness,
-    bevelSize: Math.min(radius * 0.15, 0.05),
-    bevelThickness: Math.min(radius * 0.15, 0.05),
-    curveSegments: smoothness,
-  }
-
-  const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings)
-  geometry.center()
-  geometry.rotateX(Math.PI / 2)
-  return geometry
-}
-
 export default function Hero3DBuilding() {
   const containerRef = useRef(null)
 
@@ -51,20 +21,20 @@ export default function Hero3DBuilding() {
     const isMobile = isMobileDevice()
 
     // ----------------------------------------------------------------
-    // 1. Scene, Camera & Renderer
+    // 1. Scene, Camera & Renderer with Shadows
     // ----------------------------------------------------------------
     const scene = new THREE.Scene()
 
-    // Low-angle perspective camera for powerful architectural presence
+    // Majestic architectural camera angle (low angle looking up at the skyscraper)
     const camera = new THREE.PerspectiveCamera(
-      40,
+      38,
       container.clientWidth / container.clientHeight,
       0.1,
       1000
     )
-    const defaultCameraZ = isMobile ? 13.5 : 11.0
-    camera.position.set(2.6, 1.1, defaultCameraZ)
-    camera.lookAt(0, 0.4, 0)
+    const defaultCameraZ = isMobile ? 13.5 : 11.5
+    camera.position.set(3.4, 1.8, defaultCameraZ)
+    camera.lookAt(0, 1.2, 0)
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -75,15 +45,19 @@ export default function Hero3DBuilding() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2))
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.2
+
+    // Soft realistic shadows
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
     container.appendChild(renderer.domElement)
 
     // Master Pivot Group
-    const buildingMaster = new THREE.Group()
-    scene.add(buildingMaster)
-    buildingMaster.position.set(0, -0.6, 0)
+    const skyscraperMaster = new THREE.Group()
+    scene.add(skyscraperMaster)
+    skyscraperMaster.position.set(0, -2.5, 0)
 
     // ----------------------------------------------------------------
-    // 2. Natural Sky & Environment Map for Photorealistic Glass Reflection
+    // 2. Photorealistic Daytime Sky Environment Map (PMREM)
     // ----------------------------------------------------------------
     const pmremGenerator = new THREE.PMREMGenerator(renderer)
     pmremGenerator.compileEquirectangularShader()
@@ -93,35 +67,26 @@ export default function Hero3DBuilding() {
     envCanvas.height = 256
     const ctx = envCanvas.getContext('2d')
 
-    // Natural daylight sky gradient: Deep blue -> Sky blue -> Horizon haze -> Trees / Ground
+    // Natural Sky Gradient: Azure Zenith -> Soft Sky Blue -> Golden Horizon -> City Base
     const skyGrad = ctx.createLinearGradient(0, 0, 0, 256)
-    skyGrad.addColorStop(0.0, '#1e3a8a') // Zenith deep azure
-    skyGrad.addColorStop(0.28, '#3b82f6') // Sky blue
-    skyGrad.addColorStop(0.50, '#93c5fd') // Soft sky
-    skyGrad.addColorStop(0.56, '#e0f2fe') // Horizon light
-    skyGrad.addColorStop(0.59, '#2d5a27') // Natural green tree line
-    skyGrad.addColorStop(0.70, '#475569') // Courtyard stone pavement
-    skyGrad.addColorStop(1.0, '#1e293b') // Ground shadow
+    skyGrad.addColorStop(0.0, '#1d4ed8') // Deep blue zenith
+    skyGrad.addColorStop(0.28, '#60a5fa') // Natural sky blue
+    skyGrad.addColorStop(0.50, '#bfdbfe') // Soft sky light
+    skyGrad.addColorStop(0.55, '#fef08a') // Subtle golden horizon
+    skyGrad.addColorStop(0.60, '#334155') // Distant urban line
+    skyGrad.addColorStop(0.72, '#1e293b') // Ground plaza
+    skyGrad.addColorStop(1.0, '#0f172a') // Ground base
     ctx.fillStyle = skyGrad
     ctx.fillRect(0, 0, 512, 256)
 
-    // Natural Sunlight Flare in reflection
-    const sunGrad = ctx.createRadialGradient(360, 65, 0, 360, 65, 55)
+    // Natural Sunlight Glow in reflection
+    const sunGrad = ctx.createRadialGradient(370, 75, 0, 370, 75, 60)
     sunGrad.addColorStop(0, '#ffffff')
     sunGrad.addColorStop(0.2, '#fffbeb')
-    sunGrad.addColorStop(0.7, 'rgba(254, 240, 138, 0.4)')
+    sunGrad.addColorStop(0.6, 'rgba(254, 240, 138, 0.4)')
     sunGrad.addColorStop(1, 'rgba(254, 240, 138, 0)')
     ctx.fillStyle = sunGrad
-    ctx.fillRect(300, 10, 120, 110)
-
-    // Subtle soft white cloud streaks
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)'
-    ctx.beginPath()
-    ctx.ellipse(160, 80, 90, 16, -0.05, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.beginPath()
-    ctx.ellipse(340, 100, 120, 20, 0.04, 0, Math.PI * 2)
-    ctx.fill()
+    ctx.fillRect(310, 15, 120, 120)
 
     const envTexture = new THREE.CanvasTexture(envCanvas)
     envTexture.mapping = THREE.EquirectangularReflectionMapping
@@ -129,275 +94,337 @@ export default function Hero3DBuilding() {
     scene.environment = envMapTarget.texture
 
     // ----------------------------------------------------------------
-    // 3. Realistic Natural Architectural Materials
+    // 3. Premium Architectural Materials
     // ----------------------------------------------------------------
-    // Natural Sky Blue Double-Glazed Architectural Glass (with clear reflection)
-    const glassMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xcfe2f3,
-      emissive: 0x0c2333,
-      emissiveIntensity: 0.12,
-      metalness: 0.92,
-      roughness: 0.02,
-      transmission: 0.55,
-      thickness: 1.0,
+    // Double-glazed reflective curtain wall glass
+    const towerGlassMat = new THREE.MeshPhysicalMaterial({
+      color: 0x93c5fd,
+      emissive: THREE_COLORS.BENAA.deepDark,
+      emissiveIntensity: 0.15,
+      metalness: 0.15,
+      roughness: 0.03,
+      transmission: 0.72,
+      thickness: 1.4,
       ior: 1.52,
       transparent: true,
       opacity: 0.92,
-      reflectivity: 1.0,
-      clearcoat: 0.8,
-      clearcoatRoughness: 0.04,
+      reflectivity: 0.98,
+      clearcoat: 0.95,
+      clearcoatRoughness: 0.02,
     })
 
-    // Natural Dark Charcoal / Anthracite Architectural Metal Cladding
-    const darkMetalFasciaMat = new THREE.MeshStandardMaterial({
-      color: 0x1f242b,
-      metalness: 0.72,
-      roughness: 0.38,
-    })
-
-    // Authentic Fair-Faced Reinforced Concrete for Pilotis / Columns
-    const concreteMat = new THREE.MeshStandardMaterial({
-      color: 0xd8dbdf,
-      roughness: 0.86,
-      metalness: 0.04,
-    })
-
-    // Natural Warm Interior Ceiling & Floor Slabs (Warm 3000K Lighting)
-    const interiorFloorMat = new THREE.MeshStandardMaterial({
-      color: 0xfaf5ee,
-      emissive: 0xd4a017,
-      emissiveIntensity: 0.16,
-      roughness: 0.45,
-    })
-
-    // Black Anodized Aluminum Mullions
-    const mullionMat = new THREE.MeshStandardMaterial({
-      color: 0x242930,
+    // Anodized dark architectural titanium steel frames
+    const steelMullionMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
       metalness: 0.88,
-      roughness: 0.3,
+      roughness: 0.28,
     })
 
-    // Natural Slate Paved Courtyard
+    // Architectural fair-faced concrete & granite podium
+    const concreteMat = new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0,
+      roughness: 0.85,
+      metalness: 0.05,
+    })
+
+    // Illuminated warm corporate interior floor slabs
+    const interiorFloorMat = new THREE.MeshStandardMaterial({
+      color: 0xfef3c7,
+      emissive: THREE_COLORS.MAJD.light,
+      emissiveIntensity: 0.25,
+      roughness: 0.4,
+    })
+
+    // Ground Plaza Paver Slate
     const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x28303b,
+      color: 0x1e293b,
       roughness: 0.88,
-      metalness: 0.08,
+      metalness: 0.1,
     })
 
-    // Natural Green Lawn / Landscaping Border
-    const grassMat = new THREE.MeshStandardMaterial({
-      color: 0x2d4f29,
-      roughness: 0.95,
-      metalness: 0.0,
+    // Architectural Bronze / Gold Spire & Accent Trim
+    const goldAccentMat = new THREE.MeshStandardMaterial({
+      color: THREE_COLORS.MAJD.light,
+      metalness: 0.9,
+      roughness: 0.2,
     })
 
     // ----------------------------------------------------------------
-    // 4. Ground Plaza, Landscaping & Soft Shadow
+    // 4. Ground Plaza, Colonnade & Soft Shadow
     // ----------------------------------------------------------------
-    const groundGeo = new THREE.PlaneGeometry(16, 16)
+    const groundGeo = new THREE.PlaneGeometry(20, 20)
     const ground = new THREE.Mesh(groundGeo, groundMat)
     ground.rotation.x = -Math.PI / 2
-    ground.position.y = -1.65
-    buildingMaster.add(ground)
+    ground.position.y = -0.02
+    ground.receiveShadow = true
+    skyscraperMaster.add(ground)
 
-    // Side Natural Grass Landscaping Mound (Like the reference photo)
-    const grassGeo = new THREE.PlaneGeometry(5.5, 14)
-    const grassMesh = new THREE.Mesh(grassGeo, grassMat)
-    grassMesh.rotation.x = -Math.PI / 2
-    grassMesh.position.set(-5.5, -1.64, 0)
-    buildingMaster.add(grassMesh)
+    // Plaza grid pattern
+    const plazaGrid = new THREE.GridHelper(16, 16, 0x475569, 0x0f172a)
+    plazaGrid.position.y = -0.01
+    skyscraperMaster.add(plazaGrid)
 
-    // Ground Pavement Line Markings
-    const plazaGrid = new THREE.GridHelper(14, 14, 0x475569, 0x1f2937)
-    plazaGrid.position.y = -1.63
-    buildingMaster.add(plazaGrid)
-
-    // Soft Contact Shadow Plane under pilotis
-    const shadowCanvas = document.createElement('canvas')
-    shadowCanvas.width = 128
-    shadowCanvas.height = 128
-    const sCtx = shadowCanvas.getContext('2d')
-    const gradient = sCtx.createRadialGradient(64, 64, 10, 64, 64, 64)
-    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.75)')
-    gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.35)')
-    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)')
-    sCtx.fillStyle = gradient
-    sCtx.fillRect(0, 0, 128, 128)
-
-    const shadowTex = new THREE.CanvasTexture(shadowCanvas)
-    const shadowGeo = new THREE.PlaneGeometry(8.8, 6.6)
-    const shadowMat = new THREE.MeshBasicMaterial({
-      map: shadowTex,
-      transparent: true,
-      opacity: 0.62,
-      depthWrite: false,
-    })
-    const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat)
-    shadowMesh.rotation.x = -Math.PI / 2
-    shadowMesh.position.set(0.4, -1.62, 0)
-    buildingMaster.add(shadowMesh)
+    // Ground Podium Base Slab
+    const podiumGeo = new THREE.BoxGeometry(5.2, 0.25, 4.4)
+    const podium = new THREE.Mesh(podiumGeo, concreteMat)
+    podium.position.set(0, 0.12, 0)
+    podium.castShadow = true
+    podium.receiveShadow = true
+    skyscraperMaster.add(podium)
 
     // ----------------------------------------------------------------
-    // 5. Concrete Pilotis (Stilts supporting the elevated pavilion)
+    // 5. Grand Double-Height Entrance Lobby (Tier 1)
     // ----------------------------------------------------------------
-    const pilotisGroup = new THREE.Group()
-    buildingMaster.add(pilotisGroup)
+    const lobbyGroup = new THREE.Group()
+    skyscraperMaster.add(lobbyGroup)
 
-    const columnGeo = new THREE.CylinderGeometry(0.12, 0.12, 1.45, 20)
-    const columnPositions = [
-      // Front row
-      [-2.4, -0.92, 1.4],
-      [-1.2, -0.92, 1.4],
-      [0.0, -0.92, 1.4],
-      [1.2, -0.92, 1.4],
-      [2.4, -0.92, 1.4],
-      // Middle row
-      [-2.4, -0.92, 0.0],
-      [-1.2, -0.92, 0.0],
-      [0.0, -0.92, 0.0],
-      [1.2, -0.92, 0.0],
-      [2.4, -0.92, 0.0],
-      // Back row
-      [-2.4, -0.92, -1.4],
-      [-1.2, -0.92, -1.4],
-      [0.0, -0.92, -1.4],
-      [1.2, -0.92, -1.4],
-      [2.4, -0.92, -1.4],
+    const lobbyGlassGeo = new THREE.BoxGeometry(4.4, 0.95, 3.6)
+    const lobbyGlass = new THREE.Mesh(lobbyGlassGeo, towerGlassMat)
+    lobbyGlass.position.set(0, 0.72, 0)
+    lobbyGlass.castShadow = true
+    lobbyGlass.receiveShadow = true
+    lobbyGroup.add(lobbyGlass)
+
+    // Lobby Concrete Core
+    const lobbyCoreGeo = new THREE.BoxGeometry(2.0, 0.95, 1.8)
+    const lobbyCore = new THREE.Mesh(lobbyCoreGeo, concreteMat)
+    lobbyCore.position.set(0, 0.72, 0)
+    lobbyCore.castShadow = true
+    lobbyCore.receiveShadow = true
+    lobbyGroup.add(lobbyCore)
+
+    // Colonnade Pillars around Lobby
+    const pillarGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.95, 16)
+    const pillarPositions = [
+      [-2.0, 0.72, 1.6],
+      [-1.0, 0.72, 1.6],
+      [0.0, 0.72, 1.6],
+      [1.0, 0.72, 1.6],
+      [2.0, 0.72, 1.6],
+      [-2.0, 0.72, -1.6],
+      [2.0, 0.72, -1.6],
     ]
-
-    columnPositions.forEach(([cx, cy, cz]) => {
-      const col = new THREE.Mesh(columnGeo, concreteMat)
-      col.position.set(cx, cy, cz)
-      pilotisGroup.add(col)
+    pillarPositions.forEach(([px, py, pz]) => {
+      const pillar = new THREE.Mesh(pillarGeo, steelMullionMat)
+      pillar.position.set(px, py, pz)
+      pillar.castShadow = true
+      pillar.receiveShadow = true
+      lobbyGroup.add(pillar)
     })
 
-    // Ground Entrance Core / Utility Volume
-    const coreGeo = new THREE.BoxGeometry(1.6, 1.45, 1.6)
-    const coreMesh = new THREE.Mesh(coreGeo, concreteMat)
-    coreMesh.position.set(-1.0, -0.92, -0.3)
-    pilotisGroup.add(coreMesh)
+    // Entrance Canopy Overhang
+    const canopyGeo = new THREE.BoxGeometry(2.4, 0.08, 1.2)
+    const canopy = new THREE.Mesh(canopyGeo, steelMullionMat)
+    canopy.position.set(0, 0.9, 2.2)
+    canopy.castShadow = true
+    canopy.receiveShadow = true
+    lobbyGroup.add(canopy)
 
     // ----------------------------------------------------------------
-    // 6. Cantilevered Pavilion Architecture (Rounded Curved Glass Volumes)
+    // 6. Main Soaring Office Tower (Tier 2 - Floors 2 to 24)
     // ----------------------------------------------------------------
-    const pavilionGroup = new THREE.Group()
-    buildingMaster.add(pavilionGroup)
+    const towerGroup = new THREE.Group()
+    skyscraperMaster.add(towerGroup)
 
-    // --- LEVEL 1 (Lower Floating Glass Pavilion) ---
-    // Floor 1 Soffit / Base Slab with rounded corners
-    const baseSlabGeo = createRoundedSlabGeometry(6.2, 0.22, 3.8, 0.9)
-    const baseSlab = new THREE.Mesh(baseSlabGeo, darkMetalFasciaMat)
-    baseSlab.position.set(0, -0.1, 0)
-    pavilionGroup.add(baseSlab)
+    const mainTowerHeight = 5.2
+    const mainTowerWidth = 3.6
+    const mainTowerDepth = 2.8
+    const numFloors = 20
+    const floorH = mainTowerHeight / numFloors
 
-    // Level 1 Glass Enclosure
-    const l1GlassGeo = createRoundedSlabGeometry(6.0, 1.35, 3.6, 0.85)
-    const l1Glass = new THREE.Mesh(l1GlassGeo, glassMaterial)
-    l1Glass.position.set(0, 0.65, 0)
-    pavilionGroup.add(l1Glass)
+    // Main Glass Volume
+    const mainGlassGeo = new THREE.BoxGeometry(mainTowerWidth, mainTowerHeight, mainTowerDepth)
+    const mainGlass = new THREE.Mesh(mainGlassGeo, towerGlassMat)
+    mainGlass.position.set(0, 1.2 + mainTowerHeight / 2, 0)
+    mainGlass.castShadow = true
+    mainGlass.receiveShadow = true
+    towerGroup.add(mainGlass)
 
-    // Level 1 Interior Floor Plate
-    const l1InteriorGeo = createRoundedSlabGeometry(5.6, 0.08, 3.2, 0.75)
-    const l1Interior = new THREE.Mesh(l1InteriorGeo, interiorFloorMat)
-    l1Interior.position.set(0, 0.05, 0)
-    pavilionGroup.add(l1Interior)
+    // Tower Central Concrete Structural Core
+    const towerCoreGeo = new THREE.BoxGeometry(1.6, mainTowerHeight, 1.4)
+    const towerCore = new THREE.Mesh(towerCoreGeo, concreteMat)
+    towerCore.position.set(0, 1.2 + mainTowerHeight / 2, 0)
+    towerCore.castShadow = true
+    towerCore.receiveShadow = true
+    towerGroup.add(towerCore)
 
-    // Level 1 Vertical Structural Mullions
-    for (let mx = -2.6; mx <= 2.6; mx += 0.86) {
-      const mullionFrontGeo = new THREE.BoxGeometry(0.04, 1.35, 0.06)
-      const mf = new THREE.Mesh(mullionFrontGeo, mullionMat)
-      mf.position.set(mx, 0.65, 1.8)
-      pavilionGroup.add(mf)
+    // Horizontal Floor Slabs & Warm Interior Glow Plates
+    for (let f = 0; f <= numFloors; f++) {
+      const fy = 1.2 + f * floorH
 
-      const mb = new THREE.Mesh(mullionFrontGeo, mullionMat)
-      mb.position.set(mx, 0.65, -1.8)
-      pavilionGroup.add(mb)
+      // Exterior Floor Spandrel Trim
+      const spandrelGeo = new THREE.BoxGeometry(mainTowerWidth + 0.04, 0.04, mainTowerDepth + 0.04)
+      const spandrel = new THREE.Mesh(spandrelGeo, steelMullionMat)
+      spandrel.position.set(0, fy, 0)
+      spandrel.castShadow = true
+      spandrel.receiveShadow = true
+      towerGroup.add(spandrel)
+
+      // Interior Illuminated Floor Slab
+      if (f % 2 === 0) {
+        const floorSlabGeo = new THREE.BoxGeometry(
+          mainTowerWidth - 0.1,
+          0.02,
+          mainTowerDepth - 0.1
+        )
+        const floorSlab = new THREE.Mesh(floorSlabGeo, interiorFloorMat)
+        floorSlab.position.set(0, fy - 0.02, 0)
+        towerGroup.add(floorSlab)
+      }
     }
 
-    // --- MID FASCIA LOUVERS (Iconic Black Ribbed Horizontal Band) ---
-    const midFasciaGeo = createRoundedSlabGeometry(6.3, 0.35, 3.9, 0.95)
-    const midFascia = new THREE.Mesh(midFasciaGeo, darkMetalFasciaMat)
-    midFascia.position.set(0, 1.45, 0)
-    pavilionGroup.add(midFascia)
+    // Vertical Architectural Steel Mullions (Continuous structural verticality)
+    const mullionPositionsX = [-1.6, -1.0, -0.4, 0.4, 1.0, 1.6]
+    mullionPositionsX.forEach((mx) => {
+      // Front facade vertical fins
+      const finFrontGeo = new THREE.BoxGeometry(0.04, mainTowerHeight, 0.08)
+      const finFront = new THREE.Mesh(finFrontGeo, steelMullionMat)
+      finFront.position.set(mx, 1.2 + mainTowerHeight / 2, mainTowerDepth / 2 + 0.02)
+      finFront.castShadow = true
+      towerGroup.add(finFront)
 
-    // Horizontal Accent Trim Ribs around mid fascia
-    for (let ry = 1.35; ry <= 1.55; ry += 0.09) {
-      const ribGeo = createRoundedSlabGeometry(6.34, 0.02, 3.94, 0.97)
-      const rib = new THREE.Mesh(ribGeo, mullionMat)
-      rib.position.set(0, ry, 0)
-      pavilionGroup.add(rib)
-    }
+      // Back facade vertical fins
+      const finBack = new THREE.Mesh(finFrontGeo, steelMullionMat)
+      finBack.position.set(mx, 1.2 + mainTowerHeight / 2, -mainTowerDepth / 2 - 0.02)
+      finBack.castShadow = true
+      towerGroup.add(finBack)
+    })
 
-    // --- LEVEL 2 (Upper Stepped Glass Pavilion) ---
-    const l2GlassGeo = createRoundedSlabGeometry(5.8, 1.35, 3.5, 0.85)
-    const l2Glass = new THREE.Mesh(l2GlassGeo, glassMaterial)
-    l2Glass.position.set(-0.1, 2.25, -0.05)
-    pavilionGroup.add(l2Glass)
+    // Side vertical mullions
+    const mullionPositionsZ = [-1.0, -0.4, 0.4, 1.0]
+    mullionPositionsZ.forEach((mz) => {
+      const sideFinGeo = new THREE.BoxGeometry(0.08, mainTowerHeight, 0.04)
+      const finLeft = new THREE.Mesh(sideFinGeo, steelMullionMat)
+      finLeft.position.set(-mainTowerWidth / 2 - 0.02, 1.2 + mainTowerHeight / 2, mz)
+      finLeft.castShadow = true
+      towerGroup.add(finLeft)
 
-    // Level 2 Interior Floor Slab
-    const l2InteriorGeo = createRoundedSlabGeometry(5.4, 0.08, 3.1, 0.75)
-    const l2Interior = new THREE.Mesh(l2InteriorGeo, interiorFloorMat)
-    l2Interior.position.set(-0.1, 1.65, -0.05)
-    pavilionGroup.add(l2Interior)
-
-    // Level 2 Mullions
-    for (let mx = -2.4; mx <= 2.4; mx += 0.8) {
-      const mullionGeo = new THREE.BoxGeometry(0.04, 1.35, 0.06)
-      const mf2 = new THREE.Mesh(mullionGeo, mullionMat)
-      mf2.position.set(mx - 0.1, 2.25, 1.7)
-      pavilionGroup.add(mf2)
-    }
-
-    // --- ROOF SLAB & TOP FASCIA CAP ---
-    const roofSlabGeo = createRoundedSlabGeometry(6.0, 0.28, 3.7, 0.9)
-    const roofSlab = new THREE.Mesh(roofSlabGeo, darkMetalFasciaMat)
-    roofSlab.position.set(-0.1, 3.02, -0.05)
-    pavilionGroup.add(roofSlab)
-
-    // Roof Ribbed Trim Accent
-    for (let ry = 2.94; ry <= 3.1; ry += 0.08) {
-      const roofRibGeo = createRoundedSlabGeometry(6.04, 0.02, 3.74, 0.92)
-      const roofRib = new THREE.Mesh(roofRibGeo, mullionMat)
-      roofRib.position.set(-0.1, ry, -0.05)
-      pavilionGroup.add(roofRib)
-    }
+      const finRight = new THREE.Mesh(sideFinGeo, steelMullionMat)
+      finRight.position.set(mainTowerWidth / 2 + 0.02, 1.2 + mainTowerHeight / 2, mz)
+      finRight.castShadow = true
+      towerGroup.add(finRight)
+    })
 
     // ----------------------------------------------------------------
-    // 7. Natural Outdoor Sunlight & Atmosphere Lighting
+    // 7. Executive Sky Lounge Setback (Tier 3)
     // ----------------------------------------------------------------
-    // Sky Ambient Daylight
-    const hemiLight = new THREE.HemisphereLight(0xbfdbfe, 0x334155, 1.5)
+    const setbackGroup = new THREE.Group()
+    skyscraperMaster.add(setbackGroup)
+
+    const setbackY = 1.2 + mainTowerHeight
+    const setbackH = 1.4
+    const setbackW = 2.8
+    const setbackD = 2.2
+
+    // Setback Glass Box
+    const setbackGlassGeo = new THREE.BoxGeometry(setbackW, setbackH, setbackD)
+    const setbackGlass = new THREE.Mesh(setbackGlassGeo, towerGlassMat)
+    setbackGlass.position.set(0, setbackY + setbackH / 2, 0)
+    setbackGlass.castShadow = true
+    setbackGlass.receiveShadow = true
+    setbackGroup.add(setbackGlass)
+
+    // Sky Lounge Observation Balcony Slab
+    const balconyGeo = new THREE.BoxGeometry(mainTowerWidth, 0.12, mainTowerDepth)
+    const balcony = new THREE.Mesh(balconyGeo, steelMullionMat)
+    balcony.position.set(0, setbackY, 0)
+    balcony.castShadow = true
+    balcony.receiveShadow = true
+    setbackGroup.add(balcony)
+
+    // Glass Railing around Sky Terrace
+    const railingGeo = new THREE.BoxGeometry(mainTowerWidth - 0.08, 0.25, mainTowerDepth - 0.08)
+    const railing = new THREE.Mesh(railingGeo, towerGlassMat)
+    railing.position.set(0, setbackY + 0.15, 0)
+    setbackGroup.add(railing)
+
+    // ----------------------------------------------------------------
+    // 8. Angled Crown Roof, Helipad & Architectural Spire (Tier 4)
+    // ----------------------------------------------------------------
+    const crownGroup = new THREE.Group()
+    skyscraperMaster.add(crownGroup)
+
+    const crownBaseY = setbackY + setbackH
+
+    // Crown Cap Slab
+    const crownCapGeo = new THREE.BoxGeometry(setbackW + 0.15, 0.18, setbackD + 0.15)
+    const crownCap = new THREE.Mesh(crownCapGeo, steelMullionMat)
+    crownCap.position.set(0, crownBaseY + 0.09, 0)
+    crownCap.castShadow = true
+    crownCap.receiveShadow = true
+    crownGroup.add(crownCap)
+
+    // Angled Architectural Crown Truss Screen
+    const crownScreenGeo = new THREE.BoxGeometry(setbackW * 0.9, 0.7, setbackD * 0.9)
+    const crownScreen = new THREE.Mesh(crownScreenGeo, steelMullionMat)
+    crownScreen.position.set(0, crownBaseY + 0.5, 0)
+    crownScreen.castShadow = true
+    crownScreen.receiveShadow = true
+    crownGroup.add(crownScreen)
+
+    // Rooftop Helipad
+    const helipadGeo = new THREE.CylinderGeometry(0.85, 0.85, 0.05, 24)
+    const helipad = new THREE.Mesh(helipadGeo, concreteMat)
+    helipad.position.set(0, crownBaseY + 0.9, 0)
+    helipad.castShadow = true
+    helipad.receiveShadow = true
+    crownGroup.add(helipad)
+
+    // Architectural Spire (Gold/Bronze)
+    const spireGeo = new THREE.CylinderGeometry(0.02, 0.09, 1.6, 12)
+    const spire = new THREE.Mesh(spireGeo, goldAccentMat)
+    spire.position.set(0.4, crownBaseY + 1.7, 0.2)
+    spire.castShadow = true
+    crownGroup.add(spire)
+
+    // Pulsing Red Aviation Warning Beacon
+    const beaconGeo = new THREE.SphereGeometry(0.06, 16, 16)
+    const beaconMat = new THREE.MeshBasicMaterial({ color: 0xff3b30 })
+    const beacon = new THREE.Mesh(beaconGeo, beaconMat)
+    beacon.position.set(0.4, crownBaseY + 2.52, 0.2)
+    crownGroup.add(beacon)
+
+    // ----------------------------------------------------------------
+    // 9. Natural Outdoor Daylight & Shadows (Section 7B)
+    // ----------------------------------------------------------------
+    // Hemisphere Fill Light (Daylight sky above + ground bounce below)
+    const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x1e293b, 1.35)
     scene.add(hemiLight)
 
-    // Direct Warm Natural Sunlight
+    // Strong Directional Key Sunlight with Shadow Frustum
     const sunLight = new THREE.DirectionalLight(0xfffaed, 2.6)
-    sunLight.position.set(7, 11, 8)
+    sunLight.position.set(8, 14, 9)
+    sunLight.castShadow = true
+    sunLight.shadow.mapSize.width = isMobile ? 1024 : 2048
+    sunLight.shadow.mapSize.height = isMobile ? 1024 : 2048
+    sunLight.shadow.camera.near = 0.5
+    sunLight.shadow.camera.far = 35
+    sunLight.shadow.camera.left = -7
+    sunLight.shadow.camera.right = 7
+    sunLight.shadow.camera.top = 10
+    sunLight.shadow.camera.bottom = -4
+    sunLight.shadow.bias = -0.0004
     scene.add(sunLight)
 
-    // Natural Sky Fill Light
-    const skyFillLight = new THREE.DirectionalLight(0x93c5fd, 1.4)
-    skyFillLight.position.set(-6, 8, 6)
-    scene.add(skyFillLight)
-
-    // Back Glass Rim Sparkle
-    const rimLight = new THREE.DirectionalLight(0xe0f2fe, 1.6)
-    rimLight.position.set(-8, 6, -7)
+    // Sky Rim Sparkle Light
+    const rimLight = new THREE.DirectionalLight(0x93c5fd, 1.4)
+    rimLight.position.set(-8, 9, -7)
     scene.add(rimLight)
 
-    // Subtle Brand Architectural Accent Lighting
-    const benaaBounce = new THREE.PointLight(0x0f4c3a, 1.4, 14)
-    benaaBounce.position.set(-3, -0.4, 3)
+    // Subtle Brand Accent Bounce Lights
+    const benaaBounce = new THREE.PointLight(THREE_COLORS.BENAA.primary, 0.9, 15)
+    benaaBounce.position.set(-3, 1, 3)
     scene.add(benaaBounce)
 
-    const majdBounce = new THREE.PointLight(0xd4a017, 1.2, 14)
-    majdBounce.position.set(4, 2, 2)
+    const majdBounce = new THREE.PointLight(THREE_COLORS.MAJD.light, 0.8, 15)
+    majdBounce.position.set(3, 5, 2)
     scene.add(majdBounce)
 
     // ----------------------------------------------------------------
-    // 8. Interaction: Mouse Parallax, Scroll Zoom & Raycasting
+    // 10. Interaction: Mouse Move Parallax, Scroll Zoom & Raycasting
     // ----------------------------------------------------------------
-    let targetRotY = -0.35 // Initial angled perspective view
-    let targetRotX = 0.06
+    let targetRotY = 0.35 // Angled perspective view
+    let targetRotX = 0.04
     let targetCameraZ = defaultCameraZ
     let isVisible = true
 
@@ -413,9 +440,9 @@ export default function Hero3DBuilding() {
       mouse.x = x
       mouse.y = y
 
-      // Smooth multi-axis rotation
-      targetRotY = -0.35 + x * 0.42
-      targetRotX = 0.06 - y * 0.18
+      // Subtle multi-axis rotation around the grand skyscraper
+      targetRotY = 0.35 + x * 0.38
+      targetRotX = 0.04 - y * 0.14
     }
 
     const onScroll = () => {
@@ -432,7 +459,7 @@ export default function Hero3DBuilding() {
     })
 
     // ----------------------------------------------------------------
-    // 9. Animation Render Loop (60 FPS Target)
+    // 11. Animation Render Loop (60 FPS Target)
     // ----------------------------------------------------------------
     let animId
     const clock = new THREE.Clock()
@@ -444,25 +471,28 @@ export default function Hero3DBuilding() {
       const t = clock.getElapsedTime()
 
       if (!reducedMotion) {
-        // Smooth rotational physics
-        buildingMaster.rotation.y +=
-          (targetRotY - buildingMaster.rotation.y) * THREE_TIMING.DAMPING_FACTOR
-        buildingMaster.rotation.x +=
-          (targetRotX - buildingMaster.rotation.x) * THREE_TIMING.DAMPING_FACTOR
+        skyscraperMaster.rotation.y +=
+          (targetRotY - skyscraperMaster.rotation.y) * THREE_TIMING.DAMPING_FACTOR
+        skyscraperMaster.rotation.x +=
+          (targetRotX - skyscraperMaster.rotation.x) * THREE_TIMING.DAMPING_FACTOR
 
-        // Idle organic floating motion
-        buildingMaster.position.y = -0.6 + Math.sin(t * 0.8) * 0.035
+        // Idle organic micro-motion
+        skyscraperMaster.position.y = -2.5 + Math.sin(t * 0.7) * 0.025
 
         // Camera dolly zoom smoothing
         camera.position.z += (targetCameraZ - camera.position.z) * 0.06
 
-        // Raycasting for subtle glass glint highlight
+        // Aviation Beacon Flash
+        const beaconPulse = Math.sin(t * 4.0) > 0.2 ? 1 : 0.15
+        beaconMat.color.setRGB(beaconPulse, 0.08, 0.08)
+
+        // Raycasting for subtle glass sparkle glint
         raycaster.setFromCamera(mouse, camera)
-        const intersects = raycaster.intersectObjects([l1Glass, l2Glass])
+        const intersects = raycaster.intersectObjects([mainGlass, setbackGlass, lobbyGlass])
         if (intersects.length > 0) {
-          glassMaterial.emissiveIntensity = 0.28
+          towerGlassMat.emissiveIntensity = 0.32
         } else {
-          glassMaterial.emissiveIntensity = 0.12
+          towerGlassMat.emissiveIntensity = 0.15
         }
       }
 
@@ -471,7 +501,7 @@ export default function Hero3DBuilding() {
     animate()
 
     // ----------------------------------------------------------------
-    // 10. Resize Handling & Responsive Canvas
+    // 12. Resize Handling
     // ----------------------------------------------------------------
     const ro = new ResizeObserver(() => {
       if (!container) return
@@ -482,7 +512,7 @@ export default function Hero3DBuilding() {
     ro.observe(container)
 
     // ----------------------------------------------------------------
-    // 11. Complete Resource Cleanup on Unmount
+    // 13. Resource Cleanup on Unmount
     // ----------------------------------------------------------------
     return () => {
       cancelAnimationFrame(animId)
@@ -509,14 +539,14 @@ export default function Hero3DBuilding() {
       transition={{ duration: 0.9, ease: 'easeOut' }}
       className="relative w-full h-full min-h-[420px] lg:min-h-[500px] flex items-center justify-center select-none"
     >
-      {/* 3D Ambient Depth Brand Glow (#0F4C3A, #D4A017, #2DD4BF) */}
-      <div className="absolute -inset-2 bg-gradient-to-tr from-[#0F4C3A]/25 via-[#2DD4BF]/10 to-[#D4A017]/15 rounded-3xl blur-2xl opacity-50 pointer-events-none" />
+      {/* 3D Ambient Depth Brand Glow (#0F4C3A Deep Green & #D4A017 Gold) */}
+      <div className="absolute -inset-2 bg-gradient-to-tr from-[#0F4C3A]/25 via-[#2DD4BF]/10 to-[#D4A017]/20 rounded-3xl blur-2xl opacity-50 pointer-events-none" />
 
       {/* 3D WebGL Canvas Container */}
       <div
         ref={containerRef}
         className="w-full h-[400px] sm:h-[460px] lg:h-[490px] rounded-3xl overflow-hidden border border-white/20 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65)] bg-slate-950/85 backdrop-blur-[2px] relative pointer-events-auto cursor-grab active:cursor-grabbing"
-        aria-label="Interactive 3D Real Corporate Building Model"
+        aria-label="Interactive 3D Architectural Corporate Skyscraper HQ"
       />
     </motion.div>
   )

@@ -40,8 +40,7 @@ export default function MajdHome() {
               </p>
             </div>
 
-            <div className="lg:col-span-5 relative w-full h-[340px] sm:h-[400px] flex items-center justify-center">
-              <div className="absolute inset-0 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-[2px] pointer-events-none"></div>
+            <div className="lg:col-span-5 relative w-full h-[340px] sm:h-[400px] rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-[2px] shadow-2xl flex items-center justify-center">
               <Suspense
                 fallback={
                   <div className="w-full h-full flex items-center justify-center text-white/40 text-xs">
@@ -51,9 +50,6 @@ export default function MajdHome() {
               >
                 <MajdTradeGlobe3D />
               </Suspense>
-              <div className="absolute bottom-3 right-4 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[10px] text-amber-300 pointer-events-none font-mono">
-                Interactive 3D Trade Routes
-              </div>
             </div>
           </div>
         </Container>
