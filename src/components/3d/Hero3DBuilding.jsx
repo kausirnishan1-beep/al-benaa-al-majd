@@ -32,9 +32,9 @@ export default function Hero3DBuilding() {
       0.1,
       1000
     )
-    const defaultCameraZ = isMobile ? 13.5 : 11.5
-    camera.position.set(3.4, 1.8, defaultCameraZ)
-    camera.lookAt(0, 1.2, 0)
+    const defaultCameraZ = isMobile ? 15.0 : 13.2
+    camera.position.set(3.8, 1.6, defaultCameraZ)
+    camera.lookAt(0, 0.4, 0)
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -51,10 +51,11 @@ export default function Hero3DBuilding() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     container.appendChild(renderer.domElement)
 
-    // Master Pivot Group
+    // Master Pivot Group (Scaled to fit entirely within box)
     const skyscraperMaster = new THREE.Group()
     scene.add(skyscraperMaster)
-    skyscraperMaster.position.set(0, -2.5, 0)
+    skyscraperMaster.scale.set(0.62, 0.62, 0.62)
+    skyscraperMaster.position.set(0, -2.2, 0)
 
     // ----------------------------------------------------------------
     // 2. Photorealistic Daytime Sky Environment Map (PMREM)
@@ -477,7 +478,7 @@ export default function Hero3DBuilding() {
           (targetRotX - skyscraperMaster.rotation.x) * THREE_TIMING.DAMPING_FACTOR
 
         // Idle organic micro-motion
-        skyscraperMaster.position.y = -2.5 + Math.sin(t * 0.7) * 0.025
+        skyscraperMaster.position.y = -2.2 + Math.sin(t * 0.7) * 0.025
 
         // Camera dolly zoom smoothing
         camera.position.z += (targetCameraZ - camera.position.z) * 0.06
