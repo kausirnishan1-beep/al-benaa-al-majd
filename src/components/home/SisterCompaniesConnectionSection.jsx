@@ -50,10 +50,7 @@ export default function SisterCompaniesConnectionSection() {
               <span>AL MAJD • Global Trade</span>
             </div>
 
-            <div className="absolute bottom-4 px-3.5 py-1 rounded-full bg-black/60 border border-white/15 text-[10px] text-white/80 font-mono backdrop-blur-md pointer-events-none shadow-md">
-              Interactive 3D Alliance Core • Move cursor to interact
             </div>
-          </div>
         </div>
       </Container>
     </section>
