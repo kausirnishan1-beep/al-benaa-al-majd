@@ -1,14 +1,31 @@
+import { lazy, Suspense } from 'react'
 import { Phone, Mail, MapPin, Clock } from 'lucide-react'
 import { CONTACT_INFO } from '../../utils/constants.js'
 import { useSettings } from '../../admin/hooks/useSettings.js'
+
+const Contact3DPin = lazy(() => import('../3d/Contact3DPin.jsx'))
 
 export default function ContactInfo() {
   const { settings } = useSettings()
   const contact = settings?.contact || CONTACT_INFO
 
   return (
-    <div className="space-y-6 bg-white p-8 rounded-3xl border border-gray-100 shadow-xl">
-      <div className="border-b border-gray-100 pb-4 mb-6">
+    <div className="space-y-6 bg-white p-8 rounded-3xl border border-gray-100 shadow-xl overflow-hidden">
+      {/* 3D Location Beacon */}
+      <div className="w-full h-44 rounded-2xl bg-gradient-to-br from-benaa-dark via-[#06241b] to-black relative overflow-hidden flex items-center justify-center border border-white/10 shadow-inner">
+        <Suspense
+          fallback={
+            <div className="text-white/40 text-xs animate-pulse">Loading 3D Radar Beacon...</div>
+          }
+        >
+          <Contact3DPin />
+        </Suspense>
+        <div className="absolute bottom-2 right-3 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-[9px] text-emerald-300 font-mono">
+          Riyadh HQ • 3D Radar
+        </div>
+      </div>
+
+      <div className="border-b border-gray-100 pb-4 mb-4">
         <h3 className="text-xl font-extrabold text-benaa tracking-tight">Corporate Headquarters</h3>
         <p className="text-sm font-bold text-majd font-arabic">المقر الرئيسي ومعلومات الاتصال</p>
       </div>

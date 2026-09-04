@@ -4,7 +4,7 @@ import { Building2, Globe2 } from 'lucide-react'
 import Container from '../common/Container.jsx'
 import Button from '../common/Button.jsx'
 
-const Hero3DScene = lazy(() => import('../3d/Hero3DScene.jsx'))
+const Hero3DBuilding = lazy(() => import('../3d/Hero3DBuilding.jsx'))
 
 export default function Hero() {
   return (
@@ -100,17 +100,17 @@ export default function Hero() {
             <Suspense
               fallback={
                 <div className="w-full h-full flex items-center justify-center text-white/40 text-xs">
-                  <span className="animate-pulse">Loading 3D Visuals...</span>
+                  <span className="animate-pulse">Loading 3D Skyscraper...</span>
                 </div>
               }
             >
-              <Hero3DScene />
+              <Hero3DBuilding />
             </Suspense>
 
             {/* Interactive hint tag */}
             <div className="absolute bottom-3 right-4 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[10px] text-white/70 pointer-events-none flex items-center gap-1.5 font-mono">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-              <span>Interactive 3D • Move cursor</span>
+              <span>Interactive 3D Skyscraper • Move cursor</span>
             </div>
           </motion.div>
         </div>

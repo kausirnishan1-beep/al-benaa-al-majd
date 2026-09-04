@@ -6,7 +6,7 @@ import { usePublicServices } from '../../hooks/usePublicServices.js'
 import { useCompanies } from '../../hooks/useCompanies.js'
 import { Link } from 'react-router-dom'
 
-const Benaa3DScene = lazy(() => import('../../components/3d/Benaa3DScene.jsx'))
+const BenaaConstruction3D = lazy(() => import('../../components/3d/BenaaConstruction3D.jsx'))
 
 export default function BenaaHome() {
   const { benaaServices } = usePublicServices()
@@ -40,20 +40,17 @@ export default function BenaaHome() {
               </p>
             </div>
 
-            <div className="lg:col-span-5 relative w-full h-[320px] sm:h-[380px] flex items-center justify-center">
+            <div className="lg:col-span-5 relative w-full h-[340px] sm:h-[400px] flex items-center justify-center">
               <div className="absolute inset-0 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-[2px] pointer-events-none"></div>
               <Suspense
                 fallback={
                   <div className="w-full h-full flex items-center justify-center text-white/40 text-xs">
-                    <span className="animate-pulse">Loading 3D Architecture...</span>
+                    <span className="animate-pulse">Loading 3D Construction Scene...</span>
                   </div>
                 }
               >
-                <Benaa3DScene />
+                <BenaaConstruction3D />
               </Suspense>
-              <div className="absolute bottom-3 right-4 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[10px] text-emerald-300 pointer-events-none font-mono">
-                3D Blueprint Matrix
-              </div>
             </div>
           </div>
         </Container>
