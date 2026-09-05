@@ -51,10 +51,19 @@ export function useSettings() {
           const merged = { ...prev }
           data.forEach((row) => {
             if (row.key && row.value) {
-              const val = typeof row.value === 'string' ? JSON.parse(row.value) : row.value
-              merged[row.key] = {
-                ...prev[row.key],
-                ...val,
+              let val = row.value
+              if (typeof row.value === 'string') {
+                try {
+                  val = JSON.parse(row.value)
+                } catch {
+                  val = row.value
+                }
+              }
+              if (typeof val === 'object' && val !== null) {
+                merged[row.key] = {
+                  ...prev[row.key],
+                  ...val,
+                }
               }
               if (row.key === 'contact') {
                 merged.contact = {
