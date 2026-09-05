@@ -13,16 +13,16 @@ export default function Navbar() {
 
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md' : 'bg-white/90 backdrop-blur'}`}>
-      <Container className="flex items-center justify-between h-20">
-        <NavLink to="/" className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-benaa text-white flex items-center justify-center shadow-md">
-            <Building2 className="w-6 h-6 text-majd-light" />
+      <Container className="flex items-center justify-between h-16 sm:h-20">
+        <NavLink to="/" className="flex items-center gap-2.5 sm:gap-3 min-w-0 pr-2">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-benaa text-white flex items-center justify-center shadow-md flex-shrink-0">
+            <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-majd-light" />
           </div>
-          <div>
-            <span className="font-extrabold text-benaa text-base md:text-lg block leading-tight tracking-tight uppercase">
+          <div className="min-w-0">
+            <span className="font-extrabold text-benaa text-xs sm:text-base md:text-lg block leading-tight tracking-tight uppercase truncate">
               AL BENAA & AL MAJD
             </span>
-            <span className="text-xs font-semibold text-majd block font-arabic leading-tight">
+            <span className="text-[10px] sm:text-xs font-semibold text-majd block font-arabic leading-tight truncate">
               مؤسسة البناء الرحاب وخطوط المجد
             </span>
           </div>
@@ -68,7 +68,7 @@ export default function Navbar() {
         </div>
 
         <button
-          className="lg:hidden p-2 text-benaa hover:bg-gray-100 rounded-lg transition-colors"
+          className="lg:hidden p-2.5 text-benaa hover:bg-gray-100 rounded-xl transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center active:scale-95"
           onClick={() => setOpen(!open)}
           aria-label={open ? "Close menu" : "Open menu"}
         >

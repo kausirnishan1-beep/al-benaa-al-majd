@@ -26,7 +26,7 @@ export default function MajdTradeGlobe3D() {
       0.1,
       1000
     )
-    camera.position.set(0, 0, 8.5)
+    camera.position.set(0, 0, isMobile ? 9.8 : 8.5)
     camera.lookAt(0, 0, 0)
 
     const renderer = new THREE.WebGLRenderer({
@@ -39,6 +39,8 @@ export default function MajdTradeGlobe3D() {
     container.appendChild(renderer.domElement)
 
     const globeMaster = new THREE.Group()
+    const globeScale = isMobile ? 0.78 : 0.9
+    globeMaster.scale.set(globeScale, globeScale, globeScale)
     scene.add(globeMaster)
 
     // ----------------------------------------------------------------

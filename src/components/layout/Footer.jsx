@@ -90,7 +90,7 @@ export default function Footer() {
             </li>
             <li className="flex items-start gap-2.5">
               <Mail className="w-4 h-4 text-majd-light flex-shrink-0 mt-1" />
-              <span className="font-medium">{contact.email || CONTACT_INFO.email}</span>
+              <span className="font-medium break-all">{contact.email || CONTACT_INFO.email}</span>
             </li>
             <li className="flex items-start gap-2.5">
               <MapPin className="w-4 h-4 text-majd-light flex-shrink-0 mt-1" />
@@ -110,8 +110,8 @@ export default function Footer() {
         </div>
       </Container>
 
-      <div className="border-t border-white/10 py-5 text-center text-white/60 text-xs">
-        <p>© {new Date().getFullYear()} AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT. All rights reserved. | جميع الحقوق محفوظة</p>
+      <div className="border-t border-white/10 py-5 px-4 text-center text-white/60 text-xs">
+        <p className="max-w-4xl mx-auto break-words">© {new Date().getFullYear()} AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT. All rights reserved. | جميع الحقوق محفوظة</p>
       </div>
     </footer>
   )

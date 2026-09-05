@@ -8,16 +8,16 @@ const Hero3DBuilding = lazy(() => import('../3d/Hero3DBuilding.jsx'))
 
 export default function Hero() {
   return (
-    <section className="relative bg-gradient-to-br from-benaa via-benaa-dark to-[#06241b] text-white overflow-hidden py-20 md:py-28">
+    <section className="relative bg-gradient-to-br from-benaa via-benaa-dark to-[#06241b] text-white overflow-hidden py-12 sm:py-16 md:py-24">
       {/* Background geometric accents */}
       <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#d4a017_1px,transparent_1px)] [background-size:24px_24px]"></div>
       
       {/* Ambient 3D Glow Orbs */}
-      <div className="absolute top-1/4 -right-20 w-96 h-96 bg-majd/20 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-10 left-1/3 w-80 h-80 bg-benaa-light/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute top-1/4 -right-20 w-72 sm:w-96 h-72 sm:h-96 bg-majd/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-10 left-1/3 w-60 sm:w-80 h-60 sm:h-80 bg-benaa-light/20 rounded-full blur-3xl pointer-events-none"></div>
 
       <Container className="relative z-10">
-        <div className="grid lg:grid-cols-12 gap-8 items-center">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Content Column */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -25,46 +25,46 @@ export default function Hero() {
             transition={{ duration: 0.7 }}
             className="lg:col-span-7 max-w-2xl"
           >
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-sm mb-6">
-              <span className="w-2 h-2 rounded-full bg-majd-light animate-pulse"></span>
-              <span className="text-majd-light font-bold text-xs md:text-sm tracking-wider uppercase">
+            <div className="inline-flex flex-wrap items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-sm mb-5 max-w-full">
+              <span className="w-2 h-2 rounded-full bg-majd-light animate-pulse flex-shrink-0"></span>
+              <span className="text-majd-light font-bold text-[11px] sm:text-xs md:text-sm tracking-wider uppercase">
                 AL BENAA AL RAHAB & AL MAJD LINES
               </span>
-              <span className="text-white/40">|</span>
-              <span className="text-white/80 text-xs md:text-sm font-arabic">مؤسسة البناء ومؤسسة خطوط المجد</span>
+              <span className="text-white/40 hidden xs:inline">|</span>
+              <span className="text-white/80 text-[11px] sm:text-xs md:text-sm font-arabic">مؤسسة البناء ومؤسسة خطوط المجد</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
               Building the Future, <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-majd-light via-amber-300 to-majd">
                 Connecting Global Markets
               </span>
             </h1>
 
-            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-white/90 mt-3 font-arabic leading-snug">
+            <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white/90 mt-2.5 sm:mt-3 font-arabic leading-snug">
               نبني المستقبل، ونربط الأسواق العالمية
             </p>
 
-            <p className="mt-5 text-white/80 text-sm md:text-base leading-relaxed">
+            <p className="mt-4 sm:mt-5 text-white/80 text-xs sm:text-sm md:text-base leading-relaxed">
               A premier Saudi commercial alliance uniting two certified industry leaders: <strong className="text-white">AL BENAA AL RAHAB CONTRACTING EST.</strong> (General Construction & Engineering) and <strong className="text-white">AL MAJD LINES FOR TRADE & IMPORT</strong> (Global Supply Chain & Logistics).
             </p>
 
-            <p className="mt-2 text-white/60 text-xs md:text-sm font-arabic leading-relaxed">
+            <p className="mt-2 text-white/60 text-[11px] sm:text-xs md:text-sm font-arabic leading-relaxed">
               تحالف تجاري سعودي رائد يجمع بين التميز الإنشائي والهندسي والتجارة وسلاسل الإمداد العالمية المعتمدة.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3.5 sm:gap-4">
               <Button
                 to="/benaa"
                 variant="primary"
-                className="bg-white text-benaa hover:bg-gray-100 shadow-xl px-6 py-3.5 border border-white/20"
+                className="w-full sm:w-auto bg-white text-benaa hover:bg-gray-100 shadow-xl px-5 sm:px-6 py-3 sm:py-3.5 border border-white/20 active:scale-98 transition-transform"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-benaa/10 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-benaa/10 flex items-center justify-center flex-shrink-0">
                     <Building2 className="w-4 h-4 text-benaa" />
                   </div>
                   <div className="text-left">
-                    <span className="block font-bold text-xs md:text-sm leading-tight">AL BENAA AL RAHAB</span>
+                    <span className="block font-bold text-xs sm:text-sm leading-tight">AL BENAA AL RAHAB</span>
                     <span className="block text-[10px] text-benaa/80 font-arabic leading-tight">مؤسسة البناء الرحاب للمقاولات</span>
                   </div>
                 </div>
@@ -73,14 +73,14 @@ export default function Hero() {
               <Button
                 to="/majd"
                 variant="secondary"
-                className="bg-gradient-to-r from-majd to-amber-600 text-white hover:brightness-110 shadow-xl px-6 py-3.5 border border-majd/30"
+                className="w-full sm:w-auto bg-gradient-to-r from-majd to-amber-600 text-white hover:brightness-110 shadow-xl px-5 sm:px-6 py-3 sm:py-3.5 border border-majd/30 active:scale-98 transition-transform"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
                     <Globe2 className="w-4 h-4 text-white" />
                   </div>
                   <div className="text-left">
-                    <span className="block font-bold text-xs md:text-sm leading-tight">AL MAJD LINES</span>
+                    <span className="block font-bold text-xs sm:text-sm leading-tight">AL MAJD LINES</span>
                     <span className="block text-[10px] text-white/80 font-arabic leading-tight">مؤسسة خطوط المجد للتجارة</span>
                   </div>
                 </div>
@@ -90,13 +90,11 @@ export default function Hero() {
 
           {/* Right 3D Interactive Canvas Column */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.9, delay: 0.2 }}
-            className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] lg:h-[500px] flex items-center justify-center"
+            transition={{ duration: 0.8, delay: 0.15 }}
+            className="lg:col-span-5 relative w-full h-[320px] sm:h-[400px] lg:h-[500px] rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-b from-white/5 to-transparent backdrop-blur-[2px] shadow-2xl flex items-center justify-center mt-4 lg:mt-0"
           >
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 backdrop-blur-[2px] pointer-events-none"></div>
-            
             <Suspense
               fallback={
                 <div className="w-full h-full flex items-center justify-center text-white/40 text-xs">

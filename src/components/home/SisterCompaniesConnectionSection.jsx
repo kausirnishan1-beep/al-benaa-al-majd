@@ -40,14 +40,14 @@ export default function SisterCompaniesConnectionSection() {
             </Suspense>
 
             {/* Live Indicator Badges */}
-            <div className="absolute top-4 left-4 flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-benaa-dark/90 border border-emerald-500/30 text-[11px] text-emerald-300 font-mono shadow-lg backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>AL BENAA • Construction</span>
+            <div className="absolute top-3 sm:top-4 left-3 sm:left-4 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-benaa-dark/90 border border-emerald-500/30 text-[10px] sm:text-[11px] text-emerald-300 font-mono shadow-lg backdrop-blur-md max-w-[45%]">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
+              <span className="truncate">AL BENAA</span>
             </div>
 
-            <div className="absolute top-4 right-4 flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#402e03]/90 border border-amber-500/30 text-[11px] text-amber-300 font-mono shadow-lg backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-              <span>AL MAJD • Global Trade</span>
+            <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-[#402e03]/90 border border-amber-500/30 text-[10px] sm:text-[11px] text-amber-300 font-mono shadow-lg backdrop-blur-md max-w-[45%]">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0"></span>
+              <span className="truncate">AL MAJD</span>
             </div>
 
             </div>

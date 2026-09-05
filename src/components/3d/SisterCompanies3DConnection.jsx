@@ -27,7 +27,9 @@ export default function SisterCompanies3DConnection() {
       0.1,
       1000
     )
-    camera.position.set(0, 1.2, 11.2)
+    const cameraZ = isMobile ? 14.8 : 11.2
+    const cameraY = isMobile ? 1.4 : 1.2
+    camera.position.set(0, cameraY, cameraZ)
     camera.lookAt(0, -0.3, 0)
 
     const renderer = new THREE.WebGLRenderer({
@@ -75,6 +77,8 @@ export default function SisterCompanies3DConnection() {
     scene.environment = envMapTarget.texture
 
     const connectionMaster = new THREE.Group()
+    const masterScale = isMobile ? 0.72 : 1.0
+    connectionMaster.scale.set(masterScale, masterScale, masterScale)
     connectionMaster.position.y = -0.3
     scene.add(connectionMaster)
 

@@ -71,7 +71,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white p-8 rounded-3xl border border-gray-100 shadow-xl">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white p-5 sm:p-8 rounded-3xl border border-gray-100 shadow-xl">
       {/* Honeypot field (hidden from human visitors) */}
       <div className="hidden" aria-hidden="true">
         <input

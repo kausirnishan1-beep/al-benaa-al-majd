@@ -32,8 +32,10 @@ export default function Hero3DBuilding() {
       0.1,
       1000
     )
-    const defaultCameraZ = isMobile ? 15.0 : 13.2
-    camera.position.set(3.8, 1.6, defaultCameraZ)
+    const cameraX = isMobile ? 2.4 : 3.8
+    const cameraY = isMobile ? 1.4 : 1.6
+    const cameraZ = isMobile ? 14.6 : 13.2
+    camera.position.set(cameraX, cameraY, cameraZ)
     camera.lookAt(0, 0.4, 0)
 
     const renderer = new THREE.WebGLRenderer({
@@ -47,15 +49,18 @@ export default function Hero3DBuilding() {
     renderer.toneMappingExposure = 1.2
 
     // Soft realistic shadows
-    renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    renderer.shadowMap.enabled = !isMobile // optimize mobile GPU performance
+    if (!isMobile) {
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    }
     container.appendChild(renderer.domElement)
 
     // Master Pivot Group (Scaled to fit entirely within box)
     const skyscraperMaster = new THREE.Group()
     scene.add(skyscraperMaster)
-    skyscraperMaster.scale.set(0.62, 0.62, 0.62)
-    skyscraperMaster.position.set(0, -2.2, 0)
+    const buildingScale = isMobile ? 0.57 : 0.62
+    skyscraperMaster.scale.set(buildingScale, buildingScale, buildingScale)
+    skyscraperMaster.position.set(0, isMobile ? -2.0 : -2.2, 0)
 
     // ----------------------------------------------------------------
     // 2. Photorealistic Daytime Sky Environment Map (PMREM)

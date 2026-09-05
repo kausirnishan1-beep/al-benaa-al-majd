@@ -11,15 +11,15 @@ export default function MajdCard({ data }) {
       transition={{ duration: 0.5, delay: 0.1 }}
       className="rounded-3xl overflow-hidden shadow-lg border-t-4 border-majd bg-white hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
     >
-      <div className="p-8 md:p-10 flex flex-col flex-grow">
-        <div className="w-14 h-14 rounded-2xl bg-majd/10 text-majd flex items-center justify-center mb-6">
-          <Globe2 className="w-8 h-8" />
+      <div className="p-6 sm:p-8 md:p-10 flex flex-col flex-grow">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-majd/10 text-majd flex items-center justify-center mb-5 sm:mb-6">
+          <Globe2 className="w-6 h-6 sm:w-8 sm:h-8" />
         </div>
 
-        <h3 className="text-2xl md:text-3xl font-extrabold text-majd-dark tracking-tight">
+        <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-majd-dark tracking-tight">
           {data.name}
         </h3>
-        <p className="text-lg font-bold text-majd mt-1 font-arabic">
+        <p className="text-base sm:text-lg font-bold text-majd mt-1 font-arabic">
           {data.nameAr}
         </p>
 
