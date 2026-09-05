@@ -34,8 +34,8 @@ export default function Hero3DBuilding() {
     )
     const cameraX = isMobile ? 2.4 : 3.8
     const cameraY = isMobile ? 1.4 : 1.6
-    const cameraZ = isMobile ? 14.6 : 13.2
-    camera.position.set(cameraX, cameraY, cameraZ)
+    const defaultCameraZ = isMobile ? 14.6 : 13.2
+    camera.position.set(cameraX, cameraY, defaultCameraZ)
     camera.lookAt(0, 0.4, 0)
 
     const renderer = new THREE.WebGLRenderer({
