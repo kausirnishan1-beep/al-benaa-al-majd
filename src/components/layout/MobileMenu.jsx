@@ -10,7 +10,7 @@ export default function MobileMenu({ onClose }) {
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
       transition={{ duration: 0.25 }}
-      className="lg:hidden bg-white border-t border-gray-100 shadow-2xl overflow-hidden"
+      className="xl:hidden bg-white border-t border-gray-100 shadow-2xl overflow-hidden"
     >
       <nav className="flex flex-col p-4 divide-y divide-gray-100">
         {mainNav.map((item) => (
