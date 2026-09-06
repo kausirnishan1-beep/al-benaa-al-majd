@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { THREE_COLORS } from '../../utils/three-colors.js'
@@ -10,6 +9,7 @@ import {
   createViewportObserver,
   disposeObject3D,
 } from '../../utils/three-performance.js'
+import { ScrollTrigger } from '../../utils/gsap-utils.js'
 
 export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) {
   const containerRef = useRef(null)
@@ -502,17 +502,24 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
       touchStartY = e.touches[0].clientY
     }
 
-    // Scroll: scroll down -> camera slight zoom, scroll up -> reverse
-    const onScroll = () => {
-      if (reducedMotion) return
-      const scrollPercent = Math.min(window.scrollY / 600, 1)
-      targetCameraZ = defaultCameraZ - scrollPercent * 1.2
+    // GSAP ScrollTrigger: scrub camera dolly zoom and subtle perspective rotation
+    let scrollTriggerInstance = null
+    if (!reducedMotion) {
+      scrollTriggerInstance = ScrollTrigger.create({
+        trigger: container,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1.2,
+        onUpdate: (self) => {
+          targetCameraZ = defaultCameraZ - self.progress * 1.5
+          targetRotY = 0.35 + self.progress * 0.12
+        },
+      })
     }
 
     window.addEventListener('mousemove', onMouseMove, { passive: true })
     container.addEventListener('touchstart', onTouchStart, { passive: true })
     container.addEventListener('touchmove', onTouchMove, { passive: true })
-    window.addEventListener('scroll', onScroll, { passive: true })
 
     const viewportObserver = createViewportObserver(container, (visible) => {
       isVisible = visible
@@ -586,7 +593,9 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
         container.removeEventListener('touchstart', onTouchStart)
         container.removeEventListener('touchmove', onTouchMove)
       }
-      window.removeEventListener('scroll', onScroll)
+      if (scrollTriggerInstance) {
+        scrollTriggerInstance.kill()
+      }
       viewportObserver.disconnect()
       ro.disconnect()
 
@@ -602,12 +611,7 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
   }, [modelUrl])
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.94 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.9, ease: 'easeOut' }}
-      className="relative w-full h-full min-h-[420px] lg:min-h-[500px] flex items-center justify-center select-none"
-    >
+    <div className="relative w-full h-full min-h-[420px] lg:min-h-[500px] flex items-center justify-center select-none">
       {/* 3D Ambient Depth Brand Glow (#0F4C3A Deep Green & #D4A017 Gold) */}
       <div className="absolute -inset-2 bg-gradient-to-tr from-[#0F4C3A]/25 via-[#2DD4BF]/10 to-[#D4A017]/20 rounded-3xl blur-2xl opacity-50 pointer-events-none" />
 
@@ -617,6 +621,6 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
         className="w-full h-[400px] sm:h-[460px] lg:h-[490px] rounded-3xl overflow-hidden border border-white/20 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65)] bg-slate-950/85 backdrop-blur-[2px] relative pointer-events-auto cursor-grab active:cursor-grabbing"
         aria-label="Interactive 3D Architectural Corporate Skyscraper HQ"
       />
-    </motion.div>
+    </div>
   )
 }
