@@ -1,7 +1,20 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://lcbwpykligrzpfthycay.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_Cfz_pCyPnASyrQ73gnDtUw_sge_u1rB'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error(
+    'Missing Supabase Environment Variables! Please define VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env or Vercel Environment Variables.'
+  )
+}
+
+export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '', {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  },
+})
+
 

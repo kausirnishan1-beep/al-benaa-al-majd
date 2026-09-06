@@ -1,44 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
 
-const DEFAULT_PROJECTS = [
-  {
-    id: 'proj-1',
-    title: 'Al-Narjis Commercial Plaza & Business Hub',
-    titleAr: 'مجمع النرجس التجاري والأعمال',
-    company: 'benaa',
-    category: 'construction',
-    badge: 'AL BENAA AL RAHAB CONTRACTING EST.',
-    badgeAr: 'مؤسسة البناء الرحاب للمقاولات',
-    image: 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80',
-    description: 'Turnkey structural construction and architectural finishing of a multi-tier commercial complex in Riyadh.',
-    descriptionAr: 'تنفيذ أعمال الهيكل الخرساني والتشطيبات المعمارية لمجمع تجاري حديث بالرياض.',
-    location: 'Riyadh, Saudi Arabia',
-    locationAr: 'الرياض، المملكة العربية السعودية',
-    year: '2024',
-    isFeatured: true,
-  },
-  {
-    id: 'proj-2',
-    title: 'Industrial Heavy Equipment & Materials Supply',
-    titleAr: 'عقد توريد معدات ومواد صناعية ثقيلة',
-    company: 'majd',
-    category: 'import-export',
-    badge: 'AL MAJD LINES FOR TRADE & IMPORT',
-    badgeAr: 'مؤسسة خطوط المجد للتجارة والاستيراد',
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
-    description: 'Cross-border procurement and customs clearance for mega-infrastructure construction equipment.',
-    descriptionAr: 'استيراد وتوريد معدات هندسية وتخليص جمركي متكامل لمشاريع البنية التحتية.',
-    location: 'Dammam Port & Riyadh',
-    locationAr: 'ميناء الدمام والرياض',
-    year: '2024',
-    isFeatured: true,
-  },
-]
-
 export function useProjects() {
-  const [projects, setProjects] = useState(DEFAULT_PROJECTS)
-  const [loading, setLoading] = useState(false)
+  const [projects, setProjects] = useState([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   const fetchProjects = useCallback(async () => {

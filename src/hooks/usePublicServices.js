@@ -1,52 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../utils/supabaseClient.js'
 
-const DEFAULT_SERVICES = [
-  {
-    id: 'benaa-construction',
-    companyId: 'benaa',
-    title: 'General Construction & Contracting',
-    titleAr: 'المقاولات العامة والإنشاءات',
-    description: 'Turnkey residential and commercial construction adhering strictly to certified engineering standards and Saudi Building Code.',
-    descriptionAr: 'تنفيذ المباني السكنية والتجارية وتسليم المفتاح وفق كود البناء السعودي.',
-    path: '/benaa/construction',
-    icon: 'Building2',
-  },
-  {
-    id: 'benaa-renovation',
-    companyId: 'benaa',
-    title: 'Architectural Renovation & Remodeling',
-    titleAr: 'الترميم المعماري والتجديد',
-    description: 'Comprehensive structural restoration, interior modernization, and facade enhancement for historical and contemporary properties.',
-    descriptionAr: 'أعمال الترميم والتطوير المعماري وتحديث الواجهات والمباني.',
-    path: '/benaa/renovation',
-    icon: 'Hammer',
-  },
-  {
-    id: 'majd-import-export',
-    companyId: 'majd',
-    title: 'Global Import & Export Solutions',
-    titleAr: 'الاستيراد والتصدير الدولي',
-    description: 'Seamless cross-border trading operations with streamlined customs clearance and end-to-end documentation handling.',
-    descriptionAr: 'حلول متكاملة في عمليات الاستيراد والتصدير والتخليص الجمركي.',
-    path: '/majd/import-export',
-    icon: 'Globe',
-  },
-  {
-    id: 'majd-logistics',
-    companyId: 'majd',
-    title: 'Agile Freight & Logistics',
-    titleAr: 'الخدمات اللوجستية والشحن',
-    description: 'Multi-modal international shipping, secure regional warehousing, and reliable freight distribution network.',
-    descriptionAr: 'خدمات الشحن الدولي والتخزين والتوزيع اللوجستي السريع.',
-    path: '/majd/logistics',
-    icon: 'Truck',
-  },
-]
-
 export function usePublicServices() {
-  const [services, setServices] = useState(DEFAULT_SERVICES)
-  const [loading, setLoading] = useState(false)
+  const [services, setServices] = useState([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   const fetchServices = useCallback(async () => {
