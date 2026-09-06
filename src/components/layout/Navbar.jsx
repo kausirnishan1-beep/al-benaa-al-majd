@@ -5,11 +5,14 @@ import { Menu, X, Building2, PhoneCall } from 'lucide-react'
 import { mainNav } from '../../data/navigation.js'
 import Container from '../common/Container.jsx'
 import { useScroll } from '../../hooks/useScroll.js'
+import { useSettings } from '../../admin/hooks/useSettings.js'
 import MobileMenu from './MobileMenu.jsx'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const scrolled = useScroll()
+  const { settings } = useSettings()
+  const general = settings?.general || {}
 
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md' : 'bg-white/90 backdrop-blur'}`}>
@@ -20,10 +23,10 @@ export default function Navbar() {
           </div>
           <div className="min-w-0">
             <span className="font-extrabold text-benaa text-xs sm:text-base md:text-lg block leading-tight tracking-tight uppercase truncate">
-              AL BENAA & AL MAJD
+              {general.siteNameEn || 'AL BENAA & AL MAJD'}
             </span>
             <span className="text-[10px] sm:text-xs font-semibold text-majd block font-arabic leading-tight truncate">
-              مؤسسة البناء الرحاب وخطوط المجد
+              {general.siteNameAr || 'مؤسسة البناء الرحاب وخطوط المجد'}
             </span>
           </div>
         </NavLink>

@@ -111,7 +111,9 @@ export default function Footer() {
       </Container>
 
       <div className="border-t border-white/10 py-5 px-4 text-center text-white/60 text-xs">
-        <p className="max-w-4xl mx-auto break-words">© {new Date().getFullYear()} AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT. All rights reserved. | جميع الحقوق محفوظة</p>
+        <p className="max-w-4xl mx-auto break-words">
+          © {new Date().getFullYear()} {general.siteNameEn || 'AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT'}. All rights reserved. | جميع الحقوق محفوظة
+        </p>
       </div>
     </footer>
   )

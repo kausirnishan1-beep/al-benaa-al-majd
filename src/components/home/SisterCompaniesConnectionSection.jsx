@@ -1,10 +1,15 @@
 import { lazy, Suspense } from 'react'
 import Container from '../common/Container.jsx'
 import SectionTitle from '../common/SectionTitle.jsx'
+import { useCompanies } from '../../hooks/useCompanies.js'
 
 const SisterCompanies3DConnection = lazy(() => import('../3d/SisterCompanies3DConnection.jsx'))
 
 export default function SisterCompaniesConnectionSection() {
+  const { getCompany } = useCompanies()
+  const benaa = getCompany('benaa')
+  const majd = getCompany('majd')
+
   return (
     <section className="py-20 md:py-28 bg-gradient-to-b from-white via-slate-50/60 to-white relative overflow-hidden border-y border-gray-100">
       {/* Background subtle ambient glows */}
@@ -42,15 +47,15 @@ export default function SisterCompaniesConnectionSection() {
             {/* Live Indicator Badges */}
             <div className="absolute top-3 sm:top-4 left-3 sm:left-4 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-benaa-dark/90 border border-emerald-500/30 text-[10px] sm:text-[11px] text-emerald-300 font-mono shadow-lg backdrop-blur-md max-w-[45%]">
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
-              <span className="truncate">AL BENAA</span>
+              <span className="truncate">{benaa?.name ? benaa.name.split(' CONTRACTING')[0] : 'AL BENAA'}</span>
             </div>
 
             <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-[#402e03]/90 border border-amber-500/30 text-[10px] sm:text-[11px] text-amber-300 font-mono shadow-lg backdrop-blur-md max-w-[45%]">
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0"></span>
-              <span className="truncate">AL MAJD</span>
+              <span className="truncate">{majd?.name ? majd.name.split(' FOR TRADE')[0] : 'AL MAJD'}</span>
             </div>
 
-            </div>
+          </div>
         </div>
       </Container>
     </section>

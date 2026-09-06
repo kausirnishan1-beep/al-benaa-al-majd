@@ -1,18 +1,26 @@
 import { Target, Eye } from 'lucide-react'
 import Container from '../components/common/Container.jsx'
 import SectionTitle from '../components/common/SectionTitle.jsx'
+import { useSettings } from '../admin/hooks/useSettings.js'
+import { useCompanies } from '../hooks/useCompanies.js'
 
 export default function About() {
+  const { settings } = useSettings()
+  const { getCompany } = useCompanies()
+  const general = settings?.general || {}
+  const benaa = getCompany('benaa')
+  const majd = getCompany('majd')
+
   return (
     <div className="py-16 md:py-24">
       <Container>
         <SectionTitle
           eyebrow="Corporate Profile"
           eyebrowAr="الملف التعريفي للمجموعة"
-          title="About AL BENAA & AL MAJD"
-          titleAr="نبذة عن مؤسسة البناء الرحاب ومؤسسة خطوط المجد"
-          subtitle="Pioneering modern construction contracting and strategic international trade in Saudi Arabia."
-          subtitleAr="رواد المقاولات والإنشاءات الحديثة والتجارة والاستيراد والتصدير في المملكة العربية السعودية."
+          title={`About ${general.siteNameEn || 'AL BENAA & AL MAJD'}`}
+          titleAr={`نبذة عن ${general.siteNameAr || 'مؤسسة البناء الرحاب ومؤسسة خطوط المجد'}`}
+          subtitle={general.taglineEn || 'Pioneering modern construction contracting and strategic international trade in Saudi Arabia.'}
+          subtitleAr={general.taglineAr || 'رواد المقاولات والإنشاءات الحديثة والتجارة والاستيراد والتصدير في المملكة العربية السعودية.'}
         />
 
         <div className="max-w-4xl mx-auto space-y-8 text-gray-700 leading-relaxed">
@@ -20,10 +28,10 @@ export default function About() {
             <h3 className="text-2xl font-extrabold text-benaa mb-1">Our Corporate Legacy</h3>
             <p className="text-sm font-bold text-majd font-arabic mb-4">مسيرتنا ورؤيتنا المؤسسية</p>
             <p className="text-base text-gray-700 leading-relaxed mb-3">
-              Operating in the Kingdom of Saudi Arabia, our alliance comprises two fully certified commercial establishments: <strong>AL BENAA AL RAHAB CONTRACTING EST.</strong> (specializing in general construction, civil contracting, renovation, and project management) and <strong>AL MAJD LINES FOR TRADE & IMPORT</strong> (specializing in international product sourcing, commercial imports, building materials, and logistics). Together, we deliver turnkey integrated engineering solutions, premium building materials, and cross-border commercial execution.
+              Operating in the Kingdom of Saudi Arabia, our alliance comprises two fully certified commercial establishments: <strong>{benaa?.name || 'AL BENAA AL RAHAB CONTRACTING EST.'}</strong> ({benaa?.tagline || 'specializing in general construction, civil contracting, renovation, and project management'}) and <strong>{majd?.name || 'AL MAJD LINES FOR TRADE & IMPORT'}</strong> ({majd?.tagline || 'specializing in international product sourcing, commercial imports, building materials, and logistics'}). Together, we deliver turnkey integrated engineering solutions, premium building materials, and cross-border commercial execution.
             </p>
             <p className="text-sm text-gray-600 font-arabic leading-relaxed">
-              كيان سعودي رائد يضم مؤسستين متخصصتين ومعتمدتين: مؤسسة البناء الرحاب للمقاولات (المتخصصة في المقاولات العامة والإنشاءات والترميم وإدارة المشاريع)، ومؤسسة خطوط المجد للتجارة والاستيراد (المتخصصة في الاستيراد والتجارة وتوريد المواد والحلول اللوجستية). نسعى لتقديم حلول شاملة بأعلى معايير الجودة والاحترافية والكفاءة التشغيلية.
+              كيان سعودي رائد يضم مؤسستين متخصصتين ومعتمدتين: <strong>{benaa?.nameAr || 'مؤسسة البناء الرحاب للمقاولات'}</strong> ({benaa?.taglineAr || 'المتخصصة في المقاولات العامة والإنشاءات والترميم وإدارة المشاريع'})، و<strong>{majd?.nameAr || 'مؤسسة خطوط المجد للتجارة والاستيراد'}</strong> ({majd?.taglineAr || 'المتخصصة في الاستيراد والتجارة وتوريد المواد والحلول اللوجستية'}). نسعى لتقديم حلول شاملة بأعلى معايير الجودة والاحترافية والكفاءة التشغيلية.
             </p>
           </div>
 
