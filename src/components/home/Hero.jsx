@@ -16,7 +16,7 @@ export default function Hero() {
   const majdCompany = getCompany('majd')
 
   return (
-    <section className="relative bg-gradient-to-br from-benaa via-benaa-dark to-[#06241b] text-white overflow-hidden py-12 sm:py-16 md:py-24">
+    <section className="relative bg-gradient-to-br from-benaa via-benaa-dark to-[#06241b] text-white overflow-hidden py-10 sm:py-16 md:py-20 lg:py-24">
       {/* Background geometric accents */}
       <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#d4a017_1px,transparent_1px)] [background-size:24px_24px]"></div>
       
@@ -108,7 +108,7 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.15 }}
-            className="lg:col-span-5 relative w-full h-[320px] sm:h-[400px] lg:h-[500px] rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-b from-white/5 to-transparent backdrop-blur-[2px] shadow-2xl flex items-center justify-center mt-4 lg:mt-0"
+            className="lg:col-span-5 relative w-full h-[340px] sm:h-[420px] lg:h-[500px] rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-b from-white/5 to-transparent backdrop-blur-[2px] shadow-2xl flex items-center justify-center mt-8 lg:mt-0"
           >
             <Suspense
               fallback={

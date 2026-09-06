@@ -451,6 +451,25 @@ export default function Hero3DBuilding() {
       targetRotX = 0.04 - y * 0.14
     }
 
+    let touchStartX = 0
+    let touchStartY = 0
+    const onTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX
+        touchStartY = e.touches[0].clientY
+      }
+    }
+
+    const onTouchMove = (e) => {
+      if (reducedMotion || e.touches.length !== 1) return
+      const deltaX = e.touches[0].clientX - touchStartX
+      const deltaY = e.touches[0].clientY - touchStartY
+      targetRotY += deltaX * 0.006
+      targetRotX = Math.max(-0.2, Math.min(0.25, targetRotX - deltaY * 0.003))
+      touchStartX = e.touches[0].clientX
+      touchStartY = e.touches[0].clientY
+    }
+
     const onScroll = () => {
       if (reducedMotion) return
       const scrollPercent = Math.min(window.scrollY / 600, 1)
@@ -458,6 +477,8 @@ export default function Hero3DBuilding() {
     }
 
     window.addEventListener('mousemove', onMouseMove, { passive: true })
+    container.addEventListener('touchstart', onTouchStart, { passive: true })
+    container.addEventListener('touchmove', onTouchMove, { passive: true })
     window.addEventListener('scroll', onScroll, { passive: true })
 
     const viewportObserver = createViewportObserver(container, (visible) => {
@@ -523,6 +544,10 @@ export default function Hero3DBuilding() {
     return () => {
       cancelAnimationFrame(animId)
       window.removeEventListener('mousemove', onMouseMove)
+      if (container) {
+        container.removeEventListener('touchstart', onTouchStart)
+        container.removeEventListener('touchmove', onTouchMove)
+      }
       window.removeEventListener('scroll', onScroll)
       viewportObserver.disconnect()
       ro.disconnect()
