@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
+import OptimizedImage from '../common/OptimizedImage.jsx'
 
 export default function ProjectCard({ project }) {
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
@@ -40,13 +41,14 @@ export default function ProjectCard({ project }) {
       className="h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl bg-white border border-gray-100 flex flex-col group relative will-change-transform"
     >
       <div className="relative aspect-video overflow-hidden bg-gray-100">
-        <img
+        <OptimizedImage
           src={project.image}
           alt={project.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
+          aspectRatio="16/9"
+          className="group-hover:scale-105 transition-transform duration-500"
+          fallbackText={project.title}
         />
-        <div className="absolute top-3 right-3 bg-benaa text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+        <div className="absolute top-3 right-3 bg-benaa text-white text-xs font-semibold px-3 py-1 rounded-full shadow z-10">
           {project.badge || (project.company === 'benaa' ? 'Al-Benaa' : 'Al-Majd')}
         </div>
       </div>

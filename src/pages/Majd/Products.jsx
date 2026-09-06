@@ -2,6 +2,7 @@ import { ArrowUpRight } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
+import OptimizedImage from '../../components/common/OptimizedImage.jsx'
 import { useProducts } from '../../admin/hooks/useProducts.js'
 
 export default function Products() {
@@ -33,13 +34,14 @@ export default function Products() {
               className="rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white border border-gray-100 flex flex-col group"
             >
               <div className="relative aspect-video overflow-hidden bg-gray-100">
-                <img
+                <OptimizedImage
                   src={p.image}
                   alt={p.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
+                  aspectRatio="16/9"
+                  className="group-hover:scale-105 transition-transform duration-500"
+                  fallbackText={p.name}
                 />
-                <div className="absolute top-3 right-3 bg-majd text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow tracking-tight">
+                <div className="absolute top-3 right-3 bg-majd text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow tracking-tight z-10">
                   AL MAJD LINES
                 </div>
               </div>
