@@ -53,9 +53,10 @@ export default function Contact3DPin() {
     envCanvas.height = 256
     const ctx = envCanvas.getContext('2d')
     const skyGrad = ctx.createLinearGradient(0, 0, 0, 256)
-    skyGrad.addColorStop(0, '#064e3b')
-    skyGrad.addColorStop(0.35, '#0284c7')
-    skyGrad.addColorStop(0.65, '#042f2e')
+    skyGrad.addColorStop(0, '#0a3528') // Benaa deep dark green
+    skyGrad.addColorStop(0.35, '#0f4c3a') // Benaa green
+    skyGrad.addColorStop(0.55, '#fef08a') // Warm gold sun horizon
+    skyGrad.addColorStop(0.75, '#1e293b') // Slate
     skyGrad.addColorStop(1, '#020617')
     ctx.fillStyle = skyGrad
     ctx.fillRect(0, 0, 512, 256)
@@ -107,15 +108,15 @@ export default function Contact3DPin() {
     groundGroup.add(rimMesh)
 
     // Map Grid / Street Crosshairs
-    const gridHelper = new THREE.GridHelper(2.8, 12, 0x38bdf8, 0x1e3a5f)
+    const gridHelper = new THREE.GridHelper(2.8, 12, 0x1a6b52, 0x1e293b)
     gridHelper.position.y = 0.08
     gridHelper.material.opacity = 0.4
     gridHelper.material.transparent = true
     groundGroup.add(gridHelper)
 
-    // Target Center Target Disc (Google Maps Blue Dot Location Anchor)
+    // Target Center Target Disc (Location Anchor)
     const targetGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.02, 24)
-    const targetMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
+    const targetMat = new THREE.MeshBasicMaterial({ color: 0x14b8a6 }) // Muted technical teal
     const targetDot = new THREE.Mesh(targetGeo, targetMat)
     targetDot.position.y = 0.085
     groundGroup.add(targetDot)
@@ -123,10 +124,10 @@ export default function Contact3DPin() {
     // Concentric Target Rings
     const tRingGeo1 = new THREE.RingGeometry(0.45, 0.49, 36)
     const tRingMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
+      color: 0x14b8a6,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.65,
     })
     const tRing1 = new THREE.Mesh(tRingGeo1, tRingMat)
     tRing1.rotation.x = -Math.PI / 2
@@ -142,10 +143,10 @@ export default function Contact3DPin() {
     // Expanding Radar Shockwave Rings
     const pulseRingGeo = new THREE.RingGeometry(0.2, 0.26, 36)
     const pulseMat = new THREE.MeshBasicMaterial({
-      color: 0x2dd4bf,
+      color: 0x14b8a6, // Muted technical teal
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.8,
     })
     const pulseRing = new THREE.Mesh(pulseRingGeo, pulseMat)
     pulseRing.rotation.x = -Math.PI / 2
@@ -155,10 +156,10 @@ export default function Contact3DPin() {
     // Rotating Radar Sweep Wedge
     const sweepGeo = new THREE.CircleGeometry(2.0, 36, 0, Math.PI / 3)
     const sweepMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
+      color: 0x14b8a6,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.18,
+      opacity: 0.14,
     })
     const sweepMesh = new THREE.Mesh(sweepGeo, sweepMat)
     sweepMesh.rotation.x = -Math.PI / 2
@@ -254,12 +255,12 @@ export default function Contact3DPin() {
     orbitMesh.rotation.x = Math.PI / 3.5
     pinGroup.add(orbitMesh)
 
-    // Vertical Upward Sky Beacon Light Shaft
+    // Vertical Upward Sky Beacon Light Shaft (Gold/Amber highlight)
     const beaconGeo = new THREE.CylinderGeometry(0.04, 0.18, 2.6, 16)
     const beaconMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
+      color: 0xd4a017,
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.35,
     })
     const beacon = new THREE.Mesh(beaconGeo, beaconMat)
     beacon.position.y = 1.8
@@ -268,7 +269,7 @@ export default function Contact3DPin() {
     // ----------------------------------------------------------------
     // 5. Lighting & Particles
     // ----------------------------------------------------------------
-    const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x0f172a, 1.5)
+    const hemiLight = new THREE.HemisphereLight(0xfffaed, 0x0f172a, 1.5)
     scene.add(hemiLight)
 
     const dirLight = new THREE.DirectionalLight(0xfffbeb, 3.2)
@@ -289,10 +290,10 @@ export default function Contact3DPin() {
     }
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3))
     const pMat = new THREE.PointsMaterial({
-      color: 0x93c5fd,
-      size: 0.04,
+      color: 0xfffaed,
+      size: 0.03,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.5,
     })
     const particles = new THREE.Points(pGeo, pMat)
     scene.add(particles)

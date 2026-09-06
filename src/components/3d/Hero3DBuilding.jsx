@@ -76,11 +76,11 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     envCanvas.height = 256
     const ctx = envCanvas.getContext('2d')
 
-    // Natural Sky & Horizon Gradient: Azure Sky -> Warm Sun Glow -> Desert/Plaza Ground
+    // Natural Sky & Horizon Gradient: Deep Emerald/Slate Zenith -> Warm Sun Glow -> Granite Plaza
     const skyGrad = ctx.createLinearGradient(0, 0, 0, 256)
-    skyGrad.addColorStop(0.0, '#1e3a8a') // Deep blue zenith
-    skyGrad.addColorStop(0.25, '#3b82f6') // Clear sky blue
-    skyGrad.addColorStop(0.48, '#bfdbfe') // Atmosphere haze
+    skyGrad.addColorStop(0.0, '#0a3528') // Deep architectural green zenith
+    skyGrad.addColorStop(0.28, '#1e293b') // Neutral slate atmosphere
+    skyGrad.addColorStop(0.48, '#e2e8f0') // Light ambient horizon
     skyGrad.addColorStop(0.52, '#fef08a') // Warm sun horizon
     skyGrad.addColorStop(0.58, '#334155') // Distant skyline
     skyGrad.addColorStop(0.70, '#1e293b') // Granite ground
@@ -107,12 +107,12 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     // ----------------------------------------------------------------
     // High-spec reflective solar curtain wall glass (MeshPhysicalMaterial)
     const towerGlassMat = new THREE.MeshPhysicalMaterial({
-      color: 0x93c5fd,
+      color: 0x143b30, // Architectural deep emerald-slate tint
       emissive: THREE_COLORS.BENAA.deepDark,
-      emissiveIntensity: 0.12,
-      metalness: 0.12,
+      emissiveIntensity: 0.18,
+      metalness: 0.15,
       roughness: 0.05,
-      transmission: 0.75,
+      transmission: 0.72,
       thickness: 1.2,
       ior: 1.52,
       transparent: true,
@@ -443,17 +443,17 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     sunLight.shadow.bias = -0.0004
     scene.add(sunLight)
 
-    // Soft sky rim light
-    const rimLight = new THREE.DirectionalLight(0x93c5fd, 1.3)
+    // Soft warm architectural rim light
+    const rimLight = new THREE.DirectionalLight(0xfffaed, 1.1)
     rimLight.position.set(-8, 9, -7)
     scene.add(rimLight)
 
     // Corporate brand bounce lights
-    const benaaBounce = new THREE.PointLight(THREE_COLORS.BENAA.primary, 0.8, 15)
+    const benaaBounce = new THREE.PointLight(THREE_COLORS.BENAA.light, 1.2, 16)
     benaaBounce.position.set(-3, 1, 3)
     scene.add(benaaBounce)
 
-    const majdBounce = new THREE.PointLight(THREE_COLORS.MAJD.light, 0.7, 15)
+    const majdBounce = new THREE.PointLight(THREE_COLORS.MAJD.light, 0.9, 16)
     majdBounce.position.set(3, 5, 2)
     scene.add(majdBounce)
 
@@ -629,8 +629,8 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
 
   return (
     <div className="relative w-full h-full min-h-[420px] lg:min-h-[500px] flex items-center justify-center select-none">
-      {/* 3D Ambient Depth Brand Glow (#0F4C3A Deep Green & #D4A017 Gold) */}
-      <div className="absolute -inset-2 bg-gradient-to-tr from-[#0F4C3A]/25 via-[#2DD4BF]/10 to-[#D4A017]/20 rounded-3xl blur-2xl opacity-50 pointer-events-none" />
+      {/* 3D Ambient Depth Brand Glow (#0F4C3A Deep Green, #14B8A6 Muted Teal, #D4A017 Gold) */}
+      <div className="absolute -inset-2 bg-gradient-to-tr from-[#0F4C3A]/25 via-[#14B8A6]/10 to-[#D4A017]/20 rounded-3xl blur-2xl opacity-40 pointer-events-none" />
 
       {/* 3D WebGL Canvas Container */}
       <div

@@ -53,10 +53,10 @@ export default function SisterCompanies3DConnection() {
     const ctx = envCanvas.getContext('2d')
 
     const skyGrad = ctx.createLinearGradient(0, 0, 0, 256)
-    skyGrad.addColorStop(0.0, '#064e3b') // Deep Green
-    skyGrad.addColorStop(0.25, '#0284c7') // Sky Blue
-    skyGrad.addColorStop(0.5, '#fef08a') // Soft Horizon Gold
-    skyGrad.addColorStop(0.65, '#334155') // Slate
+    skyGrad.addColorStop(0.0, '#0a3528') // Deep Green #0A3528
+    skyGrad.addColorStop(0.30, '#0f4c3a') // Benaa Green #0F4C3A
+    skyGrad.addColorStop(0.52, '#fef08a') // Soft Horizon Gold
+    skyGrad.addColorStop(0.68, '#1e293b') // Slate
     skyGrad.addColorStop(1.0, '#0f172a')
     ctx.fillStyle = skyGrad
     ctx.fillRect(0, 0, 512, 256)
@@ -101,8 +101,8 @@ export default function SisterCompanies3DConnection() {
 
     // Left Edge Marker (Green) & Right Edge Marker (Gold)
     const edgeGeo = new THREE.BoxGeometry(5.2, 0.03, 0.04)
-    const edgeMatGreen = new THREE.MeshBasicMaterial({ color: 0x10b981 })
-    const edgeMatGold = new THREE.MeshBasicMaterial({ color: 0xf59e0b })
+    const edgeMatGreen = new THREE.MeshBasicMaterial({ color: 0x1a6b52 })
+    const edgeMatGold = new THREE.MeshBasicMaterial({ color: 0xd4a017 })
 
     const edgeLeft = new THREE.Mesh(edgeGeo, edgeMatGreen)
     edgeLeft.position.set(-2.6, -2.03, 2.5)
@@ -121,8 +121,8 @@ export default function SisterCompanies3DConnection() {
 
     // Emerald Green Tinted Architectural Solar Glass
     const benaaGlassMat = new THREE.MeshPhysicalMaterial({
-      color: 0x34d399,
-      emissive: 0x064e3b,
+      color: 0x143b30,
+      emissive: 0x051b14,
       emissiveIntensity: 0.2,
       roughness: 0.05,
       metalness: 0.15,
@@ -149,7 +149,7 @@ export default function SisterCompanies3DConnection() {
     })
 
     const benaaGreenAccent = new THREE.MeshStandardMaterial({
-      color: 0x10b981,
+      color: 0x1a6b52,
       metalness: 0.8,
       roughness: 0.2,
     })
@@ -201,7 +201,7 @@ export default function SisterCompanies3DConnection() {
     benaaGroup.add(bSpire)
 
     const bBeaconGeo = new THREE.SphereGeometry(0.07, 12, 12)
-    const bBeaconMat = new THREE.MeshBasicMaterial({ color: 0x10b981 })
+    const bBeaconMat = new THREE.MeshBasicMaterial({ color: 0x1a6b52 })
     const bBeacon = new THREE.Mesh(bBeaconGeo, bBeaconMat)
     bBeacon.position.set(0, 3.75, 0)
     benaaGroup.add(bBeacon)
@@ -223,16 +223,16 @@ export default function SisterCompanies3DConnection() {
     })
 
     const majdGoldMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
+      color: 0xd4a017,
       metalness: 0.9,
       roughness: 0.2,
     })
 
     const majdGoldWireMat = new THREE.MeshBasicMaterial({
-      color: 0xf59e0b,
+      color: 0xd4a017,
       wireframe: true,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.45,
     })
 
     const mGlobeGeo = new THREE.SphereGeometry(1.35, 26, 26)
@@ -251,7 +251,12 @@ export default function SisterCompanies3DConnection() {
     majdGroup.add(mOrbit1)
 
     const mRingGeo2 = new THREE.TorusGeometry(2.1, 0.016, 16, 48)
-    const mOrbit2 = new THREE.Mesh(mRingGeo2, majdGoldMat)
+    const mOrbit2Mat = new THREE.MeshStandardMaterial({
+      color: 0x8b6508, // Dark Gold
+      metalness: 0.9,
+      roughness: 0.25,
+    })
+    const mOrbit2 = new THREE.Mesh(mRingGeo2, mOrbit2Mat)
     mOrbit2.position.y = 0.15
     mOrbit2.rotation.x = -Math.PI / 4
     mOrbit2.rotation.y = Math.PI / 4
@@ -270,10 +275,10 @@ export default function SisterCompanies3DConnection() {
     centerGroup.position.set(0, 0.1, 0)
     connectionMaster.add(centerGroup)
 
-    // Central Teal Synergy Nexus
+    // Central Muted Teal Synergy Nexus
     const coreCrystalGeo = new THREE.OctahedronGeometry(0.55, 0)
     const coreCrystalMat = new THREE.MeshPhysicalMaterial({
-      color: 0x14b8a6, // Pure Teal
+      color: 0x14b8a6, // Muted refined technical teal
       emissive: 0x0f766e,
       emissiveIntensity: 0.6,
       roughness: 0.1,
@@ -287,7 +292,7 @@ export default function SisterCompanies3DConnection() {
     // Architectural Sky-Bridge Conduits (Teal Connection)
     const bridgeGeo = new THREE.CylinderGeometry(0.045, 0.045, 7.2, 12)
     const bridgeMat = new THREE.MeshBasicMaterial({
-      color: 0x14b8a6, // Teal Connection Corridor
+      color: 0x14b8a6, // Muted Teal Connection Corridor
       transparent: true,
       opacity: 0.85,
     })
@@ -307,7 +312,7 @@ export default function SisterCompanies3DConnection() {
     // ----------------------------------------------------------------
     // 4. Lighting (Clean Daylight + Brand Accent Bounce)
     // ----------------------------------------------------------------
-    const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x1e293b, 1.35)
+    const hemiLight = new THREE.HemisphereLight(0xfffaed, 0x1e293b, 1.35)
     scene.add(hemiLight)
 
     const sunLight = new THREE.DirectionalLight(0xfffbeb, 2.8)
@@ -315,15 +320,15 @@ export default function SisterCompanies3DConnection() {
     scene.add(sunLight)
 
     // Green bounce on left, Teal bounce in center, Gold bounce on right
-    const pGreen = new THREE.PointLight(0x10b981, 2.2, 14)
+    const pGreen = new THREE.PointLight(0x1a6b52, 2.2, 14)
     pGreen.position.set(-4, 2, 3)
     scene.add(pGreen)
 
-    const pTeal = new THREE.PointLight(0x14b8a6, 2.0, 12)
+    const pTeal = new THREE.PointLight(0x14b8a6, 1.8, 12)
     pTeal.position.set(0, 1, 3)
     scene.add(pTeal)
 
-    const pGold = new THREE.PointLight(0xf59e0b, 2.2, 14)
+    const pGold = new THREE.PointLight(0xd4a017, 2.2, 14)
     pGold.position.set(4, 2, 3)
     scene.add(pGold)
 

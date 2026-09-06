@@ -172,7 +172,7 @@ export default function BenaaConstruction3D() {
 
     // Green Laser Rebar & Alignment wireframe
     const emeraldWireMat = new THREE.MeshBasicMaterial({
-      color: 0x10b981,
+      color: 0x1a6b52, // Benaa light green
       wireframe: true,
       transparent: true,
       opacity: 0.5,
@@ -185,11 +185,11 @@ export default function BenaaConstruction3D() {
       roughness: 0.2,
     })
 
-    // Double-glazed reflective glass
+    // Double-glazed reflective architectural glass
     const glassMat = new THREE.MeshPhysicalMaterial({
-      color: 0x93c5fd,
+      color: 0x143b30, // Architectural emerald slate glass
       roughness: 0.05,
-      metalness: 0.12,
+      metalness: 0.15,
       transmission: 0.72,
       thickness: 1.2,
       ior: 1.52,
@@ -203,14 +203,14 @@ export default function BenaaConstruction3D() {
     // Illuminated warm interior floor plates
     const interiorFloorMat = new THREE.MeshStandardMaterial({
       color: 0xfef08a,
-      emissive: 0xf59e0b,
+      emissive: 0xd4a017,
       emissiveIntensity: 0.35,
       roughness: 0.35,
     })
 
     // Gold / Champagne Spire Accent
     const goldMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
+      color: 0xd4a017,
       metalness: 0.9,
       roughness: 0.2,
     })
@@ -228,9 +228,9 @@ export default function BenaaConstruction3D() {
     fBase.position.y = -2.2
     foundationGroup.add(fBase)
 
-    // Laser Blueprint Grid
-    const grid = new THREE.GridHelper(7.2, 16, 0x10b981, 0x1e3a5f)
-    grid.position.y = -1.98
+    // Foundation Grid
+    const grid = new THREE.GridHelper(7.2, 16, 0x1a6b52, 0x1e293b)
+    grid.position.y = -2.398
     foundationGroup.add(grid)
 
     // Reinforced Footing Pads
@@ -253,7 +253,7 @@ export default function BenaaConstruction3D() {
     })
 
     // Perimeter Safety Rails (Emerald glowing strips)
-    const railMat = new THREE.MeshBasicMaterial({ color: 0x10b981 })
+    const railMat = new THREE.MeshBasicMaterial({ color: 0x1a6b52 })
     const railGeo = new THREE.BoxGeometry(6.64, 0.04, 0.04)
     const railFront = new THREE.Mesh(railGeo, railMat)
     railFront.position.set(0, -1.98, 3.3)
@@ -383,11 +383,11 @@ export default function BenaaConstruction3D() {
 
     const loadGeo = new THREE.BoxGeometry(0.6, 0.45, 0.6)
     const loadMat = new THREE.MeshStandardMaterial({
-      color: 0x38bdf8,
+      color: 0x14b8a6, // Muted technical teal
       metalness: 0.8,
       roughness: 0.2,
-      emissive: 0x0284c7,
-      emissiveIntensity: 0.4,
+      emissive: 0x0f766e,
+      emissiveIntensity: 0.3,
     })
     const load = new THREE.Mesh(loadGeo, loadMat)
     load.position.set(2.4, -2.45, 0)
@@ -452,14 +452,14 @@ export default function BenaaConstruction3D() {
     // ----------------------------------------------------------------
     // 8. Lighting & Atmosphere
     // ----------------------------------------------------------------
-    const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x064e3b, 1.35)
+    const hemiLight = new THREE.HemisphereLight(0xfffaed, 0x0a3528, 1.35)
     scene.add(hemiLight)
 
     const sunLight = new THREE.DirectionalLight(0xfffbeb, 2.8)
     sunLight.position.set(6, 10, 8)
     scene.add(sunLight)
 
-    const benaaBounce = new THREE.PointLight(0x10b981, 1.8, 16)
+    const benaaBounce = new THREE.PointLight(0x1a6b52, 1.8, 16)
     benaaBounce.position.set(-3, 2, 4)
     scene.add(benaaBounce)
 

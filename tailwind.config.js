@@ -19,12 +19,12 @@ export default {
         },
         accent: {
           teal: {
-            DEFAULT: '#2dd4bf',
-            light: '#5eead4',
-            dark: '#14b8a6',
+            DEFAULT: '#14b8a6', // Muted architectural technical teal
+            light: '#2dd4bf',   // Subtle micro-highlight
+            dark: '#0f766e',    // Deep connection accent
           },
           amber: {
-            DEFAULT: '#f59e0b',
+            DEFAULT: '#f59e0b', // Micro-highlight only
             light: '#fbbf24',
             dark: '#d97706',
           },
