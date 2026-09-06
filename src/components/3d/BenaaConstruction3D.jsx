@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
+import { gsap } from '../../utils/gsap-utils.js'
 import {
   THREE_TIMING,
   isReducedMotion,
@@ -8,8 +9,82 @@ import {
   disposeObject3D,
 } from '../../utils/three-performance.js'
 
+const STAGES = [
+  { id: 0, titleEn: 'Foundation', titleAr: 'الأساس', desc: 'Footings & Rebar Grid' },
+  { id: 1, titleEn: 'Structure', titleAr: 'الهيكل', desc: 'Concrete Core & Steel Frames' },
+  { id: 2, titleEn: 'Construction', titleAr: 'البناء', desc: 'Active Crane & Formwork' },
+  { id: 3, titleEn: 'Finished', titleAr: 'المكتمل', desc: 'Glass Curtain & Crown Spire' },
+]
+
 export default function BenaaConstruction3D() {
   const containerRef = useRef(null)
+  const [activeStage, setActiveStage] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+  const stageGroupsRef = useRef({
+    foundation: null,
+    structure: null,
+    construction: null,
+    finished: null,
+  })
+
+  // ----------------------------------------------------------------
+  // Stage Transition Logic using GSAP
+  // ----------------------------------------------------------------
+  const applyStageTransition = useCallback((stageIndex) => {
+    const { foundation, structure, construction, finished } = stageGroupsRef.current
+    if (!foundation || !structure || !construction || !finished) return
+
+    const duration = 0.8
+    const ease = 'power2.out'
+
+    // Foundation is always base
+    foundation.visible = true
+
+    if (stageIndex === 0) {
+      // Stage 0: Foundation only
+      gsap.to(structure.scale, { y: 0.001, duration, ease, onComplete: () => { structure.visible = false } })
+      gsap.to(construction.scale, { x: 0.001, y: 0.001, z: 0.001, duration: 0.5, ease, onComplete: () => { construction.visible = false } })
+      gsap.to(finished.scale, { y: 0.001, duration: 0.5, ease, onComplete: () => { finished.visible = false } })
+    } else if (stageIndex === 1) {
+      // Stage 1: Structure (Core + Columns rise)
+      structure.visible = true
+      gsap.to(structure.scale, { y: 1, duration, ease })
+      gsap.to(construction.scale, { x: 0.001, y: 0.001, z: 0.001, duration: 0.5, ease, onComplete: () => { construction.visible = false } })
+      gsap.to(finished.scale, { y: 0.001, duration: 0.5, ease, onComplete: () => { finished.visible = false } })
+    } else if (stageIndex === 2) {
+      // Stage 2: Active Construction (Structure + Tower Crane + Formwork)
+      structure.visible = true
+      construction.visible = true
+      gsap.to(structure.scale, { y: 1, duration: 0.5, ease })
+      gsap.to(construction.scale, { x: 1, y: 1, z: 1, duration, ease })
+      gsap.to(finished.scale, { y: 0.001, duration: 0.5, ease, onComplete: () => { finished.visible = false } })
+    } else if (stageIndex === 3) {
+      // Stage 3: Finished Architectural Marvel (Glass Facade + Spire)
+      structure.visible = true
+      finished.visible = true
+      gsap.to(structure.scale, { y: 1, duration: 0.5, ease })
+      gsap.to(construction.scale, { x: 0.001, y: 0.001, z: 0.001, duration: 0.5, ease, onComplete: () => { construction.visible = false } })
+      gsap.to(finished.scale, { y: 1, duration, ease })
+    }
+  }, [])
+
+  // Auto-progression cycle
+  useEffect(() => {
+    if (isPaused) return
+    const interval = setInterval(() => {
+      setActiveStage((prev) => {
+        const next = (prev + 1) % STAGES.length
+        applyStageTransition(next)
+        return next
+      })
+    }, 5500)
+    return () => clearInterval(interval)
+  }, [isPaused, applyStageTransition])
+
+  const handleManualStageSelect = (stageId) => {
+    setActiveStage(stageId)
+    applyStageTransition(stageId)
+  }
 
   useEffect(() => {
     const container = containerRef.current
@@ -28,8 +103,7 @@ export default function BenaaConstruction3D() {
       0.1,
       1000
     )
-    // Low-angle architectural isometric view that captures full height
-    camera.position.set(3.2, 3.2, 11.8)
+    camera.position.set(3.4, 2.8, 12.2)
     camera.lookAt(0, 0.4, 0)
 
     const renderer = new THREE.WebGLRenderer({
@@ -40,11 +114,11 @@ export default function BenaaConstruction3D() {
     renderer.setSize(container.clientWidth, container.clientHeight)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2))
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.35
+    renderer.toneMappingExposure = 1.3
     container.appendChild(renderer.domElement)
 
     // ----------------------------------------------------------------
-    // 2. PMREM Sky & Construction Lighting Reflections
+    // 2. HDRI Environment Map (PMREM) with Emerald Tone
     // ----------------------------------------------------------------
     const pmremGenerator = new THREE.PMREMGenerator(renderer)
     pmremGenerator.compileEquirectangularShader()
@@ -54,9 +128,9 @@ export default function BenaaConstruction3D() {
     envCanvas.height = 256
     const ctx = envCanvas.getContext('2d')
     const skyGrad = ctx.createLinearGradient(0, 0, 0, 256)
-    skyGrad.addColorStop(0, '#064e3b')
-    skyGrad.addColorStop(0.3, '#0284c7')
-    skyGrad.addColorStop(0.6, '#0f172a')
+    skyGrad.addColorStop(0, '#064e3b') // Deep Emerald
+    skyGrad.addColorStop(0.3, '#0284c7') // Sky Blue
+    skyGrad.addColorStop(0.6, '#0f172a') // Slate
     skyGrad.addColorStop(1, '#020617')
     ctx.fillStyle = skyGrad
     ctx.fillRect(0, 0, 512, 256)
@@ -73,237 +147,241 @@ export default function BenaaConstruction3D() {
     const envMapTarget = pmremGenerator.fromEquirectangular(envTexture)
     scene.environment = envMapTarget.texture
 
-    // Master site group: scaled & centered to fit perfectly within card boundaries
+    // Master site group
     const siteMaster = new THREE.Group()
-    siteMaster.scale.set(0.62, 0.62, 0.62)
+    siteMaster.scale.set(0.60, 0.60, 0.60)
     siteMaster.position.set(0, -0.6, 0)
     scene.add(siteMaster)
 
     // ----------------------------------------------------------------
-    // 3. Foundation Ground Podium & Blueprint Grid
+    // 3. Materials
     // ----------------------------------------------------------------
-    const groundGroup = new THREE.Group()
-    siteMaster.add(groundGroup)
-
-    const foundationGeo = new THREE.BoxGeometry(6.6, 0.35, 6.6)
-    const foundationMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
-      metalness: 0.8,
-      roughness: 0.3,
-    })
-    const foundation = new THREE.Mesh(foundationGeo, foundationMat)
-    foundation.position.y = -2.18
-    groundGroup.add(foundation)
-
-    const grid = new THREE.GridHelper(7.2, 16, 0x34d399, 0x1e3a5f)
-    grid.position.y = -1.98
-    grid.material.opacity = 0.55
-    grid.material.transparent = true
-    groundGroup.add(grid)
-
-    // Perimeter Warning Accent Rails
-    const railMat = new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.8 })
-    const railGeo = new THREE.BoxGeometry(6.64, 0.04, 0.04)
-    const railFront = new THREE.Mesh(railGeo, railMat)
-    railFront.position.set(0, -1.98, 3.3)
-    groundGroup.add(railFront)
-
-    const railBack = new THREE.Mesh(railGeo, railMat)
-    railBack.position.set(0, -1.98, -3.3)
-    groundGroup.add(railBack)
-
-    // ----------------------------------------------------------------
-    // 4. Rising Architectural Skyscraper Structure
-    // ----------------------------------------------------------------
-    const buildingGroup = new THREE.Group()
-    siteMaster.add(buildingGroup)
-
-    // Fair-faced architectural concrete core
+    // Fair-faced concrete
     const concreteMat = new THREE.MeshStandardMaterial({
       color: 0xcfd8dc,
-      roughness: 0.7,
-      metalness: 0.2,
+      roughness: 0.82,
+      metalness: 0.05,
     })
 
-    // Reflective solar architectural glass
+    // Structural steel (Dark titanium)
+    const steelMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      metalness: 0.88,
+      roughness: 0.24,
+    })
+
+    // Green Laser Rebar & Alignment wireframe
+    const emeraldWireMat = new THREE.MeshBasicMaterial({
+      color: 0x10b981,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.5,
+    })
+
+    // Rebar rods
+    const rebarMat = new THREE.MeshStandardMaterial({
+      color: 0x94a3b8,
+      metalness: 0.92,
+      roughness: 0.2,
+    })
+
+    // Double-glazed reflective glass
     const glassMat = new THREE.MeshPhysicalMaterial({
       color: 0x93c5fd,
       roughness: 0.05,
-      metalness: 0.15,
-      transmission: 0.55,
+      metalness: 0.12,
+      transmission: 0.72,
       thickness: 1.2,
-      ior: 1.5,
+      ior: 1.52,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.92,
       clearcoat: 1.0,
       clearcoatRoughness: 0.04,
       reflectivity: 0.95,
     })
 
-    // Anodized structural steel frames & wireframes
-    const steelFrameMat = new THREE.MeshStandardMaterial({
-      color: 0xe2e8f0,
+    // Illuminated warm interior floor plates
+    const interiorFloorMat = new THREE.MeshStandardMaterial({
+      color: 0xfef08a,
+      emissive: 0xf59e0b,
+      emissiveIntensity: 0.35,
+      roughness: 0.35,
+    })
+
+    // Gold / Champagne Spire Accent
+    const goldMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
       metalness: 0.9,
       roughness: 0.2,
     })
 
-    const wireMat = new THREE.MeshBasicMaterial({
-      color: 0x34d399,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.45,
+    // ----------------------------------------------------------------
+    // 4. STAGE 1: Foundation Group (Excavation, Footings, Rebar)
+    // ----------------------------------------------------------------
+    const foundationGroup = new THREE.Group()
+    siteMaster.add(foundationGroup)
+    stageGroupsRef.current.foundation = foundationGroup
+
+    // Ground Excavation Base Slab
+    const fBaseGeo = new THREE.BoxGeometry(6.6, 0.4, 6.6)
+    const fBase = new THREE.Mesh(fBaseGeo, concreteMat)
+    fBase.position.y = -2.2
+    foundationGroup.add(fBase)
+
+    // Laser Blueprint Grid
+    const grid = new THREE.GridHelper(7.2, 16, 0x10b981, 0x1e3a5f)
+    grid.position.y = -1.98
+    foundationGroup.add(grid)
+
+    // Reinforced Footing Pads
+    const footingGeo = new THREE.BoxGeometry(1.2, 0.3, 1.2)
+    const footingCoords = [
+      [-1.8, -1.8], [0, -1.8], [1.8, -1.8],
+      [-1.8, 0], [1.8, 0],
+      [-1.8, 1.8], [0, 1.8], [1.8, 1.8]
+    ]
+    footingCoords.forEach(([fx, fz]) => {
+      const footing = new THREE.Mesh(footingGeo, concreteMat)
+      footing.position.set(fx, -1.85, fz)
+      foundationGroup.add(footing)
+
+      // Rebar starter mesh on footings
+      const rMeshGeo = new THREE.BoxGeometry(0.8, 0.2, 0.8)
+      const rMesh = new THREE.Mesh(rMeshGeo, emeraldWireMat)
+      rMesh.position.set(fx, -1.75, fz)
+      foundationGroup.add(rMesh)
     })
 
-    // Illuminated warm interior floor plates
-    const litFloorMat = new THREE.MeshStandardMaterial({
-      color: 0xfef08a,
-      emissive: 0xf59e0b,
-      emissiveIntensity: 0.4,
-      roughness: 0.35,
-    })
+    // Perimeter Safety Rails (Emerald glowing strips)
+    const railMat = new THREE.MeshBasicMaterial({ color: 0x10b981 })
+    const railGeo = new THREE.BoxGeometry(6.64, 0.04, 0.04)
+    const railFront = new THREE.Mesh(railGeo, railMat)
+    railFront.position.set(0, -1.98, 3.3)
+    foundationGroup.add(railFront)
 
-    // Level 1: Podium Core & Glass Facade (Ground to +0.0)
-    const l1GlassGeo = new THREE.BoxGeometry(3.6, 1.8, 3.6)
-    const l1Glass = new THREE.Mesh(l1GlassGeo, glassMat)
-    const l1Wire = new THREE.Mesh(l1GlassGeo, wireMat)
-    l1Glass.position.y = -1.05
-    l1Wire.position.y = -1.05
-    buildingGroup.add(l1Glass)
-    buildingGroup.add(l1Wire)
-
-    // Slabs & columns for Level 1
-    for (let y = -1.9; y <= -0.2; y += 0.45) {
-      const slabGeo = new THREE.BoxGeometry(3.7, 0.04, 3.7)
-      const slab = new THREE.Mesh(slabGeo, steelFrameMat)
-      slab.position.y = y
-      buildingGroup.add(slab)
-
-      const floorGeo = new THREE.BoxGeometry(3.5, 0.02, 3.5)
-      const floor = new THREE.Mesh(floorGeo, litFloorMat)
-      floor.position.y = y + 0.02
-      buildingGroup.add(floor)
-    }
-
-    // Level 2: Middle Tier (+0.0 to +1.6)
-    const l2GlassGeo = new THREE.BoxGeometry(2.9, 1.6, 2.9)
-    const l2Glass = new THREE.Mesh(l2GlassGeo, glassMat)
-    const l2Wire = new THREE.Mesh(l2GlassGeo, wireMat)
-    l2Glass.position.y = 0.65
-    l2Wire.position.y = 0.65
-    buildingGroup.add(l2Glass)
-    buildingGroup.add(l2Wire)
-
-    for (let y = 0.0; y <= 1.4; y += 0.45) {
-      const slabGeo = new THREE.BoxGeometry(3.0, 0.04, 3.0)
-      const slab = new THREE.Mesh(slabGeo, steelFrameMat)
-      slab.position.y = y
-      buildingGroup.add(slab)
-
-      const floorGeo = new THREE.BoxGeometry(2.8, 0.02, 2.8)
-      const floor = new THREE.Mesh(floorGeo, litFloorMat)
-      floor.position.y = y + 0.02
-      buildingGroup.add(floor)
-    }
-
-    // Level 3: Penthouse / Crown Under Construction (+1.6 to +2.8)
-    const l3Geo = new THREE.BoxGeometry(2.2, 1.2, 2.2)
-    const l3Mesh = new THREE.Mesh(l3Geo, concreteMat)
-    const l3Wire = new THREE.Mesh(l3Geo, wireMat)
-    l3Mesh.position.y = 2.05
-    l3Wire.position.y = 2.05
-    buildingGroup.add(l3Mesh)
-    buildingGroup.add(l3Wire)
-
-    // Exposed rebar columns extending from rooftop under construction
-    const rebarMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.3 })
-    const rebarCoords = [[-0.9, -0.9], [0.9, -0.9], [0.9, 0.9], [-0.9, 0.9], [0, -0.9], [0, 0.9]]
-    rebarCoords.forEach(([rx, rz]) => {
-      const rebarGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.7, 8)
-      const rebar = new THREE.Mesh(rebarGeo, rebarMat)
-      rebar.position.set(rx, 2.95, rz)
-      buildingGroup.add(rebar)
-    })
+    const railBack = new THREE.Mesh(railGeo, railMat)
+    railBack.position.set(0, -1.98, -3.3)
+    foundationGroup.add(railBack)
 
     // ----------------------------------------------------------------
-    // 5. Heavy-Duty Construction Tower Crane
+    // 5. STAGE 2: Structure Group (Concrete Core & Steel Frames)
     // ----------------------------------------------------------------
-    const craneGroup = new THREE.Group()
-    craneGroup.position.set(-2.5, -1.98, -2.0)
-    siteMaster.add(craneGroup)
+    const structureGroup = new THREE.Group()
+    structureGroup.position.y = -2.0
+    structureGroup.scale.y = 0.001
+    structureGroup.visible = false
+    siteMaster.add(structureGroup)
+    stageGroupsRef.current.structure = structureGroup
+
+    // Reinforced Concrete Central Core
+    const coreHeight = 5.2
+    const coreGeo = new THREE.BoxGeometry(1.6, coreHeight, 1.6)
+    const coreMesh = new THREE.Mesh(coreGeo, concreteMat)
+    coreMesh.position.set(0, coreHeight / 2, 0)
+    structureGroup.add(coreMesh)
+
+    // Structural Steel H-Columns rising around the core
+    const colCoords = [
+      [-1.8, -1.8], [0, -1.8], [1.8, -1.8],
+      [-1.8, 0], [1.8, 0],
+      [-1.8, 1.8], [0, 1.8], [1.8, 1.8]
+    ]
+    const colGeo = new THREE.BoxGeometry(0.12, coreHeight, 0.12)
+    colCoords.forEach(([cx, cz]) => {
+      const col = new THREE.Mesh(colGeo, steelMat)
+      col.position.set(cx, coreHeight / 2, cz)
+      structureGroup.add(col)
+    })
+
+    // Horizontal Steel Floor Slabs
+    for (let h = 0.5; h <= coreHeight; h += 0.8) {
+      const floorSlabGeo = new THREE.BoxGeometry(3.8, 0.05, 3.8)
+      const floorSlab = new THREE.Mesh(floorSlabGeo, steelMat)
+      floorSlab.position.set(0, h, 0)
+      structureGroup.add(floorSlab)
+
+      const slabWire = new THREE.Mesh(floorSlabGeo, emeraldWireMat)
+      slabWire.position.set(0, h, 0)
+      structureGroup.add(slabWire)
+    }
+
+    // Exposed Starter Rebar on top
+    for (let rx = -1.6; rx <= 1.6; rx += 0.8) {
+      for (let rz = -1.6; rz <= 1.6; rz += 0.8) {
+        const rebarGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.7, 6)
+        const rebar = new THREE.Mesh(rebarGeo, rebarMat)
+        rebar.position.set(rx, coreHeight + 0.35, rz)
+        structureGroup.add(rebar)
+      }
+    }
+
+    // ----------------------------------------------------------------
+    // 6. STAGE 3: Construction Group (Heavy-Duty Tower Crane & Scaffolding)
+    // ----------------------------------------------------------------
+    const constructionGroup = new THREE.Group()
+    constructionGroup.position.set(-2.2, -1.98, -1.8)
+    constructionGroup.scale.set(0.001, 0.001, 0.001)
+    constructionGroup.visible = false
+    siteMaster.add(constructionGroup)
+    stageGroupsRef.current.construction = constructionGroup
 
     const craneGoldMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b, // Construction gold/amber
+      color: 0xf59e0b,
       metalness: 0.85,
       roughness: 0.25,
     })
 
-    const craneDarkMat = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      metalness: 0.8,
-      roughness: 0.3,
-    })
-
-    // Crane Foundation Base Anchor
-    const cBaseGeo = new THREE.BoxGeometry(0.9, 0.3, 0.9)
-    const cBase = new THREE.Mesh(cBaseGeo, craneDarkMat)
-    cBase.position.y = 0.15
-    craneGroup.add(cBase)
-
-    // Crane Mast (Lattice Vertical Tower)
-    const mastGeo = new THREE.BoxGeometry(0.35, 5.6, 0.35)
+    // Crane Mast (Lattice Tower)
+    const mastHeight = 6.2
+    const mastGeo = new THREE.BoxGeometry(0.35, mastHeight, 0.35)
     const mast = new THREE.Mesh(mastGeo, craneGoldMat)
-    mast.position.y = 2.95
-    craneGroup.add(mast)
+    mast.position.y = mastHeight / 2
+    constructionGroup.add(mast)
 
-    // Crane Mast Wireframe (Truss effect)
-    const mastWireGeo = new THREE.BoxGeometry(0.38, 5.6, 0.38)
-    const mastWire = new THREE.Mesh(mastWireGeo, wireMat)
-    mastWire.position.y = 2.95
-    craneGroup.add(mastWire)
+    const mastWireGeo = new THREE.BoxGeometry(0.38, mastHeight, 0.38)
+    const mastWire = new THREE.Mesh(mastWireGeo, emeraldWireMat)
+    mastWire.position.y = mastHeight / 2
+    constructionGroup.add(mastWire)
 
-    // Crane Cabin
+    // Cabin
     const cabinGeo = new THREE.BoxGeometry(0.5, 0.45, 0.45)
-    const cabin = new THREE.Mesh(cabinGeo, craneDarkMat)
-    cabin.position.set(0.15, 5.75, 0.15)
-    craneGroup.add(cabin)
+    const cabin = new THREE.Mesh(cabinGeo, steelMat)
+    cabin.position.set(0.15, mastHeight + 0.2, 0.15)
+    constructionGroup.add(cabin)
 
-    // Rotating Jib & Boom Arm Group
+    // Jib Group
     const jibGroup = new THREE.Group()
-    jibGroup.position.y = 5.8
-    craneGroup.add(jibGroup)
+    jibGroup.position.y = mastHeight + 0.25
+    constructionGroup.add(jibGroup)
 
-    // Main Jib Arm (Extending forward over the building)
-    const jibGeo = new THREE.BoxGeometry(4.2, 0.14, 0.14)
+    const jibGeo = new THREE.BoxGeometry(4.4, 0.14, 0.14)
     const jib = new THREE.Mesh(jibGeo, craneGoldMat)
-    jib.position.x = 1.7
+    jib.position.x = 1.8
     jibGroup.add(jib)
 
-    // Crane Jib Truss Top Cable Peak (A-frame tower)
     const peakGeo = new THREE.ConeGeometry(0.2, 0.7, 4)
     const peak = new THREE.Mesh(peakGeo, craneGoldMat)
     peak.position.set(0, 0.45, 0)
     jibGroup.add(peak)
 
-    // Counterweight at the back
     const counterGeo = new THREE.BoxGeometry(0.7, 0.35, 0.35)
-    const counter = new THREE.Mesh(counterGeo, craneDarkMat)
+    const counter = new THREE.Mesh(counterGeo, steelMat)
     counter.position.x = -0.7
     jibGroup.add(counter)
 
-    // Crane Trolley, Hoist Cable & Active Load
+    // Hoist Cable & Suspended Load
     const trolleyGeo = new THREE.BoxGeometry(0.25, 0.1, 0.2)
-    const trolley = new THREE.Mesh(trolleyGeo, craneDarkMat)
+    const trolley = new THREE.Mesh(trolleyGeo, steelMat)
     trolley.position.set(2.4, -0.1, 0)
     jibGroup.add(trolley)
 
-    const cableGeo = new THREE.CylinderGeometry(0.012, 0.012, 2.0, 4)
+    const cableGeo = new THREE.CylinderGeometry(0.012, 0.012, 2.2, 4)
     const cableMat = new THREE.MeshBasicMaterial({ color: 0xffffff })
     const cable = new THREE.Mesh(cableGeo, cableMat)
-    cable.position.set(2.4, -1.1, 0)
+    cable.position.set(2.4, -1.2, 0)
     jibGroup.add(cable)
 
-    // Suspended Architectural Construction Precast Block
-    const loadGeo = new THREE.BoxGeometry(0.55, 0.4, 0.55)
+    const loadGeo = new THREE.BoxGeometry(0.6, 0.45, 0.6)
     const loadMat = new THREE.MeshStandardMaterial({
       color: 0x38bdf8,
       metalness: 0.8,
@@ -312,46 +390,84 @@ export default function BenaaConstruction3D() {
       emissiveIntensity: 0.4,
     })
     const load = new THREE.Mesh(loadGeo, loadMat)
-    load.position.set(2.4, -2.25, 0)
+    load.position.set(2.4, -2.45, 0)
     jibGroup.add(load)
 
     // ----------------------------------------------------------------
-    // 6. Lighting & Atmosphere
+    // 7. STAGE 4: Finished Group (Glass Facade, Interior Light & Spire)
     // ----------------------------------------------------------------
-    const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x064e3b, 1.4)
+    const finishedGroup = new THREE.Group()
+    finishedGroup.position.y = -2.0
+    finishedGroup.scale.y = 0.001
+    finishedGroup.visible = false
+    siteMaster.add(finishedGroup)
+    stageGroupsRef.current.finished = finishedGroup
+
+    // Main Curtain Wall Glass Envelope
+    const glassVolumeHeight = 5.2
+    const glassVolumeGeo = new THREE.BoxGeometry(3.9, glassVolumeHeight, 3.9)
+    const glassVolume = new THREE.Mesh(glassVolumeGeo, glassMat)
+    glassVolume.position.set(0, glassVolumeHeight / 2, 0)
+    finishedGroup.add(glassVolume)
+
+    // Illuminated Floor Plates inside
+    for (let fh = 0.4; fh <= glassVolumeHeight - 0.4; fh += 0.8) {
+      const iFloorGeo = new THREE.BoxGeometry(3.7, 0.04, 3.7)
+      const iFloor = new THREE.Mesh(iFloorGeo, interiorFloorMat)
+      iFloor.position.set(0, fh, 0)
+      finishedGroup.add(iFloor)
+    }
+
+    // Architectural Mullions
+    for (let mx = -1.8; mx <= 1.8; mx += 0.9) {
+      const mFinGeo = new THREE.BoxGeometry(0.04, glassVolumeHeight, 0.08)
+      const mFinF = new THREE.Mesh(mFinGeo, steelMat)
+      mFinF.position.set(mx, glassVolumeHeight / 2, 1.98)
+      finishedGroup.add(mFinF)
+
+      const mFinB = new THREE.Mesh(mFinGeo, steelMat)
+      mFinB.position.set(mx, glassVolumeHeight / 2, -1.98)
+      finishedGroup.add(mFinB)
+    }
+
+    // Rooftop Helipad
+    const helipadGeo = new THREE.CylinderGeometry(0.9, 0.9, 0.06, 24)
+    const helipad = new THREE.Mesh(helipadGeo, concreteMat)
+    helipad.position.set(0, glassVolumeHeight + 0.04, 0)
+    finishedGroup.add(helipad)
+
+    // Architectural Spire
+    const spireGeo = new THREE.CylinderGeometry(0.02, 0.08, 1.8, 12)
+    const spire = new THREE.Mesh(spireGeo, goldMat)
+    spire.position.set(0.4, glassVolumeHeight + 0.95, 0.3)
+    finishedGroup.add(spire)
+
+    // Red Aviation Beacon
+    const beaconGeo = new THREE.SphereGeometry(0.06, 12, 12)
+    const beaconMat = new THREE.MeshBasicMaterial({ color: 0xff3b30 })
+    const beacon = new THREE.Mesh(beaconGeo, beaconMat)
+    beacon.position.set(0.4, glassVolumeHeight + 1.85, 0.3)
+    finishedGroup.add(beacon)
+
+    // ----------------------------------------------------------------
+    // 8. Lighting & Atmosphere
+    // ----------------------------------------------------------------
+    const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x064e3b, 1.35)
     scene.add(hemiLight)
 
-    const sunLight = new THREE.DirectionalLight(0xfffbeb, 3.2)
-    sunLight.position.set(6, 9, 8)
+    const sunLight = new THREE.DirectionalLight(0xfffbeb, 2.8)
+    sunLight.position.set(6, 10, 8)
     scene.add(sunLight)
 
-    const fillLight = new THREE.PointLight(0x34d399, 2.5, 16)
-    fillLight.position.set(-4, 3, 4)
-    scene.add(fillLight)
-
-    const pCount = isMobile ? 25 : 50
-    const pGeo = new THREE.BufferGeometry()
-    const pPos = new Float32Array(pCount * 3)
-    for (let i = 0; i < pCount; i++) {
-      pPos[i * 3] = (Math.random() - 0.5) * 12
-      pPos[i * 3 + 1] = Math.random() * 8 - 2
-      pPos[i * 3 + 2] = (Math.random() - 0.5) * 12
-    }
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3))
-    const pMat = new THREE.PointsMaterial({
-      color: 0x93c5fd,
-      size: 0.045,
-      transparent: true,
-      opacity: 0.65,
-    })
-    const particles = new THREE.Points(pGeo, pMat)
-    scene.add(particles)
+    const benaaBounce = new THREE.PointLight(0x10b981, 1.8, 16)
+    benaaBounce.position.set(-3, 2, 4)
+    scene.add(benaaBounce)
 
     // ----------------------------------------------------------------
-    // 7. Interaction & Animation Loop
+    // 9. Interaction & Animation Loop
     // ----------------------------------------------------------------
-    let targetRotY = 0.4
-    let targetRotX = 0.08
+    let targetRotY = 0.35
+    let targetRotX = 0.04
     let isVisible = true
 
     const onMouseMove = (e) => {
@@ -359,8 +475,8 @@ export default function BenaaConstruction3D() {
       const rect = container.getBoundingClientRect()
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1
       const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1)
-      targetRotY = 0.4 + x * 0.22
-      targetRotX = 0.08 - y * 0.1
+      targetRotY = 0.35 + x * 0.2
+      targetRotX = 0.04 - y * 0.08
     }
     window.addEventListener('mousemove', onMouseMove, { passive: true })
 
@@ -381,13 +497,15 @@ export default function BenaaConstruction3D() {
         siteMaster.rotation.y += (targetRotY - siteMaster.rotation.y) * THREE_TIMING.DAMPING_FACTOR
         siteMaster.rotation.x += (targetRotX - siteMaster.rotation.x) * THREE_TIMING.DAMPING_FACTOR
 
-        // Crane Jib realistic smooth rotating sweep
-        jibGroup.rotation.y = Math.sin(t * 0.5) * 0.55 + 0.3
+        // Crane smooth rotation in Construction stage
+        if (constructionGroup.visible) {
+          jibGroup.rotation.y = Math.sin(t * 0.6) * 0.5 + 0.3
+          load.rotation.y = Math.sin(t * 1.2) * 0.12
+        }
 
-        // Suspended load slight swaying motion
-        load.rotation.y = Math.sin(t * 1.2) * 0.15
-
-        particles.rotation.y = t * 0.01
+        // Aviation Beacon Flash
+        const beaconPulse = Math.sin(t * 4.0) > 0.2 ? 1 : 0.15
+        beaconMat.color.setRGB(beaconPulse, 0.08, 0.08)
       }
 
       renderer.render(scene, camera)
@@ -395,7 +513,7 @@ export default function BenaaConstruction3D() {
     animate()
 
     // ----------------------------------------------------------------
-    // 8. Resize Observer & Cleanup
+    // 10. Resize Observer & Cleanup
     // ----------------------------------------------------------------
     const ro = new ResizeObserver(() => {
       if (!container) return
@@ -411,6 +529,9 @@ export default function BenaaConstruction3D() {
       viewportObserver.disconnect()
       ro.disconnect()
 
+      pmremGenerator.dispose()
+      envMapTarget.dispose()
+      envTexture.dispose()
       disposeObject3D(scene)
       renderer.dispose()
       if (container && renderer.domElement) {
@@ -421,9 +542,52 @@ export default function BenaaConstruction3D() {
 
   return (
     <div
-      ref={containerRef}
-      className="w-full h-full relative pointer-events-auto cursor-grab active:cursor-grabbing"
-      aria-hidden="true"
-    />
+      className="relative w-full h-full flex flex-col items-center justify-center select-none"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* 3D WebGL Canvas */}
+      <div
+        ref={containerRef}
+        className="w-full h-full relative pointer-events-auto cursor-grab active:cursor-grabbing"
+        aria-label="Interactive Benaa 3D Construction & Architectural Evolution Scene"
+      />
+
+      {/* Floating 4-Stage Lifecycle Controller */}
+      <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 z-20 flex items-center justify-between gap-1 sm:gap-1.5 p-1.5 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-emerald-500/20 shadow-2xl">
+        {STAGES.map((stage) => {
+          const isActive = activeStage === stage.id
+          return (
+            <button
+              key={stage.id}
+              onClick={() => handleManualStageSelect(stage.id)}
+              className={`flex-1 flex flex-col items-center justify-center py-1 sm:py-1.5 px-1 rounded-xl text-center transition-all duration-300 ${
+                isActive
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-900/40 border border-emerald-400/40 scale-102'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+              }`}
+            >
+              <div className="flex items-center gap-1">
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    isActive ? 'bg-white animate-ping' : 'bg-slate-600'
+                  }`}
+                />
+                <span className="text-[10px] sm:text-xs font-bold tracking-tight">
+                  {stage.titleEn}
+                </span>
+              </div>
+              <span
+                className={`text-[8px] sm:text-[9px] font-arabic leading-tight ${
+                  isActive ? 'text-emerald-100' : 'text-slate-500'
+                }`}
+              >
+                {stage.titleAr}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 }

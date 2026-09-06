@@ -40,7 +40,7 @@ export default function BenaaHome() {
               </p>
             </div>
 
-            <div className="lg:col-span-5 relative w-full h-[360px] sm:h-[420px] rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-[2px] shadow-2xl flex items-center justify-center">
+            <div className="lg:col-span-5 relative w-full h-[400px] sm:h-[460px] lg:h-[480px] rounded-3xl overflow-hidden border border-white/10 bg-slate-950/60 backdrop-blur-[2px] shadow-2xl flex items-center justify-center">
               <Suspense
                 fallback={
                   <div className="w-full h-full flex items-center justify-center text-white/40 text-xs">
