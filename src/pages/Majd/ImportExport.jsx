@@ -2,6 +2,7 @@ import { CheckCircle2 } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
+import SEO from '../../components/common/SEO.jsx'
 
 export default function ImportExport() {
   const highlights = [
@@ -13,14 +14,20 @@ export default function ImportExport() {
 
   return (
     <div className="py-16 md:py-24">
+      <SEO
+        title="International Import & Export | AL MAJD"
+        description="Comprehensive international import and export services, SABER compliance, and cross-border trade operations by AL MAJD LINES FOR TRADE & IMPORT."
+        canonicalPath="/majd/import-export"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="AL MAJD LINES FOR TRADE & IMPORT"
           eyebrowAr="مؤسسة خطوط المجد للتجارة والاستيراد"
           title="International Import & Export"
           titleAr="الاستيراد والتصدير والتجارة الدولية"
-          subtitle="Connecting certified global factories with the rapidly expanding Saudi infrastructure market."
-          subtitleAr="ربط كبرى المصانع والشركات العالمية بمشاريع البنية التحتية المتسارعة في المملكة."
+          subtitle="Facilitating cross-border trade and industrial procurement for the Saudi market."
+          subtitleAr="تيسير التجارة الدولية وتوريد المواد والمعدات الصناعية للسوق السعودي."
         />
 
         <div className="max-w-4xl mx-auto space-y-8">

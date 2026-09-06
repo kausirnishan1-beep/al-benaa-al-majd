@@ -8,7 +8,10 @@ export default function SectionTitle({
   subtitle,
   subtitleAr,
   center = true,
+  as = 'h2',
 }) {
+  const HeadingTag = as === 'h1' ? 'h1' : 'h2'
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -34,9 +37,9 @@ export default function SectionTitle({
       )}
 
       {title && (
-        <h2 className="text-3xl md:text-4xl font-extrabold text-benaa tracking-tight">
+        <HeadingTag className="text-3xl md:text-4xl font-extrabold text-benaa tracking-tight">
           {title}
-        </h2>
+        </HeadingTag>
       )}
 
       {titleAr && (

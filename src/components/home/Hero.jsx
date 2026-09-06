@@ -140,7 +140,7 @@ export default function Hero() {
               ref={descRef}
               className="mt-4 sm:mt-5 text-white/80 text-xs sm:text-sm md:text-base leading-relaxed"
             >
-              A premier Saudi commercial alliance uniting two certified industry leaders:{' '}
+              A unified Saudi commercial group operating two established entities:{' '}
               <strong className="text-white">
                 {benaaCompany?.name || 'AL BENAA AL RAHAB CONTRACTING EST.'}
               </strong>{' '}
@@ -148,14 +148,14 @@ export default function Hero() {
               <strong className="text-white">
                 {majdCompany?.name || 'AL MAJD LINES FOR TRADE & IMPORT'}
               </strong>{' '}
-              (Global Supply Chain & Logistics).
+              (International Trade, Supply & Logistics).
             </p>
 
             <p
               ref={descArRef}
               className="mt-2 text-white/60 text-[11px] sm:text-xs md:text-sm font-arabic leading-relaxed"
             >
-              تحالف تجاري سعودي رائد يجمع بين التميز الإنشائي والهندسي والتجارة وسلاسل الإمداد العالمية المعتمدة.
+              مجموعة تجارية سعودية موحدة تضم مؤسستين معتمدتين: مؤسسة البناء الرحاب للمقاولات العامة، ومؤسسة خطوط المجد للتجارة والاستيراد.
             </p>
 
             <div

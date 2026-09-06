@@ -2,6 +2,7 @@ import { CheckCircle2 } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
+import SEO from '../../components/common/SEO.jsx'
 
 export default function Logistics() {
   const highlights = [
@@ -13,8 +14,14 @@ export default function Logistics() {
 
   return (
     <div className="py-16 md:py-24">
+      <SEO
+        title="Supply Chain & Logistics Services | AL MAJD"
+        description="Reliable freight forwarding, customs clearance, warehousing, and inland transport across Saudi Arabia by AL MAJD LINES FOR TRADE & IMPORT."
+        canonicalPath="/majd/logistics"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="AL MAJD LINES FOR TRADE & IMPORT"
           eyebrowAr="مؤسسة خطوط المجد للتجارة والاستيراد"
           title="Supply Chain & Logistics Services"

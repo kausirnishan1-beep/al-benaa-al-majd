@@ -2,6 +2,7 @@ import { CheckCircle2 } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
+import SEO from '../../components/common/SEO.jsx'
 
 export default function ProductSourcing() {
   const highlights = [
@@ -13,13 +14,19 @@ export default function ProductSourcing() {
 
   return (
     <div className="py-16 md:py-24">
+      <SEO
+        title="Global Product Sourcing & Procurement | AL MAJD"
+        description="Strategic global product sourcing, factory audits, and international procurement services by AL MAJD LINES FOR TRADE & IMPORT."
+        canonicalPath="/majd/product-sourcing"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="AL MAJD LINES FOR TRADE & IMPORT"
           eyebrowAr="مؤسسة خطوط المجد للتجارة والاستيراد"
           title="Global Product Sourcing & Procurement"
           titleAr="توريد المنتجات والبحث عن الموردين العالميين"
-          subtitle="Connecting you with verified manufacturers to procure certified materials at wholesale rates."
+          subtitle="Connecting clients with verified manufacturers to procure certified materials at competitive rates."
           subtitleAr="الوصول إلى أفضل المصانع العالمية المعتمدة لتوريد المنتجات والمواد بأفضل الأسعار التنافسية."
         />
 

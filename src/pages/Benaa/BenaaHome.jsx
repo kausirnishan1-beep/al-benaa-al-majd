@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Building2, ChevronRight } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
+import SEO from '../../components/common/SEO.jsx'
 import { usePublicServices } from '../../hooks/usePublicServices.js'
 import { useCompanies } from '../../hooks/useCompanies.js'
 import { Link } from 'react-router-dom'
@@ -15,6 +16,11 @@ export default function BenaaHome() {
 
   return (
     <>
+      <SEO
+        title="AL BENAA AL RAHAB CONTRACTING EST. | General Construction & Contracting"
+        description="AL BENAA AL RAHAB CONTRACTING EST. - General contracting, civil construction, renovation, maintenance, and project management in Saudi Arabia."
+        canonicalPath="/benaa"
+      />
       <section className="relative bg-gradient-to-br from-benaa via-benaa-dark to-[#06241b] text-white py-20 md:py-24 overflow-hidden">
         {/* Ambient Glow */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>

@@ -2,6 +2,7 @@ import { CheckCircle2 } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
+import SEO from '../../components/common/SEO.jsx'
 
 export default function ProjectManagement() {
   const highlights = [
@@ -13,13 +14,19 @@ export default function ProjectManagement() {
 
   return (
     <div className="py-16 md:py-24">
+      <SEO
+        title="Engineering Project Management | AL BENAA"
+        description="Comprehensive construction project management, supervision, and value engineering by AL BENAA AL RAHAB CONTRACTING EST. in Saudi Arabia."
+        canonicalPath="/benaa/project-management"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="AL BENAA AL RAHAB CONTRACTING EST."
           eyebrowAr="مؤسسة البناء الرحاب للمقاولات"
           title="Engineering Project Management"
           titleAr="إدارة المشاريع الهندسية والإشراف الفني"
-          subtitle="Delivering complex construction programs on time, within budget, and to the highest quality benchmarks."
+          subtitle="Delivering construction programs on schedule, within budget, and to rigorous quality benchmarks."
           subtitleAr="إدارة وتنفيذ البرامج والمشاريع الإنشائية الكبرى وفق الجداول المحددة والميزانيات المعتمدة."
         />
 

@@ -3,12 +3,19 @@ import SectionTitle from '../components/common/SectionTitle.jsx'
 import ContactForm from '../components/contact/ContactForm.jsx'
 import ContactInfo from '../components/contact/ContactInfo.jsx'
 import Map from '../components/contact/Map.jsx'
+import SEO from '../components/common/SEO.jsx'
 
 export default function Contact() {
   return (
     <div className="py-16 md:py-24 bg-gray-50/40">
+      <SEO
+        title="Contact Us | Headquarters & Inquiries"
+        description="Contact AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT - Riyadh headquarters, phone, email, and project quotation requests."
+        canonicalPath="/contact"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="Connect With Our Team"
           eyebrowAr="تواصل مع فريقنا المتخصص"
           title="Get In Touch / Request a Quotation"

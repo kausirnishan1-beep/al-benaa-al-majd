@@ -2,6 +2,7 @@ import { CheckCircle2 } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
+import SEO from '../../components/common/SEO.jsx'
 
 export default function Maintenance() {
   const highlights = [
@@ -13,8 +14,14 @@ export default function Maintenance() {
 
   return (
     <div className="py-16 md:py-24">
+      <SEO
+        title="Facility Maintenance & Operations | AL BENAA"
+        description="Comprehensive facility maintenance, MEP operations, and preventive care services by AL BENAA AL RAHAB CONTRACTING EST. in Saudi Arabia."
+        canonicalPath="/benaa/maintenance"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="AL BENAA AL RAHAB CONTRACTING EST."
           eyebrowAr="مؤسسة البناء الرحاب للمقاولات"
           title="Facility Maintenance & Operations"

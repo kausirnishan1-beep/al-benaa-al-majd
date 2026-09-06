@@ -2,6 +2,7 @@ import { CheckCircle2 } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
+import SEO from '../../components/common/SEO.jsx'
 
 export default function GeneralTrading() {
   const highlights = [
@@ -13,13 +14,19 @@ export default function GeneralTrading() {
 
   return (
     <div className="py-16 md:py-24">
+      <SEO
+        title="General Trading & Commercial Distribution | AL MAJD"
+        description="Reliable general trading, building material distribution, and commercial wholesale supplies across Saudi Arabia by AL MAJD LINES FOR TRADE & IMPORT."
+        canonicalPath="/majd/general-trading"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="AL MAJD LINES FOR TRADE & IMPORT"
           eyebrowAr="مؤسسة خطوط المجد للتجارة والاستيراد"
           title="General Trading & Commercial Distribution"
           titleAr="التجارة العامة والتوزيع التجاري الشامل"
-          subtitle="Distributing certified construction raw materials, industrial tools, and commercial commodities."
+          subtitle="Supplying certified construction materials, tools, and commercial commodities."
           subtitleAr="توفير وتوزيع أجود مواد البناء والمعدات والسلع التجارية المعتمدة في الأسواق السعودية."
         />
 

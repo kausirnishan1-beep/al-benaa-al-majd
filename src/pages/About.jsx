@@ -1,6 +1,7 @@
 import { Target, Eye } from 'lucide-react'
 import Container from '../components/common/Container.jsx'
 import SectionTitle from '../components/common/SectionTitle.jsx'
+import SEO from '../components/common/SEO.jsx'
 import { useSettings } from '../admin/hooks/useSettings.js'
 import { useCompanies } from '../hooks/useCompanies.js'
 
@@ -13,14 +14,20 @@ export default function About() {
 
   return (
     <div className="py-16 md:py-24">
+      <SEO
+        title="About Us | Corporate Profile"
+        description="Learn about AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT - Corporate legacy, vision, and services in Saudi Arabia."
+        canonicalPath="/about"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="Corporate Profile"
           eyebrowAr="الملف التعريفي للمجموعة"
           title={`About ${general.siteNameEn || 'AL BENAA & AL MAJD'}`}
           titleAr={`نبذة عن ${general.siteNameAr || 'مؤسسة البناء الرحاب ومؤسسة خطوط المجد'}`}
-          subtitle={general.taglineEn || 'Pioneering modern construction contracting and strategic international trade in Saudi Arabia.'}
-          subtitleAr={general.taglineAr || 'رواد المقاولات والإنشاءات الحديثة والتجارة والاستيراد والتصدير في المملكة العربية السعودية.'}
+          subtitle={general.taglineEn || 'General construction contracting and international trade services in Saudi Arabia.'}
+          subtitleAr={general.taglineAr || 'خدمات المقاولات والإنشاءات والتجارة والاستيراد في المملكة العربية السعودية.'}
         />
 
         <div className="max-w-4xl mx-auto space-y-8 text-gray-700 leading-relaxed">

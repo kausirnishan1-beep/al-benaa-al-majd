@@ -1,6 +1,7 @@
 import { ShieldCheck, Download } from 'lucide-react'
 import Container from '../components/common/Container.jsx'
 import SectionTitle from '../components/common/SectionTitle.jsx'
+import SEO from '../components/common/SEO.jsx'
 import { useDocuments } from '../admin/hooks/useDocuments.js'
 
 export default function Compliance() {
@@ -8,13 +9,19 @@ export default function Compliance() {
 
   return (
     <div className="py-16 md:py-24 bg-gray-50/50">
+      <SEO
+        title="Compliance, Licenses & Certifications | AL BENAA & AL MAJD"
+        description="Official commercial registrations, compliance certificates, and governance documentation for AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT in Saudi Arabia."
+        canonicalPath="/compliance"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="Trust & Governance"
           eyebrowAr="الحوكمة والالتزام النظامي"
           title="Compliance, Licenses & Certifications"
           titleAr="الالتزام النظامي، الشهادات والتراخيص الرسمية"
-          subtitle="Operating under full compliance with the laws, safety protocols, and commercial regulations of the Kingdom of Saudi Arabia."
+          subtitle="Operating in compliance with the laws, safety protocols, and commercial regulations of Saudi Arabia."
           subtitleAr="نعمل وفق التزام تام بالقوانين والأنظمة المعمول بها ومعايير الجودة والسلامة في المملكة العربية السعودية."
         />
 

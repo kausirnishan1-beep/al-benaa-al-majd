@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Globe2, ChevronRight } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
+import SEO from '../../components/common/SEO.jsx'
 import { usePublicServices } from '../../hooks/usePublicServices.js'
 import { useCompanies } from '../../hooks/useCompanies.js'
 import { Link } from 'react-router-dom'
@@ -15,6 +16,11 @@ export default function MajdHome() {
 
   return (
     <>
+      <SEO
+        title="AL MAJD LINES FOR TRADE & IMPORT | International Trade & Logistics"
+        description="AL MAJD LINES FOR TRADE & IMPORT - Import & export, general trading, product sourcing, and logistics solutions in Saudi Arabia."
+        canonicalPath="/majd"
+      />
       <section className="relative bg-gradient-to-br from-majd-dark via-[#684b06] to-[#402e03] text-white py-20 md:py-24 overflow-hidden">
         {/* Ambient Glow */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>

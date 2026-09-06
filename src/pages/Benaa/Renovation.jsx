@@ -2,6 +2,7 @@ import { CheckCircle2 } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
+import SEO from '../../components/common/SEO.jsx'
 
 export default function Renovation() {
   const highlights = [
@@ -13,13 +14,19 @@ export default function Renovation() {
 
   return (
     <div className="py-16 md:py-24">
+      <SEO
+        title="Renovation & Architectural Restoration | AL BENAA"
+        description="Professional renovation, structural rehabilitation, and architectural remodeling services by AL BENAA AL RAHAB CONTRACTING EST. in Saudi Arabia."
+        canonicalPath="/benaa/renovation"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="AL BENAA AL RAHAB CONTRACTING EST."
           eyebrowAr="مؤسسة البناء الرحاب للمقاولات"
           title="Renovation & Architectural Restoration"
           titleAr="أعمال التجديد، الترميم والتطوير المعماري"
-          subtitle="Breathing new life into existing commercial properties and residential estates."
+          subtitle="Modernizing and restoring commercial properties and residential estates."
           subtitleAr="إعادة تأهيل وتطوير المباني السكنية والتجارية القائمة بأحدث التقنيات الهندسية."
         />
 

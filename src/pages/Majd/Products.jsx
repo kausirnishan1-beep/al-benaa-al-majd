@@ -3,6 +3,7 @@ import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
 import OptimizedImage from '../../components/common/OptimizedImage.jsx'
+import SEO from '../../components/common/SEO.jsx'
 import { useProducts } from '../../admin/hooks/useProducts.js'
 
 export default function Products() {
@@ -11,14 +12,20 @@ export default function Products() {
 
   return (
     <div className="py-16 md:py-24">
+      <SEO
+        title="Products Catalog & Materials | AL MAJD"
+        description="Certified construction materials, machinery, and equipment catalog imported and supplied by AL MAJD LINES FOR TRADE & IMPORT in Saudi Arabia."
+        canonicalPath="/majd/products"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="AL MAJD LINES FOR TRADE & IMPORT"
           eyebrowAr="كتالوج منتجات مؤسسة خطوط المجد للتجارة والاستيراد"
           title="Certified Construction Materials & Equipment"
           titleAr="المواد والمعدات والمنتجات الإنشائية المعتمدة"
-          subtitle="Directly imported, quality certified, and supplied across major project sites in Saudi Arabia."
-          subtitleAr="مستوردة مباشرة ومطابقة لأعلى المواصفات القياسية السعودية ومعتمدة لكبرى المشاريع."
+          subtitle="Directly imported, certified building products supplied to project sites across Saudi Arabia."
+          subtitleAr="مستوردة مباشرة ومطابقة للمواصفات القياسية السعودية ومعتمدة للمشاريع الإنشائية."
         />
 
         {activeProducts.length === 0 ? (

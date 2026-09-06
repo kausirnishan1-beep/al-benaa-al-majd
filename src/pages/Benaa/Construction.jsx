@@ -2,6 +2,7 @@ import { CheckCircle2 } from 'lucide-react'
 import Container from '../../components/common/Container.jsx'
 import SectionTitle from '../../components/common/SectionTitle.jsx'
 import Button from '../../components/common/Button.jsx'
+import SEO from '../../components/common/SEO.jsx'
 
 export default function Construction() {
   const highlights = [
@@ -13,14 +14,20 @@ export default function Construction() {
 
   return (
     <div className="py-16 md:py-24">
+      <SEO
+        title="General Construction & Civil Engineering | AL BENAA"
+        description="Comprehensive general construction and civil engineering contracting services in Saudi Arabia by AL BENAA AL RAHAB CONTRACTING EST."
+        canonicalPath="/benaa/construction"
+      />
       <Container>
         <SectionTitle
+          as="h1"
           eyebrow="AL BENAA AL RAHAB CONTRACTING EST."
           eyebrowAr="مؤسسة البناء الرحاب للمقاولات"
           title="General Construction & Civil Engineering"
           titleAr="الإنشاءات والمقاولات العامة والهندسة المدنية"
-          subtitle="Building resilient, sustainable, and prestigious architectural developments across Saudi Arabia."
-          subtitleAr="تنفيذ مشاريع معمارية وسكنية وتجارية متطورة ومستدامة بأعلى معايير الجودة في المملكة."
+          subtitle="Executing residential, commercial, and structural engineering projects across Saudi Arabia."
+          subtitleAr="تنفيذ مشاريع معمارية وسكنية وتجارية متطورة وفق معايير الجودة والسلامة في المملكة."
         />
 
         <div className="max-w-4xl mx-auto space-y-8">
