@@ -2,66 +2,130 @@ import * as THREE from 'three'
 
 /**
  * =======================================================================
- * THREE.JS SINGLE SOURCE OF TRUTH COLOR PALETTE
+ * THREE.JS STRUCTURED 3D COLOR PALETTE & TOKENS
  * =======================================================================
- * Adheres strictly to the corporate brand architecture:
- * AL BENAA: Deep Architectural Green
- * AL MAJD: Warm Royal Gold
- * TEAL: Technical / Data Accent (<5% surface)
- * AMBER: Secondary Warm Highlight
- * NEUTRALS: Concrete, Glass, White & Lighting
+ * Separated cleanly into 3 distinct logical domains:
+ * 1. BRAND: Corporate Identity & Accents (Benaa Green, Majd Gold, Teal, Amber)
+ * 2. MATERIALS: Physical Architectural Shaders (Glass, Steel, Concrete, Ground)
+ * 3. ENVIRONMENT: Atmospheric Sky, Sun & Studio Lighting
+ * =======================================================================
  */
 
-export const THREE_COLORS = {
+// 1. BRAND CORPORATE IDENTITY
+export const BRAND_COLORS = {
   BENAA: {
     primary: 0x0f4c3a,
     light: 0x1a6b52,
     dark: 0x0a3528,
     deepDark: 0x051b14,
-    glass: 0x0b382b,
-    wireframe: 0x1a6b52,
-    emissive: 0x041a14,
   },
   MAJD: {
     primary: 0xb8860b,
     light: 0xd4a017,
     dark: 0x8b6508,
     core: 0x402e03,
-    coreEmissive: 0x684b06,
-    spire: 0x8b6508,
   },
   TEAL: {
-    primary: 0x14b8a6, // Muted refined technical teal (replaces overly saturated bright teal)
-    light: 0x2dd4bf,   // Subtle highlight
-    dark: 0x0f766e,    // Deep connection tone
-    ambient: 0x0d9488,
+    primary: 0x14b8a6, // Muted refined technical teal
+    light: 0x2dd4bf,   // Subtle data packet pulse
+    dark: 0x0f766e,    // Connection corridor
   },
   AMBER: {
     primary: 0xf59e0b, // Micro-highlight only
     light: 0xfbbf24,
     dark: 0xd97706,
   },
+}
+
+// 2. PHYSICAL ARCHITECTURAL MATERIALS
+export const MATERIAL_COLORS = {
+  glass: {
+    tint: 0x143b30,       // Architectural emerald-slate tint
+    emissive: 0x051b14,   // Deep internal body absorb
+    neutralTint: 0x1e293b,
+  },
+  steel: {
+    darkTitanium: 0x1e293b,
+    mullion: 0x1e293b,
+    rebar: 0x94a3b8,
+    cable: 0xffffff,
+  },
+  concrete: {
+    fairFaced: 0xe2e8f0,
+    podium: 0xcfd8dc,
+    slab: 0x24332e,
+  },
+  ground: {
+    slate: 0x1e293b,
+    foundation: 0x11211c,
+    plazaDark: 0x0f172a,
+    gridPrimary: 0x475569,
+    gridDark: 0x0f172a,
+  },
+  interior: {
+    warmIlluminatedFloor: 0xfef3c7,
+    floorGlow: 0xd4a017,
+  },
+  markers: {
+    beaconRed: 0xff3b30,
+    googlePinRed: 0xee1b24,
+    googlePinEmissive: 0x5a0b0f,
+  },
+}
+
+// 3. ATMOSPHERIC ENVIRONMENT & LIGHTING
+export const ENVIRONMENT_COLORS = {
+  sky: {
+    zenithGreen: '#0a3528',
+    slateAtmosphere: '#1e293b',
+    horizonAmbient: '#e2e8f0',
+    horizonWarmSun: '#fef08a',
+    distantSkyline: '#334155',
+    graniteGround: '#1e293b',
+    deepFoundation: '#0f172a',
+  },
+  sun: {
+    keyLight: 0xfffbeb,
+    glintWhite: '#ffffff',
+    glintWarm: '#fffbeb',
+    glintHalo: 'rgba(254, 240, 138, 0.45)',
+  },
+  lighting: {
+    hemiSky: 0xfffaed,
+    hemiGround: 0x1e293b,
+    warmRim: 0xfffaed,
+    ambientStudio: 0xfffaed,
+    ambientWhite: 0xffffff,
+    benaaBounce: 0x1a6b52,
+    majdBounce: 0xd4a017,
+    tealBounce: 0x14b8a6,
+    pinRedPoint: 0xef4444,
+  },
+}
+
+// Backward compatibility helper mapping
+export const THREE_COLORS = {
+  BENAA: BRAND_COLORS.BENAA,
+  MAJD: BRAND_COLORS.MAJD,
+  TEAL: BRAND_COLORS.TEAL,
+  AMBER: BRAND_COLORS.AMBER,
   NEUTRALS: {
     white: 0xffffff,
     warmWhite: 0xfffaed,
-    ivory: 0xffe8a3,
-    concrete: 0x24332e,
-    podium: 0x14201c,
-    foundation: 0x11211c,
-    beaconRed: 0xff3b30,
-    darkBackdrop: 0x06241b,
+    concrete: MATERIAL_COLORS.concrete.slab,
+    podium: MATERIAL_COLORS.ground.foundation,
+    beaconRed: MATERIAL_COLORS.markers.beaconRed,
   },
   LIGHTS: {
-    ambient: 0xffffff,
-    sun: 0xfffbeb,
-    key: 0xffffff,
-    benaaPoint: 0x1a6b52,
-    majdPoint: 0xd4a017,
+    ambient: ENVIRONMENT_COLORS.lighting.ambientWhite,
+    sun: ENVIRONMENT_COLORS.lighting.hemiSky,
+    benaaPoint: ENVIRONMENT_COLORS.lighting.benaaBounce,
+    majdPoint: ENVIRONMENT_COLORS.lighting.majdBounce,
   },
 }
 
 export const THREE_COLOR_INSTANCES = {
-  teal: new THREE.Color(THREE_COLORS.TEAL.primary),
-  gold: new THREE.Color(THREE_COLORS.MAJD.light),
-  green: new THREE.Color(THREE_COLORS.BENAA.primary),
+  teal: new THREE.Color(BRAND_COLORS.TEAL.primary),
+  gold: new THREE.Color(BRAND_COLORS.MAJD.light),
+  green: new THREE.Color(BRAND_COLORS.BENAA.primary),
 }

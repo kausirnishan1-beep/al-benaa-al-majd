@@ -1,7 +1,10 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import { THREE_COLORS } from '../../utils/three-colors.js'
+import {
+  BRAND_COLORS,
+  MATERIAL_COLORS,
+  ENVIRONMENT_COLORS,
+} from '../../utils/three-colors.js'
 import {
   THREE_TIMING,
   isReducedMotion,
@@ -78,21 +81,21 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
 
     // Natural Sky & Horizon Gradient: Deep Emerald/Slate Zenith -> Warm Sun Glow -> Granite Plaza
     const skyGrad = ctx.createLinearGradient(0, 0, 0, 256)
-    skyGrad.addColorStop(0.0, '#0a3528') // Deep architectural green zenith
-    skyGrad.addColorStop(0.28, '#1e293b') // Neutral slate atmosphere
-    skyGrad.addColorStop(0.48, '#e2e8f0') // Light ambient horizon
-    skyGrad.addColorStop(0.52, '#fef08a') // Warm sun horizon
-    skyGrad.addColorStop(0.58, '#334155') // Distant skyline
-    skyGrad.addColorStop(0.70, '#1e293b') // Granite ground
-    skyGrad.addColorStop(1.0, '#0f172a') // Deep foundation
+    skyGrad.addColorStop(0.0, ENVIRONMENT_COLORS.sky.zenithGreen)
+    skyGrad.addColorStop(0.28, ENVIRONMENT_COLORS.sky.slateAtmosphere)
+    skyGrad.addColorStop(0.48, ENVIRONMENT_COLORS.sky.horizonAmbient)
+    skyGrad.addColorStop(0.52, ENVIRONMENT_COLORS.sky.horizonWarmSun)
+    skyGrad.addColorStop(0.58, ENVIRONMENT_COLORS.sky.distantSkyline)
+    skyGrad.addColorStop(0.70, ENVIRONMENT_COLORS.sky.graniteGround)
+    skyGrad.addColorStop(1.0, ENVIRONMENT_COLORS.sky.deepFoundation)
     ctx.fillStyle = skyGrad
     ctx.fillRect(0, 0, 512, 256)
 
     // Natural Sun Glint
     const sunGrad = ctx.createRadialGradient(380, 70, 0, 380, 70, 65)
-    sunGrad.addColorStop(0, '#ffffff')
-    sunGrad.addColorStop(0.25, '#fffbeb')
-    sunGrad.addColorStop(0.6, 'rgba(254, 240, 138, 0.45)')
+    sunGrad.addColorStop(0, ENVIRONMENT_COLORS.sun.glintWhite)
+    sunGrad.addColorStop(0.25, ENVIRONMENT_COLORS.sun.glintWarm)
+    sunGrad.addColorStop(0.6, ENVIRONMENT_COLORS.sun.glintHalo)
     sunGrad.addColorStop(1, 'rgba(254, 240, 138, 0)')
     ctx.fillStyle = sunGrad
     ctx.fillRect(315, 10, 130, 130)
@@ -107,8 +110,8 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     // ----------------------------------------------------------------
     // High-spec reflective solar curtain wall glass (MeshPhysicalMaterial)
     const towerGlassMat = new THREE.MeshPhysicalMaterial({
-      color: 0x143b30, // Architectural deep emerald-slate tint
-      emissive: THREE_COLORS.BENAA.deepDark,
+      color: MATERIAL_COLORS.glass.tint,
+      emissive: MATERIAL_COLORS.glass.emissive,
       emissiveIntensity: 0.18,
       metalness: 0.15,
       roughness: 0.05,
@@ -124,36 +127,36 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
 
     // Anodized dark champagne / titanium architectural steel mullions
     const steelMullionMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
+      color: MATERIAL_COLORS.steel.mullion,
       metalness: 0.88,
       roughness: 0.24,
     })
 
     // Architectural fair-faced concrete & granite podium
     const concreteMat = new THREE.MeshStandardMaterial({
-      color: 0xe2e8f0,
+      color: MATERIAL_COLORS.concrete.fairFaced,
       roughness: 0.82,
       metalness: 0.05,
     })
 
     // Warm illuminated interior office floor slabs
     const interiorFloorMat = new THREE.MeshStandardMaterial({
-      color: 0xfef3c7,
-      emissive: THREE_COLORS.MAJD.light,
+      color: MATERIAL_COLORS.interior.warmIlluminatedFloor,
+      emissive: MATERIAL_COLORS.interior.floorGlow,
       emissiveIntensity: 0.22,
       roughness: 0.45,
     })
 
     // Ground plaza slate
     const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
+      color: MATERIAL_COLORS.ground.slate,
       roughness: 0.88,
       metalness: 0.08,
     })
 
     // Architectural gold / bronze spire & crown accents
     const goldAccentMat = new THREE.MeshStandardMaterial({
-      color: THREE_COLORS.MAJD.light,
+      color: BRAND_COLORS.MAJD.light,
       metalness: 0.92,
       roughness: 0.18,
     })
@@ -425,11 +428,15 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     // 6. Natural Outdoor Daylight & Soft Shadows
     // ----------------------------------------------------------------
     // Hemisphere light (Soft sky fill + warm earth bounce)
-    const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x1e293b, 1.25)
+    const hemiLight = new THREE.HemisphereLight(
+      ENVIRONMENT_COLORS.lighting.hemiSky,
+      ENVIRONMENT_COLORS.lighting.hemiGround,
+      1.25
+    )
     scene.add(hemiLight)
 
     // Directional Key Sun Light
-    const sunLight = new THREE.DirectionalLight(0xfffaed, 2.5)
+    const sunLight = new THREE.DirectionalLight(ENVIRONMENT_COLORS.sun.keyLight, 2.5)
     sunLight.position.set(8, 14, 9)
     sunLight.castShadow = true
     sunLight.shadow.mapSize.width = isMobile ? 1024 : 2048
@@ -444,16 +451,16 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     scene.add(sunLight)
 
     // Soft warm architectural rim light
-    const rimLight = new THREE.DirectionalLight(0xfffaed, 1.1)
+    const rimLight = new THREE.DirectionalLight(ENVIRONMENT_COLORS.lighting.warmRim, 1.1)
     rimLight.position.set(-8, 9, -7)
     scene.add(rimLight)
 
     // Corporate brand bounce lights
-    const benaaBounce = new THREE.PointLight(THREE_COLORS.BENAA.light, 1.2, 16)
+    const benaaBounce = new THREE.PointLight(BRAND_COLORS.BENAA.light, 1.2, 16)
     benaaBounce.position.set(-3, 1, 3)
     scene.add(benaaBounce)
 
-    const majdBounce = new THREE.PointLight(THREE_COLORS.MAJD.light, 0.9, 16)
+    const majdBounce = new THREE.PointLight(BRAND_COLORS.MAJD.light, 0.9, 16)
     majdBounce.position.set(3, 5, 2)
     scene.add(majdBounce)
 

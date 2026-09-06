@@ -1,6 +1,11 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import {
+  BRAND_COLORS,
+  MATERIAL_COLORS,
+  ENVIRONMENT_COLORS,
+} from '../../utils/three-colors.js'
+import {
   THREE_TIMING,
   isReducedMotion,
   isMobileDevice,
@@ -64,14 +69,14 @@ export default function MajdTradeGlobe3D() {
     const globeMesh = new THREE.Mesh(globeGeo, globeMat)
     globeMaster.add(globeMesh)
 
-    // Geodesic / Latitude-Longitude Coordinate Grid (Gold & Sky Blue)
+    // Geodesic / Latitude-Longitude Coordinate Grid (Gold)
     const wireGeo = new THREE.SphereGeometry(
       globeRadius + 0.02,
       isMobile ? 18 : 26,
       isMobile ? 18 : 26
     )
     const wireMat = new THREE.MeshBasicMaterial({
-      color: 0xd4a017, // Warm Gold Grid
+      color: BRAND_COLORS.MAJD.light, // Warm Gold Grid
       wireframe: true,
       transparent: true,
       opacity: 0.25,
@@ -88,16 +93,16 @@ export default function MajdTradeGlobe3D() {
 
     const nodeGeo = new THREE.SphereGeometry(0.045, 10, 10)
     const nodeGoldMat = new THREE.MeshStandardMaterial({
-      color: 0xffe8a3,
-      emissive: 0xd4a017, // Majd light gold
+      color: MATERIAL_COLORS.interior.warmIlluminatedFloor,
+      emissive: BRAND_COLORS.MAJD.light,
       emissiveIntensity: 0.6,
       roughness: 0.2,
       metalness: 0.9,
     })
 
     const nodeTealMat = new THREE.MeshStandardMaterial({
-      color: 0x14b8a6, // Muted technical teal
-      emissive: 0x0f766e,
+      color: BRAND_COLORS.TEAL.primary,
+      emissive: BRAND_COLORS.TEAL.dark,
       emissiveIntensity: 0.4,
       roughness: 0.2,
       metalness: 0.8,
@@ -123,7 +128,7 @@ export default function MajdTradeGlobe3D() {
       if (isPrimary) {
         const ringGeo = new THREE.RingGeometry(0.06, 0.09, 16)
         const ringMat = new THREE.MeshBasicMaterial({
-          color: 0xf59e0b, // Micro-amber highlight
+          color: BRAND_COLORS.AMBER.primary, // Micro-amber highlight
           side: THREE.DoubleSide,
           transparent: true,
           opacity: 0.7,
@@ -161,8 +166,8 @@ export default function MajdTradeGlobe3D() {
     for (let i = 0; i < arcConnections; i++) {
       const idxA = (i * 2) % numNodes
       const idxB = (i * 2 + 5) % numNodes
-      // Gold Primary (#D4A017) with Muted Teal connection (#14B8A6)
-      const colorHex = i % 2 === 0 ? 0xd4a017 : 0x14b8a6
+      // Gold Primary with Muted Teal connection
+      const colorHex = i % 2 === 0 ? BRAND_COLORS.MAJD.light : BRAND_COLORS.TEAL.primary
       const arc = createNetworkArc(nodePositions[idxA], nodePositions[idxB], colorHex)
       networkArcs.push(arc)
     }
@@ -171,8 +176,8 @@ export default function MajdTradeGlobe3D() {
     // 4. Moving Trade Logistics Data Packets (Dynamic Stream)
     // ----------------------------------------------------------------
     const packetGeo = new THREE.SphereGeometry(0.05, 8, 8)
-    const packetGoldMat = new THREE.MeshBasicMaterial({ color: 0xfffaed })
-    const packetTealMat = new THREE.MeshBasicMaterial({ color: 0x2dd4bf })
+    const packetGoldMat = new THREE.MeshBasicMaterial({ color: ENVIRONMENT_COLORS.sun.keyLight })
+    const packetTealMat = new THREE.MeshBasicMaterial({ color: BRAND_COLORS.TEAL.light })
 
     const movingPackets = networkArcs.map((arc, index) => {
       const mesh = new THREE.Mesh(packetGeo, index % 2 === 0 ? packetGoldMat : packetTealMat)
@@ -190,7 +195,7 @@ export default function MajdTradeGlobe3D() {
     // ----------------------------------------------------------------
     const ringGeo1 = new THREE.TorusGeometry(2.35, 0.016, 16, isMobile ? 40 : 80)
     const ringMat1 = new THREE.MeshStandardMaterial({
-      color: 0xd4a017, // Majd Gold
+      color: BRAND_COLORS.MAJD.light,
       metalness: 0.9,
       roughness: 0.2,
       transparent: true,
@@ -202,7 +207,7 @@ export default function MajdTradeGlobe3D() {
 
     const ringGeo2 = new THREE.TorusGeometry(2.55, 0.014, 16, isMobile ? 40 : 80)
     const ringMat2 = new THREE.MeshStandardMaterial({
-      color: 0x8b6508, // Dark Gold
+      color: BRAND_COLORS.MAJD.dark,
       metalness: 0.9,
       roughness: 0.25,
       transparent: true,
@@ -215,7 +220,7 @@ export default function MajdTradeGlobe3D() {
 
     // Orbital satellite markers
     const satGeo = new THREE.BoxGeometry(0.08, 0.08, 0.08)
-    const satMat = new THREE.MeshBasicMaterial({ color: 0xfffaed })
+    const satMat = new THREE.MeshBasicMaterial({ color: ENVIRONMENT_COLORS.sun.keyLight })
     const satellite1 = new THREE.Mesh(satGeo, satMat)
     orbit1.add(satellite1)
     satellite1.position.x = 2.35
@@ -227,13 +232,13 @@ export default function MajdTradeGlobe3D() {
     // ----------------------------------------------------------------
     // 6. Gold & Warm Atmosphere Lighting & Dust
     // ----------------------------------------------------------------
-    scene.add(new THREE.AmbientLight(0xfffaed, 0.9))
+    scene.add(new THREE.AmbientLight(ENVIRONMENT_COLORS.lighting.ambientStudio, 0.9))
 
-    const goldKeyLight = new THREE.PointLight(0xd4a017, 3.0, 25)
+    const goldKeyLight = new THREE.PointLight(ENVIRONMENT_COLORS.lighting.majdBounce, 3.0, 25)
     goldKeyLight.position.set(5, 5, 5)
     scene.add(goldKeyLight)
 
-    const goldFillLight = new THREE.PointLight(0x8b6508, 2.0, 20)
+    const goldFillLight = new THREE.PointLight(BRAND_COLORS.MAJD.dark, 2.0, 20)
     goldFillLight.position.set(-5, 4, -4)
     scene.add(goldFillLight)
 

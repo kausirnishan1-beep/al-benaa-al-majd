@@ -2,6 +2,11 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
 import { gsap } from '../../utils/gsap-utils.js'
 import {
+  BRAND_COLORS,
+  MATERIAL_COLORS,
+  ENVIRONMENT_COLORS,
+} from '../../utils/three-colors.js'
+import {
   THREE_TIMING,
   isReducedMotion,
   isMobileDevice,
@@ -158,21 +163,21 @@ export default function BenaaConstruction3D() {
     // ----------------------------------------------------------------
     // Fair-faced concrete
     const concreteMat = new THREE.MeshStandardMaterial({
-      color: 0xcfd8dc,
+      color: MATERIAL_COLORS.concrete.podium,
       roughness: 0.82,
       metalness: 0.05,
     })
 
     // Structural steel (Dark titanium)
     const steelMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
+      color: MATERIAL_COLORS.steel.darkTitanium,
       metalness: 0.88,
       roughness: 0.24,
     })
 
     // Green Laser Rebar & Alignment wireframe
     const emeraldWireMat = new THREE.MeshBasicMaterial({
-      color: 0x1a6b52, // Benaa light green
+      color: BRAND_COLORS.BENAA.light,
       wireframe: true,
       transparent: true,
       opacity: 0.5,
@@ -180,14 +185,14 @@ export default function BenaaConstruction3D() {
 
     // Rebar rods
     const rebarMat = new THREE.MeshStandardMaterial({
-      color: 0x94a3b8,
+      color: MATERIAL_COLORS.steel.rebar,
       metalness: 0.92,
       roughness: 0.2,
     })
 
     // Double-glazed reflective architectural glass
     const glassMat = new THREE.MeshPhysicalMaterial({
-      color: 0x143b30, // Architectural emerald slate glass
+      color: MATERIAL_COLORS.glass.tint,
       roughness: 0.05,
       metalness: 0.15,
       transmission: 0.72,
@@ -202,15 +207,15 @@ export default function BenaaConstruction3D() {
 
     // Illuminated warm interior floor plates
     const interiorFloorMat = new THREE.MeshStandardMaterial({
-      color: 0xfef08a,
-      emissive: 0xd4a017,
+      color: MATERIAL_COLORS.interior.warmIlluminatedFloor,
+      emissive: BRAND_COLORS.MAJD.light,
       emissiveIntensity: 0.35,
       roughness: 0.35,
     })
 
     // Gold / Champagne Spire Accent
     const goldMat = new THREE.MeshStandardMaterial({
-      color: 0xd4a017,
+      color: BRAND_COLORS.MAJD.light,
       metalness: 0.9,
       roughness: 0.2,
     })
@@ -444,7 +449,7 @@ export default function BenaaConstruction3D() {
 
     // Red Aviation Beacon
     const beaconGeo = new THREE.SphereGeometry(0.06, 12, 12)
-    const beaconMat = new THREE.MeshBasicMaterial({ color: 0xff3b30 })
+    const beaconMat = new THREE.MeshBasicMaterial({ color: MATERIAL_COLORS.markers.beaconRed })
     const beacon = new THREE.Mesh(beaconGeo, beaconMat)
     beacon.position.set(0.4, glassVolumeHeight + 1.85, 0.3)
     finishedGroup.add(beacon)
@@ -452,14 +457,18 @@ export default function BenaaConstruction3D() {
     // ----------------------------------------------------------------
     // 8. Lighting & Atmosphere
     // ----------------------------------------------------------------
-    const hemiLight = new THREE.HemisphereLight(0xfffaed, 0x0a3528, 1.35)
+    const hemiLight = new THREE.HemisphereLight(
+      ENVIRONMENT_COLORS.lighting.hemiSky,
+      BRAND_COLORS.BENAA.dark,
+      1.35
+    )
     scene.add(hemiLight)
 
-    const sunLight = new THREE.DirectionalLight(0xfffbeb, 2.8)
+    const sunLight = new THREE.DirectionalLight(ENVIRONMENT_COLORS.sun.keyLight, 2.8)
     sunLight.position.set(6, 10, 8)
     scene.add(sunLight)
 
-    const benaaBounce = new THREE.PointLight(0x1a6b52, 1.8, 16)
+    const benaaBounce = new THREE.PointLight(BRAND_COLORS.BENAA.light, 1.8, 16)
     benaaBounce.position.set(-3, 2, 4)
     scene.add(benaaBounce)
 

@@ -1,6 +1,11 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import {
+  BRAND_COLORS,
+  MATERIAL_COLORS,
+  ENVIRONMENT_COLORS,
+} from '../../utils/three-colors.js'
+import {
   THREE_TIMING,
   isReducedMotion,
   isMobileDevice,
@@ -53,17 +58,17 @@ export default function SisterCompanies3DConnection() {
     const ctx = envCanvas.getContext('2d')
 
     const skyGrad = ctx.createLinearGradient(0, 0, 0, 256)
-    skyGrad.addColorStop(0.0, '#0a3528') // Deep Green #0A3528
-    skyGrad.addColorStop(0.30, '#0f4c3a') // Benaa Green #0F4C3A
-    skyGrad.addColorStop(0.52, '#fef08a') // Soft Horizon Gold
-    skyGrad.addColorStop(0.68, '#1e293b') // Slate
-    skyGrad.addColorStop(1.0, '#0f172a')
+    skyGrad.addColorStop(0.0, ENVIRONMENT_COLORS.sky.zenithGreen)
+    skyGrad.addColorStop(0.30, ENVIRONMENT_COLORS.sky.zenithGreen)
+    skyGrad.addColorStop(0.52, ENVIRONMENT_COLORS.sky.horizonWarmSun)
+    skyGrad.addColorStop(0.68, ENVIRONMENT_COLORS.sky.distantSkyline)
+    skyGrad.addColorStop(1.0, ENVIRONMENT_COLORS.sky.deepFoundation)
     ctx.fillStyle = skyGrad
     ctx.fillRect(0, 0, 512, 256)
 
     const sunGrad = ctx.createRadialGradient(360, 80, 0, 360, 80, 70)
-    sunGrad.addColorStop(0, '#ffffff')
-    sunGrad.addColorStop(0.3, '#fffbeb')
+    sunGrad.addColorStop(0, ENVIRONMENT_COLORS.sun.glintWhite)
+    sunGrad.addColorStop(0.3, ENVIRONMENT_COLORS.sun.glintWarm)
     sunGrad.addColorStop(1, 'rgba(254, 240, 138, 0)')
     ctx.fillStyle = sunGrad
     ctx.fillRect(290, 10, 140, 140)
@@ -87,7 +92,7 @@ export default function SisterCompanies3DConnection() {
 
     const plazaGeo = new THREE.BoxGeometry(10.8, 0.22, 5.0)
     const plazaMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
+      color: MATERIAL_COLORS.ground.plazaDark,
       roughness: 0.45,
       metalness: 0.6,
     })
@@ -95,14 +100,14 @@ export default function SisterCompanies3DConnection() {
     plazaMesh.position.y = -2.15
     plazaGroup.add(plazaMesh)
 
-    const groundGrid = new THREE.GridHelper(10.2, 16, 0x334155, 0x1e293b)
+    const groundGrid = new THREE.GridHelper(10.2, 16, MATERIAL_COLORS.ground.gridPrimary, MATERIAL_COLORS.steel.mullion)
     groundGrid.position.y = -2.03
     plazaGroup.add(groundGrid)
 
     // Left Edge Marker (Green) & Right Edge Marker (Gold)
     const edgeGeo = new THREE.BoxGeometry(5.2, 0.03, 0.04)
-    const edgeMatGreen = new THREE.MeshBasicMaterial({ color: 0x1a6b52 })
-    const edgeMatGold = new THREE.MeshBasicMaterial({ color: 0xd4a017 })
+    const edgeMatGreen = new THREE.MeshBasicMaterial({ color: BRAND_COLORS.BENAA.light })
+    const edgeMatGold = new THREE.MeshBasicMaterial({ color: BRAND_COLORS.MAJD.light })
 
     const edgeLeft = new THREE.Mesh(edgeGeo, edgeMatGreen)
     edgeLeft.position.set(-2.6, -2.03, 2.5)
@@ -121,8 +126,8 @@ export default function SisterCompanies3DConnection() {
 
     // Emerald Green Tinted Architectural Solar Glass
     const benaaGlassMat = new THREE.MeshPhysicalMaterial({
-      color: 0x143b30,
-      emissive: 0x051b14,
+      color: MATERIAL_COLORS.glass.tint,
+      emissive: MATERIAL_COLORS.glass.emissive,
       emissiveIntensity: 0.2,
       roughness: 0.05,
       metalness: 0.15,
@@ -137,19 +142,19 @@ export default function SisterCompanies3DConnection() {
     })
 
     const benaaMullionMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
+      color: MATERIAL_COLORS.steel.mullion,
       metalness: 0.88,
       roughness: 0.24,
     })
 
     const benaaPodiumMat = new THREE.MeshStandardMaterial({
-      color: 0xcfd8dc,
+      color: MATERIAL_COLORS.concrete.podium,
       metalness: 0.05,
       roughness: 0.8,
     })
 
     const benaaGreenAccent = new THREE.MeshStandardMaterial({
-      color: 0x1a6b52,
+      color: BRAND_COLORS.BENAA.light,
       metalness: 0.8,
       roughness: 0.2,
     })
@@ -278,8 +283,8 @@ export default function SisterCompanies3DConnection() {
     // Central Muted Teal Synergy Nexus
     const coreCrystalGeo = new THREE.OctahedronGeometry(0.55, 0)
     const coreCrystalMat = new THREE.MeshPhysicalMaterial({
-      color: 0x14b8a6, // Muted refined technical teal
-      emissive: 0x0f766e,
+      color: BRAND_COLORS.TEAL.primary,
+      emissive: BRAND_COLORS.TEAL.dark,
       emissiveIntensity: 0.6,
       roughness: 0.1,
       metalness: 0.8,
@@ -292,7 +297,7 @@ export default function SisterCompanies3DConnection() {
     // Architectural Sky-Bridge Conduits (Teal Connection)
     const bridgeGeo = new THREE.CylinderGeometry(0.045, 0.045, 7.2, 12)
     const bridgeMat = new THREE.MeshBasicMaterial({
-      color: 0x14b8a6, // Muted Teal Connection Corridor
+      color: BRAND_COLORS.TEAL.primary,
       transparent: true,
       opacity: 0.85,
     })
@@ -303,7 +308,7 @@ export default function SisterCompanies3DConnection() {
 
     // Subtle Moving Teal Supply/Signal Packets
     const packetGeo = new THREE.SphereGeometry(0.07, 10, 10)
-    const packetMat = new THREE.MeshBasicMaterial({ color: 0x2dd4bf })
+    const packetMat = new THREE.MeshBasicMaterial({ color: BRAND_COLORS.TEAL.light })
     const packet1 = new THREE.Mesh(packetGeo, packetMat)
     const packet2 = new THREE.Mesh(packetGeo, packetMat)
     connectionMaster.add(packet1)
@@ -312,23 +317,27 @@ export default function SisterCompanies3DConnection() {
     // ----------------------------------------------------------------
     // 4. Lighting (Clean Daylight + Brand Accent Bounce)
     // ----------------------------------------------------------------
-    const hemiLight = new THREE.HemisphereLight(0xfffaed, 0x1e293b, 1.35)
+    const hemiLight = new THREE.HemisphereLight(
+      ENVIRONMENT_COLORS.lighting.hemiSky,
+      ENVIRONMENT_COLORS.lighting.hemiGround,
+      1.35
+    )
     scene.add(hemiLight)
 
-    const sunLight = new THREE.DirectionalLight(0xfffbeb, 2.8)
+    const sunLight = new THREE.DirectionalLight(ENVIRONMENT_COLORS.sun.keyLight, 2.8)
     sunLight.position.set(4, 8, 7)
     scene.add(sunLight)
 
     // Green bounce on left, Teal bounce in center, Gold bounce on right
-    const pGreen = new THREE.PointLight(0x1a6b52, 2.2, 14)
+    const pGreen = new THREE.PointLight(ENVIRONMENT_COLORS.lighting.benaaBounce, 2.2, 14)
     pGreen.position.set(-4, 2, 3)
     scene.add(pGreen)
 
-    const pTeal = new THREE.PointLight(0x14b8a6, 1.8, 12)
+    const pTeal = new THREE.PointLight(ENVIRONMENT_COLORS.lighting.tealBounce, 1.8, 12)
     pTeal.position.set(0, 1, 3)
     scene.add(pTeal)
 
-    const pGold = new THREE.PointLight(0xd4a017, 2.2, 14)
+    const pGold = new THREE.PointLight(ENVIRONMENT_COLORS.lighting.majdBounce, 2.2, 14)
     pGold.position.set(4, 2, 3)
     scene.add(pGold)
 

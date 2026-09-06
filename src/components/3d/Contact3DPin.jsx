@@ -1,6 +1,11 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import {
+  BRAND_COLORS,
+  MATERIAL_COLORS,
+  ENVIRONMENT_COLORS,
+} from '../../utils/three-colors.js'
+import {
   THREE_TIMING,
   isReducedMotion,
   isMobileDevice,
@@ -53,18 +58,18 @@ export default function Contact3DPin() {
     envCanvas.height = 256
     const ctx = envCanvas.getContext('2d')
     const skyGrad = ctx.createLinearGradient(0, 0, 0, 256)
-    skyGrad.addColorStop(0, '#0a3528') // Benaa deep dark green
-    skyGrad.addColorStop(0.35, '#0f4c3a') // Benaa green
-    skyGrad.addColorStop(0.55, '#fef08a') // Warm gold sun horizon
-    skyGrad.addColorStop(0.75, '#1e293b') // Slate
-    skyGrad.addColorStop(1, '#020617')
+    skyGrad.addColorStop(0, ENVIRONMENT_COLORS.sky.zenithGreen)
+    skyGrad.addColorStop(0.35, ENVIRONMENT_COLORS.sky.zenithGreen)
+    skyGrad.addColorStop(0.55, ENVIRONMENT_COLORS.sky.horizonWarmSun)
+    skyGrad.addColorStop(0.75, ENVIRONMENT_COLORS.sky.distantSkyline)
+    skyGrad.addColorStop(1, ENVIRONMENT_COLORS.sky.deepFoundation)
     ctx.fillStyle = skyGrad
     ctx.fillRect(0, 0, 512, 256)
 
     const sunGrad = ctx.createRadialGradient(360, 70, 0, 360, 70, 80)
-    sunGrad.addColorStop(0, '#ffffff')
-    sunGrad.addColorStop(0.25, '#fffbeb')
-    sunGrad.addColorStop(0.7, 'rgba(254, 240, 138, 0.5)')
+    sunGrad.addColorStop(0, ENVIRONMENT_COLORS.sun.glintWhite)
+    sunGrad.addColorStop(0.25, ENVIRONMENT_COLORS.sun.glintWarm)
+    sunGrad.addColorStop(0.7, ENVIRONMENT_COLORS.sun.glintHalo)
     sunGrad.addColorStop(1, 'rgba(254, 240, 138, 0)')
     ctx.fillStyle = sunGrad
     ctx.fillRect(260, 0, 200, 140)
@@ -88,7 +93,7 @@ export default function Contact3DPin() {
     // Map Base Slab (Dark Titanium Slate)
     const baseGeo = new THREE.CylinderGeometry(2.3, 2.4, 0.14, 40)
     const baseMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
+      color: MATERIAL_COLORS.ground.plazaDark,
       metalness: 0.85,
       roughness: 0.25,
     })
@@ -98,7 +103,7 @@ export default function Contact3DPin() {
     // Gold Outer Rim Ring
     const rimGeo = new THREE.TorusGeometry(2.32, 0.02, 16, 48)
     const rimMat = new THREE.MeshStandardMaterial({
-      color: 0xd4a017,
+      color: BRAND_COLORS.MAJD.light,
       metalness: 0.9,
       roughness: 0.15,
     })
@@ -108,7 +113,7 @@ export default function Contact3DPin() {
     groundGroup.add(rimMesh)
 
     // Map Grid / Street Crosshairs
-    const gridHelper = new THREE.GridHelper(2.8, 12, 0x1a6b52, 0x1e293b)
+    const gridHelper = new THREE.GridHelper(2.8, 12, BRAND_COLORS.BENAA.light, MATERIAL_COLORS.steel.mullion)
     gridHelper.position.y = 0.08
     gridHelper.material.opacity = 0.4
     gridHelper.material.transparent = true
@@ -116,7 +121,7 @@ export default function Contact3DPin() {
 
     // Target Center Target Disc (Location Anchor)
     const targetGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.02, 24)
-    const targetMat = new THREE.MeshBasicMaterial({ color: 0x14b8a6 }) // Muted technical teal
+    const targetMat = new THREE.MeshBasicMaterial({ color: BRAND_COLORS.TEAL.primary })
     const targetDot = new THREE.Mesh(targetGeo, targetMat)
     targetDot.position.y = 0.085
     groundGroup.add(targetDot)
@@ -124,7 +129,7 @@ export default function Contact3DPin() {
     // Concentric Target Rings
     const tRingGeo1 = new THREE.RingGeometry(0.45, 0.49, 36)
     const tRingMat = new THREE.MeshBasicMaterial({
-      color: 0x14b8a6,
+      color: BRAND_COLORS.TEAL.primary,
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0.65,
@@ -143,7 +148,7 @@ export default function Contact3DPin() {
     // Expanding Radar Shockwave Rings
     const pulseRingGeo = new THREE.RingGeometry(0.2, 0.26, 36)
     const pulseMat = new THREE.MeshBasicMaterial({
-      color: 0x14b8a6, // Muted technical teal
+      color: BRAND_COLORS.TEAL.primary,
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0.8,
@@ -156,7 +161,7 @@ export default function Contact3DPin() {
     // Rotating Radar Sweep Wedge
     const sweepGeo = new THREE.CircleGeometry(2.0, 36, 0, Math.PI / 3)
     const sweepMat = new THREE.MeshBasicMaterial({
-      color: 0x14b8a6,
+      color: BRAND_COLORS.TEAL.primary,
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0.14,
@@ -215,8 +220,8 @@ export default function Contact3DPin() {
 
     // Vibrant Authentic Google Maps Pure Red Gloss Material with Clearcoat
     const pinMat = new THREE.MeshPhysicalMaterial({
-      color: 0xee1b24, // Vivid pure Google Maps iconic Red
-      emissive: 0x5a0b0f,
+      color: MATERIAL_COLORS.markers.googlePinRed,
+      emissive: MATERIAL_COLORS.markers.googlePinEmissive,
       emissiveIntensity: 0.2,
       metalness: 0.15,
       roughness: 0.1,
@@ -232,7 +237,7 @@ export default function Contact3DPin() {
     const innerCoreGeo = new THREE.CylinderGeometry(0.26, 0.26, 0.18, 32)
     const innerCoreMat = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
-      emissive: 0xfef08a,
+      emissive: MATERIAL_COLORS.interior.warmIlluminatedFloor,
       emissiveIntensity: 0.6,
       metalness: 0.8,
       roughness: 0.1,
@@ -246,7 +251,7 @@ export default function Contact3DPin() {
     // Golden Orbit Ring around Google Maps Pin
     const orbitGeo = new THREE.TorusGeometry(0.95, 0.018, 16, 48)
     const orbitMat = new THREE.MeshBasicMaterial({
-      color: 0xd4a017,
+      color: BRAND_COLORS.MAJD.light,
       transparent: true,
       opacity: 0.85,
     })
@@ -258,7 +263,7 @@ export default function Contact3DPin() {
     // Vertical Upward Sky Beacon Light Shaft (Gold/Amber highlight)
     const beaconGeo = new THREE.CylinderGeometry(0.04, 0.18, 2.6, 16)
     const beaconMat = new THREE.MeshBasicMaterial({
-      color: 0xd4a017,
+      color: BRAND_COLORS.MAJD.light,
       transparent: true,
       opacity: 0.35,
     })
@@ -269,14 +274,18 @@ export default function Contact3DPin() {
     // ----------------------------------------------------------------
     // 5. Lighting & Particles
     // ----------------------------------------------------------------
-    const hemiLight = new THREE.HemisphereLight(0xfffaed, 0x0f172a, 1.5)
+    const hemiLight = new THREE.HemisphereLight(
+      ENVIRONMENT_COLORS.lighting.hemiSky,
+      ENVIRONMENT_COLORS.lighting.hemiGround,
+      1.5
+    )
     scene.add(hemiLight)
 
-    const dirLight = new THREE.DirectionalLight(0xfffbeb, 3.2)
+    const dirLight = new THREE.DirectionalLight(ENVIRONMENT_COLORS.sun.keyLight, 3.2)
     dirLight.position.set(4, 7, 6)
     scene.add(dirLight)
 
-    const pointLight = new THREE.PointLight(0xef4444, 2.5, 8)
+    const pointLight = new THREE.PointLight(ENVIRONMENT_COLORS.lighting.pinRedPoint, 2.5, 8)
     pointLight.position.set(0, 0.6, 2)
     scene.add(pointLight)
 
