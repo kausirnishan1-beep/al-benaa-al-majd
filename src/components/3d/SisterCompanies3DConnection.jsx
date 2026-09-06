@@ -8,7 +8,8 @@ import {
 import {
   THREE_TIMING,
   isReducedMotion,
-  isMobileDevice,
+  getDeviceTier,
+  getAdaptiveConfig,
   getStandardPixelRatio,
   createViewportObserver,
   disposeObject3D,
@@ -22,7 +23,8 @@ export default function SisterCompanies3DConnection() {
     if (!container) return
 
     const reducedMotion = isReducedMotion()
-    const isMobile = isMobileDevice()
+    const adaptive = getAdaptiveConfig()
+    const isMobile = adaptive.tier === 'mobile'
 
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(
@@ -38,7 +40,7 @@ export default function SisterCompanies3DConnection() {
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: !isMobile,
+      antialias: adaptive.enableAntialias,
       powerPreference: 'high-performance',
     })
     renderer.setSize(container.clientWidth, container.clientHeight)

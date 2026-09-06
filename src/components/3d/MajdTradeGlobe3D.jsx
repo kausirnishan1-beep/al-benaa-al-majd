@@ -8,7 +8,8 @@ import {
 import {
   THREE_TIMING,
   isReducedMotion,
-  isMobileDevice,
+  getDeviceTier,
+  getAdaptiveConfig,
   getStandardPixelRatio,
   createViewportObserver,
   disposeObject3D,
@@ -22,7 +23,8 @@ export default function MajdTradeGlobe3D() {
     if (!container) return
 
     const reducedMotion = isReducedMotion()
-    const isMobile = isMobileDevice()
+    const adaptive = getAdaptiveConfig()
+    const isMobile = adaptive.tier === 'mobile'
 
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(
@@ -36,7 +38,7 @@ export default function MajdTradeGlobe3D() {
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: !isMobile,
+      antialias: adaptive.enableAntialias,
       powerPreference: 'high-performance',
     })
     renderer.setSize(container.clientWidth, container.clientHeight)
@@ -56,8 +58,8 @@ export default function MajdTradeGlobe3D() {
     const globeRadius = 1.7
     const globeGeo = new THREE.SphereGeometry(
       globeRadius,
-      isMobile ? 24 : 36,
-      isMobile ? 24 : 36
+      adaptive.globeSegments,
+      adaptive.globeSegments
     )
     const globeMat = new THREE.MeshPhongMaterial({
       color: 0x051326, // Deep Royal Navy Blue
@@ -88,7 +90,7 @@ export default function MajdTradeGlobe3D() {
     // ----------------------------------------------------------------
     // 2. Generic Global Trade Network Nodes (Fibonacci Sphere Topology)
     // ----------------------------------------------------------------
-    const numNodes = isMobile ? 18 : 28
+    const numNodes = adaptive.networkNodes
     const nodePositions = []
     const goldenRatio = (1 + Math.sqrt(5)) / 2
 
@@ -151,7 +153,13 @@ export default function MajdTradeGlobe3D() {
       mid.normalize().multiplyScalar(globeRadius + Math.min(dist * 0.35, 0.75))
 
       const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2)
-      const tubeGeo = new THREE.TubeGeometry(curve, isMobile ? 20 : 36, 0.016, 6, false)
+      const tubeGeo = new THREE.TubeGeometry(
+        curve,
+        adaptive.tier === 'mobile' ? 20 : 36,
+        0.016,
+        6,
+        false
+      )
       const tubeMat = new THREE.MeshBasicMaterial({
         color: colorHex,
         transparent: true,
@@ -163,7 +171,7 @@ export default function MajdTradeGlobe3D() {
     }
 
     const networkArcs = []
-    const arcConnections = isMobile ? 12 : 20
+    const arcConnections = adaptive.networkArcs
     for (let i = 0; i < arcConnections; i++) {
       const idxA = (i * 2) % numNodes
       const idxB = (i * 2 + 5) % numNodes
@@ -194,7 +202,12 @@ export default function MajdTradeGlobe3D() {
     // ----------------------------------------------------------------
     // 5. Concentric Gold & Dark Gold Orbital Logistics Rings
     // ----------------------------------------------------------------
-    const ringGeo1 = new THREE.TorusGeometry(2.35, 0.016, 16, isMobile ? 40 : 80)
+    const ringGeo1 = new THREE.TorusGeometry(
+      2.35,
+      0.016,
+      adaptive.torusSegments.radial,
+      adaptive.torusSegments.tubular
+    )
     const ringMat1 = new THREE.MeshStandardMaterial({
       color: BRAND_COLORS.MAJD.light,
       metalness: 0.9,
@@ -206,7 +219,12 @@ export default function MajdTradeGlobe3D() {
     orbit1.rotation.x = Math.PI / 3.2
     globeMaster.add(orbit1)
 
-    const ringGeo2 = new THREE.TorusGeometry(2.55, 0.014, 16, isMobile ? 40 : 80)
+    const ringGeo2 = new THREE.TorusGeometry(
+      2.55,
+      0.014,
+      adaptive.torusSegments.radial,
+      adaptive.torusSegments.tubular
+    )
     const ringMat2 = new THREE.MeshStandardMaterial({
       color: BRAND_COLORS.MAJD.dark,
       metalness: 0.9,
@@ -243,7 +261,7 @@ export default function MajdTradeGlobe3D() {
     goldFillLight.position.set(-5, 4, -4)
     scene.add(goldFillLight)
 
-    const pCount = isMobile ? 30 : 60
+    const pCount = adaptive.particleCount
     const pGeo = new THREE.BufferGeometry()
     const pPos = new Float32Array(pCount * 3)
     for (let i = 0; i < pCount; i++) {

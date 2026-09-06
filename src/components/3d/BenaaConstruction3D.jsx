@@ -9,7 +9,8 @@ import {
 import {
   THREE_TIMING,
   isReducedMotion,
-  isMobileDevice,
+  getDeviceTier,
+  getAdaptiveConfig,
   getStandardPixelRatio,
   createViewportObserver,
   disposeObject3D,
@@ -97,7 +98,8 @@ export default function BenaaConstruction3D() {
     if (!container) return
 
     const reducedMotion = isReducedMotion()
-    const isMobile = isMobileDevice()
+    const adaptive = getAdaptiveConfig()
+    const isMobile = adaptive.tier === 'mobile'
 
     // ----------------------------------------------------------------
     // 1. Scene, Camera & Renderer
@@ -114,7 +116,7 @@ export default function BenaaConstruction3D() {
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: !isMobile,
+      antialias: adaptive.enableAntialias,
       powerPreference: 'high-performance',
     })
     renderer.setSize(container.clientWidth, container.clientHeight)

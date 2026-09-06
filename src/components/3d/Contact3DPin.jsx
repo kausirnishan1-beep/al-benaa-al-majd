@@ -8,7 +8,8 @@ import {
 import {
   THREE_TIMING,
   isReducedMotion,
-  isMobileDevice,
+  getDeviceTier,
+  getAdaptiveConfig,
   getStandardPixelRatio,
   createViewportObserver,
   disposeObject3D,
@@ -22,7 +23,8 @@ export default function Contact3DPin() {
     if (!container) return
 
     const reducedMotion = isReducedMotion()
-    const isMobile = isMobileDevice()
+    const adaptive = getAdaptiveConfig()
+    const isMobile = adaptive.tier === 'mobile'
 
     // ----------------------------------------------------------------
     // 1. Scene, Camera & Renderer
@@ -39,7 +41,7 @@ export default function Contact3DPin() {
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: !isMobile,
+      antialias: adaptive.enableAntialias,
       powerPreference: 'high-performance',
     })
     renderer.setSize(container.clientWidth, container.clientHeight)
@@ -290,7 +292,7 @@ export default function Contact3DPin() {
     pointLight.position.set(0, 0.6, 2)
     scene.add(pointLight)
 
-    const pCount = isMobile ? 20 : 40
+    const pCount = Math.round(adaptive.particleCount * 0.4)
     const pGeo = new THREE.BufferGeometry()
     const pPos = new Float32Array(pCount * 3)
     for (let i = 0; i < pCount; i++) {

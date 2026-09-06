@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
 import {
   BRAND_COLORS,
   MATERIAL_COLORS,
@@ -8,8 +10,10 @@ import {
 import {
   THREE_TIMING,
   isReducedMotion,
-  isMobileDevice,
+  getDeviceTier,
+  getAdaptiveConfig,
   getStandardPixelRatio,
+  createStandardGLTFLoader,
   createViewportObserver,
   disposeObject3D,
 } from '../../utils/three-performance.js'
@@ -23,7 +27,8 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     if (!container) return
 
     const reducedMotion = isReducedMotion()
-    const isMobile = isMobileDevice()
+    const adaptive = getAdaptiveConfig()
+    const isMobile = adaptive.tier === 'mobile'
 
     // ----------------------------------------------------------------
     // 1. Scene, Camera & Renderer with Realistic Tone Mapping & Shadows
@@ -47,7 +52,7 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: !isMobile,
+      antialias: adaptive.enableAntialias,
       powerPreference: 'high-performance',
     })
     renderer.setSize(container.clientWidth, container.clientHeight)
@@ -55,9 +60,9 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.15
 
-    // Soft realistic shadows
-    renderer.shadowMap.enabled = !isMobile
-    if (!isMobile) {
+    // Soft realistic shadows (Adaptive 3-tier: disabled on mobile, 1024 on tablet, 2048 on desktop)
+    renderer.shadowMap.enabled = adaptive.enableShadows
+    if (adaptive.enableShadows) {
       renderer.shadowMap.type = THREE.PCFSoftShadowMap
     }
     container.appendChild(renderer.domElement)
@@ -383,12 +388,12 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     }
 
     // ----------------------------------------------------------------
-    // 5. GLTF Model Loader with Fallback
+    // 5. GLTF Model Loader with DRACO Compression & Procedural Fallback
     // ----------------------------------------------------------------
     let beaconMatRef = null
 
     if (modelUrl) {
-      const loader = new GLTFLoader()
+      const loader = createStandardGLTFLoader(GLTFLoader, DRACOLoader)
       loader.load(
         modelUrl,
         (gltf) => {
@@ -399,8 +404,8 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
           const model = gltf.scene
           model.traverse((child) => {
             if (child.isMesh) {
-              child.castShadow = true
-              child.receiveShadow = true
+              child.castShadow = adaptive.enableShadows
+              child.receiveShadow = adaptive.enableShadows
               if (child.material) {
                 child.material.envMap = envMapTarget.texture
                 child.material.needsUpdate = true
@@ -439,9 +444,11 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     // Directional Key Sun Light
     const sunLight = new THREE.DirectionalLight(ENVIRONMENT_COLORS.sun.keyLight, 2.5)
     sunLight.position.set(8, 14, 9)
-    sunLight.castShadow = true
-    sunLight.shadow.mapSize.width = isMobile ? 1024 : 2048
-    sunLight.shadow.mapSize.height = isMobile ? 1024 : 2048
+    sunLight.castShadow = adaptive.enableShadows
+    if (adaptive.enableShadows) {
+      sunLight.shadow.mapSize.width = adaptive.shadowMapSize
+      sunLight.shadow.mapSize.height = adaptive.shadowMapSize
+    }
     sunLight.shadow.camera.near = 0.5
     sunLight.shadow.camera.far = 35
     sunLight.shadow.camera.left = -7
