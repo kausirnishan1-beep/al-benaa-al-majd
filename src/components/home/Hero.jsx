@@ -28,60 +28,50 @@ export default function Hero() {
     if (prefersReducedMotion()) return
 
     const ctx = gsap.context(() => {
-      // Orchestrated Entrance Timeline
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+      // Precise Orchestrated Timeline
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out' } })
 
-      tl.from(badgeRef.current, {
-        y: 20,
-        opacity: 0,
-        duration: 0.6,
-      })
-        .from(
-          titleRef.current,
-          {
-            y: 30,
-            opacity: 0,
-            duration: 0.8,
-          },
-          '-=0.3'
-        )
-        .from(
-          subTitleRef.current,
-          {
-            y: 20,
-            opacity: 0,
-            duration: 0.7,
-          },
-          '-=0.5'
-        )
-        .from(
-          [descRef.current, descArRef.current],
-          {
-            y: 20,
-            opacity: 0,
-            stagger: 0.15,
-            duration: 0.7,
-          },
-          '-=0.4'
-        )
-        .from(
-          ctaGroupRef.current,
-          {
-            y: 20,
-            opacity: 0,
-            duration: 0.6,
-          },
-          '-=0.3'
-        )
-        .from(
-          canvasColRef.current,
-          {
-            scale: 0.93,
-            opacity: 0,
-            duration: 0.9,
-          },
-          '-=0.7'
-        )
+      // 0.0s: Dark corporate background (Visible by default)
+
+      // 0.2s: Company identity appears
+      tl.fromTo(
+        badgeRef.current,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.5 },
+        0.2
+      )
+
+      // 0.4s: Headline reveal
+      tl.fromTo(
+        [titleRef.current, subTitleRef.current],
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.6, stagger: 0.08 },
+        0.4
+      )
+
+      // 0.6s: Description reveal
+      tl.fromTo(
+        [descRef.current, descArRef.current],
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.55, stagger: 0.08 },
+        0.6
+      )
+
+      // 0.8s: CTA reveal
+      tl.fromTo(
+        ctaGroupRef.current,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.5 },
+        0.8
+      )
+
+      // 0.9s: Building appears (Canvas wrapper reveal)
+      tl.fromTo(
+        canvasColRef.current,
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 0.7, ease: 'power2.out' },
+        0.9
+      )
 
       // Storytelling Scroll Exit Trigger
       ScrollTrigger.create({
@@ -92,8 +82,8 @@ export default function Hero() {
         onUpdate: (self) => {
           if (badgeRef.current && canvasColRef.current) {
             const p = self.progress
-            gsap.to(badgeRef.current, { opacity: 1 - p * 1.5, y: -p * 30, overwrite: 'auto' })
-            gsap.to(titleRef.current, { opacity: 1 - p * 1.2, y: -p * 40, overwrite: 'auto' })
+            gsap.to(badgeRef.current, { opacity: 1 - p * 1.5, y: -p * 25, overwrite: 'auto' })
+            gsap.to(titleRef.current, { opacity: 1 - p * 1.2, y: -p * 35, overwrite: 'auto' })
           }
         },
       })

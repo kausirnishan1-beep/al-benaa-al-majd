@@ -9,7 +9,7 @@ import {
   createViewportObserver,
   disposeObject3D,
 } from '../../utils/three-performance.js'
-import { ScrollTrigger } from '../../utils/gsap-utils.js'
+import { gsap, ScrollTrigger } from '../../utils/gsap-utils.js'
 
 export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) {
   const containerRef = useRef(null)
@@ -36,7 +36,9 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     const cameraX = isMobile ? 2.2 : 3.6
     const cameraY = isMobile ? 1.3 : 1.5
     const defaultCameraZ = isMobile ? 14.2 : 12.8
-    camera.position.set(cameraX, cameraY, defaultCameraZ)
+    // Start slightly pushed back for 1.2s cinematic push-in
+    const initialCameraZ = reducedMotion ? defaultCameraZ : defaultCameraZ + 2.0
+    camera.position.set(cameraX, cameraY, initialCameraZ)
     camera.lookAt(0, 0.4, 0)
 
     const renderer = new THREE.WebGLRenderer({
@@ -456,18 +458,31 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
     scene.add(majdBounce)
 
     // ----------------------------------------------------------------
-    // 7. Interaction: Cursor Subtle Rotation & Tilt, Scroll Camera Zoom
+    // 7. Interaction: 1.2s Camera Push-in, Cursor Parallax & Scroll
     // ----------------------------------------------------------------
-    // Default low-angle noble composition
     let targetRotY = 0.35
     let targetRotX = 0.03
     let targetCameraZ = defaultCameraZ
     let isVisible = true
 
+    // 1.2s: Camera slowly pushes in (Cinematic dolly-in)
+    let introCameraPushIn = null
+    if (!reducedMotion) {
+      introCameraPushIn = gsap.to(camera.position, {
+        z: defaultCameraZ,
+        duration: 2.2,
+        delay: 1.2,
+        ease: 'power2.out',
+        onUpdate: () => {
+          targetCameraZ = camera.position.z
+        },
+      })
+    }
+
     const raycaster = new THREE.Raycaster()
     const mouse = new THREE.Vector2()
 
-    // Cursor X -> subtle rotation, Cursor Y -> subtle tilt
+    // Cursor X -> subtle rotation, Cursor Y -> subtle tilt (Calm subtle parallax)
     const onMouseMove = (e) => {
       if (reducedMotion) return
       const rect = container.getBoundingClientRect()
@@ -477,9 +492,8 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
       mouse.x = x
       mouse.y = y
 
-      // Controlled subtle rotation (no rapid or aggressive spinning)
-      targetRotY = 0.35 + x * 0.22
-      targetRotX = 0.03 - y * 0.08
+      targetRotY = 0.35 + x * 0.18
+      targetRotX = 0.03 - y * 0.06
     }
 
     // Smooth Mobile Touch
@@ -496,13 +510,13 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
       if (reducedMotion || e.touches.length !== 1) return
       const deltaX = e.touches[0].clientX - touchStartX
       const deltaY = e.touches[0].clientY - touchStartY
-      targetRotY += deltaX * 0.003
-      targetRotX = Math.max(-0.15, Math.min(0.18, targetRotX - deltaY * 0.002))
+      targetRotY += deltaX * 0.002
+      targetRotX = Math.max(-0.12, Math.min(0.15, targetRotX - deltaY * 0.0015))
       touchStartX = e.touches[0].clientX
       touchStartY = e.touches[0].clientY
     }
 
-    // GSAP ScrollTrigger: scrub camera dolly zoom and subtle perspective rotation
+    // Scroll: camera slight movement via ScrollTrigger
     let scrollTriggerInstance = null
     if (!reducedMotion) {
       scrollTriggerInstance = ScrollTrigger.create({
@@ -511,8 +525,8 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
         end: 'bottom top',
         scrub: 1.2,
         onUpdate: (self) => {
-          targetCameraZ = defaultCameraZ - self.progress * 1.5
-          targetRotY = 0.35 + self.progress * 0.12
+          targetCameraZ = defaultCameraZ - self.progress * 1.2
+          targetRotY = 0.35 + self.progress * 0.08
         },
       })
     }
@@ -592,6 +606,9 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
       if (container) {
         container.removeEventListener('touchstart', onTouchStart)
         container.removeEventListener('touchmove', onTouchMove)
+      }
+      if (introCameraPushIn) {
+        introCameraPushIn.kill()
       }
       if (scrollTriggerInstance) {
         scrollTriggerInstance.kill()
