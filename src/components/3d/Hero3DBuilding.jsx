@@ -9,6 +9,7 @@ import {
   THREE_TIMING,
   isReducedMotion,
   isMobileDevice,
+  getStandardPixelRatio,
   createViewportObserver,
   disposeObject3D,
 } from '../../utils/three-performance.js'
@@ -50,7 +51,7 @@ export default function Hero3DBuilding({ modelUrl = '/models/skyscraper.glb' }) 
       powerPreference: 'high-performance',
     })
     renderer.setSize(container.clientWidth, container.clientHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2))
+    renderer.setPixelRatio(getStandardPixelRatio())
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.15
 

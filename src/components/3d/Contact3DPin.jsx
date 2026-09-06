@@ -9,6 +9,7 @@ import {
   THREE_TIMING,
   isReducedMotion,
   isMobileDevice,
+  getStandardPixelRatio,
   createViewportObserver,
   disposeObject3D,
 } from '../../utils/three-performance.js'
@@ -42,7 +43,7 @@ export default function Contact3DPin() {
       powerPreference: 'high-performance',
     })
     renderer.setSize(container.clientWidth, container.clientHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2))
+    renderer.setPixelRatio(getStandardPixelRatio())
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.35
     container.appendChild(renderer.domElement)
@@ -384,6 +385,9 @@ export default function Contact3DPin() {
       viewportObserver.disconnect()
       ro.disconnect()
 
+      pmremGenerator.dispose()
+      envMapTarget.dispose()
+      envTexture.dispose()
       disposeObject3D(scene)
       renderer.dispose()
       if (container && renderer.domElement) {

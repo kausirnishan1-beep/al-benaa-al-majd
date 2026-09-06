@@ -29,6 +29,17 @@ export const isMobileDevice = () => {
 }
 
 /**
+ * Standardized Pixel Ratio calculation:
+ * Mobile cap: 1.5 (prevents GPU thermal throttling on high-DPI retina mobile)
+ * Desktop cap: 2.0 (crisp retina rendering without wasted shader cycles on 3x/4x screens)
+ */
+export const getStandardPixelRatio = () => {
+  if (typeof window === 'undefined') return 1
+  const isMobile = isMobileDevice()
+  return Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2.0)
+}
+
+/**
  * Creates an IntersectionObserver that pauses animation when canvas is not visible
  * and resumes when visible in viewport.
  */

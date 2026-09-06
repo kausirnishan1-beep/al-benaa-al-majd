@@ -10,6 +10,7 @@ import {
   THREE_TIMING,
   isReducedMotion,
   isMobileDevice,
+  getStandardPixelRatio,
   createViewportObserver,
   disposeObject3D,
 } from '../../utils/three-performance.js'
@@ -117,13 +118,13 @@ export default function BenaaConstruction3D() {
       powerPreference: 'high-performance',
     })
     renderer.setSize(container.clientWidth, container.clientHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2))
+    renderer.setPixelRatio(getStandardPixelRatio())
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.3
     container.appendChild(renderer.domElement)
 
     // ----------------------------------------------------------------
-    // 2. HDRI Environment Map (PMREM) with Emerald Tone
+    // 2. HDRI Environment Map (PMREM) with Clean Physical Sky
     // ----------------------------------------------------------------
     const pmremGenerator = new THREE.PMREMGenerator(renderer)
     pmremGenerator.compileEquirectangularShader()
@@ -133,19 +134,20 @@ export default function BenaaConstruction3D() {
     envCanvas.height = 256
     const ctx = envCanvas.getContext('2d')
     const skyGrad = ctx.createLinearGradient(0, 0, 0, 256)
-    skyGrad.addColorStop(0, '#064e3b') // Deep Emerald
-    skyGrad.addColorStop(0.3, '#0284c7') // Sky Blue
-    skyGrad.addColorStop(0.6, '#0f172a') // Slate
-    skyGrad.addColorStop(1, '#020617')
+    skyGrad.addColorStop(0, ENVIRONMENT_COLORS.sky.zenithGreen)
+    skyGrad.addColorStop(0.3, ENVIRONMENT_COLORS.sky.slateAtmosphere)
+    skyGrad.addColorStop(0.6, ENVIRONMENT_COLORS.sky.distantSkyline)
+    skyGrad.addColorStop(1, ENVIRONMENT_COLORS.sky.deepFoundation)
     ctx.fillStyle = skyGrad
     ctx.fillRect(0, 0, 512, 256)
 
     const sunGrad = ctx.createRadialGradient(380, 70, 0, 380, 70, 80)
-    sunGrad.addColorStop(0, '#ffffff')
-    sunGrad.addColorStop(0.3, '#fef08a')
+    sunGrad.addColorStop(0, ENVIRONMENT_COLORS.sun.glintWhite)
+    sunGrad.addColorStop(0.25, ENVIRONMENT_COLORS.sun.glintWarm)
+    sunGrad.addColorStop(0.6, ENVIRONMENT_COLORS.sun.glintHalo)
     sunGrad.addColorStop(1, 'rgba(254, 240, 138, 0)')
     ctx.fillStyle = sunGrad
-    ctx.fillRect(280, 0, 200, 140)
+    ctx.fillRect(315, 10, 130, 130)
 
     const envTexture = new THREE.CanvasTexture(envCanvas)
     envTexture.mapping = THREE.EquirectangularReflectionMapping
