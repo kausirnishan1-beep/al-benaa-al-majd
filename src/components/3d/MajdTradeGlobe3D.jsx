@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
-import { THREE_COLORS } from '../../utils/three-colors.js'
 import {
   THREE_TIMING,
   isReducedMotion,
@@ -26,7 +25,7 @@ export default function MajdTradeGlobe3D() {
       0.1,
       1000
     )
-    camera.position.set(0, 0, isMobile ? 9.8 : 8.5)
+    camera.position.set(0, 0, isMobile ? 9.6 : 8.4)
     camera.lookAt(0, 0, 0)
 
     const renderer = new THREE.WebGLRenderer({
@@ -36,172 +35,208 @@ export default function MajdTradeGlobe3D() {
     })
     renderer.setSize(container.clientWidth, container.clientHeight)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2))
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.25
     container.appendChild(renderer.domElement)
 
     const globeMaster = new THREE.Group()
-    const globeScale = isMobile ? 0.78 : 0.9
+    const globeScale = isMobile ? 0.78 : 0.92
     globeMaster.scale.set(globeScale, globeScale, globeScale)
     scene.add(globeMaster)
 
     // ----------------------------------------------------------------
-    // 1. Deep Oceanic Sapphire Blue 3D Globe (Scaled to fit within box)
+    // 1. Deep Royal Navy Oceanic Core Sphere
     // ----------------------------------------------------------------
     const globeRadius = 1.7
     const globeGeo = new THREE.SphereGeometry(
       globeRadius,
-      isMobile ? 24 : 38,
-      isMobile ? 24 : 38
+      isMobile ? 24 : 36,
+      isMobile ? 24 : 36
     )
     const globeMat = new THREE.MeshPhongMaterial({
-      color: 0x0a1e38, // Deep Royal Navy Blue
-      emissive: 0x051326,
+      color: 0x051326, // Deep Royal Navy Blue
+      emissive: 0x020a14,
       emissiveIntensity: 0.6,
-      shininess: 95,
+      shininess: 90,
       transparent: true,
-      opacity: 0.88,
+      opacity: 0.92,
     })
     const globeMesh = new THREE.Mesh(globeGeo, globeMat)
     globeMaster.add(globeMesh)
 
-    // Latitude & Longitude Cyan/Blue Wireframe Grid
+    // Geodesic / Latitude-Longitude Coordinate Grid (Gold & Sky Blue)
     const wireGeo = new THREE.SphereGeometry(
       globeRadius + 0.02,
       isMobile ? 18 : 26,
       isMobile ? 18 : 26
     )
     const wireMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8, // Radiant Sky Blue / Cyan
+      color: 0xd4a017, // Warm Gold Grid
       wireframe: true,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.25,
     })
     const wireMesh = new THREE.Mesh(wireGeo, wireMat)
     globeMaster.add(wireMesh)
 
     // ----------------------------------------------------------------
-    // 2. Global Trade Corridor Hubs
+    // 2. Generic Global Trade Network Nodes (Fibonacci Sphere Topology)
     // ----------------------------------------------------------------
-    const latLngToVector3 = (lat, lng, radius) => {
-      const phi = (90 - lat) * (Math.PI / 180)
-      const theta = (lng + 180) * (Math.PI / 180)
-      const x = -(radius * Math.sin(phi) * Math.cos(theta))
-      const z = radius * Math.sin(phi) * Math.sin(theta)
-      const y = radius * Math.cos(phi)
-      return new THREE.Vector3(x, y, z)
-    }
+    const numNodes = isMobile ? 18 : 28
+    const nodePositions = []
+    const goldenRatio = (1 + Math.sqrt(5)) / 2
 
-    const hubs = {
-      primaryHub: { lat: 24.7136, lng: 46.6753 },
-      routeA: { lat: 31.2304, lng: 121.4737 },
-      routeB: { lat: 48.8566, lng: 2.3522 },
-      routeC: { lat: 25.2048, lng: 55.2708 },
-      routeD: { lat: 1.3521, lng: 103.8198 },
-    }
+    const nodeGeo = new THREE.SphereGeometry(0.045, 10, 10)
+    const nodeGoldMat = new THREE.MeshStandardMaterial({
+      color: 0xfef08a,
+      emissive: 0xf59e0b,
+      emissiveIntensity: 0.6,
+      roughness: 0.2,
+      metalness: 0.9,
+    })
 
-    const pinGeo = new THREE.SphereGeometry(0.065, 12, 12)
-    const hubPositions = {}
+    const nodeCyanMat = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      emissive: 0x0284c7,
+      emissiveIntensity: 0.5,
+      roughness: 0.2,
+      metalness: 0.9,
+    })
 
-    Object.entries(hubs).forEach(([key, info]) => {
-      const pos = latLngToVector3(info.lat, info.lng, globeRadius + 0.04)
-      hubPositions[key] = pos
+    for (let i = 0; i < numNodes; i++) {
+      const theta = (2 * Math.PI * i) / goldenRatio
+      const phi = Math.acos(1 - (2 * (i + 0.5)) / numNodes)
+      const r = globeRadius + 0.04
 
-      const pinMat = new THREE.MeshBasicMaterial({
-        color: key === 'primaryHub' ? 0xffffff : 0x38bdf8,
-      })
-      const pin = new THREE.Mesh(pinGeo, pinMat)
-      pin.position.copy(pos)
-      globeMaster.add(pin)
+      const x = r * Math.sin(phi) * Math.cos(theta)
+      const y = r * Math.cos(phi)
+      const z = r * Math.sin(phi) * Math.sin(theta)
+      const pos = new THREE.Vector3(x, y, z)
+      nodePositions.push(pos)
 
-      if (key === 'primaryHub') {
-        const ringGeo = new THREE.RingGeometry(0.09, 0.13, 24)
+      const isPrimary = i % 3 === 0
+      const nodeMesh = new THREE.Mesh(nodeGeo, isPrimary ? nodeGoldMat : nodeCyanMat)
+      nodeMesh.position.copy(pos)
+      globeMaster.add(nodeMesh)
+
+      // Pulsing pulse rings on key nodes
+      if (isPrimary) {
+        const ringGeo = new THREE.RingGeometry(0.06, 0.09, 16)
         const ringMat = new THREE.MeshBasicMaterial({
-          color: 0x60a5fa,
+          color: 0xf59e0b,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.85,
+          opacity: 0.7,
         })
         const ring = new THREE.Mesh(ringGeo, ringMat)
         ring.position.copy(pos)
         ring.lookAt(new THREE.Vector3(0, 0, 0))
         globeMaster.add(ring)
       }
-    })
+    }
 
     // ----------------------------------------------------------------
-    // 3. Glowing Blue & Cyan Curved Trade Routes
+    // 3. Generic Global Trade Network Arcs (Mathematical Interconnection)
     // ----------------------------------------------------------------
-    const createArc = (p1, p2, colorHex) => {
+    const createNetworkArc = (p1, p2, colorHex) => {
       const mid = p1.clone().add(p2).multiplyScalar(0.5)
-      const distance = p1.distanceTo(p2)
-      mid.normalize().multiplyScalar(globeRadius + distance * 0.42)
+      const dist = p1.distanceTo(p2)
+      // Raise arc higher depending on distance across the globe
+      mid.normalize().multiplyScalar(globeRadius + Math.min(dist * 0.35, 0.75))
 
       const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2)
-      const tubeGeo = new THREE.TubeGeometry(curve, isMobile ? 24 : 48, 0.02, 8, false)
+      const tubeGeo = new THREE.TubeGeometry(curve, isMobile ? 20 : 36, 0.016, 6, false)
       const tubeMat = new THREE.MeshBasicMaterial({
         color: colorHex,
         transparent: true,
-        opacity: 0.8,
+        opacity: 0.65,
       })
       const tubeMesh = new THREE.Mesh(tubeGeo, tubeMat)
       globeMaster.add(tubeMesh)
       return { curve, tubeMesh }
     }
 
-    const tradeArcs = [
-      createArc(hubPositions.primaryHub, hubPositions.routeA, 0x38bdf8),
-      createArc(hubPositions.primaryHub, hubPositions.routeB, 0x60a5fa),
-      createArc(hubPositions.primaryHub, hubPositions.routeC, 0x2dd4bf),
-      createArc(hubPositions.primaryHub, hubPositions.routeD, 0x93c5fd),
-    ]
+    const networkArcs = []
+    const arcConnections = isMobile ? 12 : 20
+    for (let i = 0; i < arcConnections; i++) {
+      const idxA = (i * 2) % numNodes
+      const idxB = (i * 2 + 5) % numNodes
+      const colorHex = i % 2 === 0 ? 0xf59e0b : 0x38bdf8
+      const arc = createNetworkArc(nodePositions[idxA], nodePositions[idxB], colorHex)
+      networkArcs.push(arc)
+    }
 
     // ----------------------------------------------------------------
-    // 4. Moving Logistics Cargo Indicators
+    // 4. Moving Trade Logistics Data Packets (Dynamic Stream)
     // ----------------------------------------------------------------
-    const cargoGeo = new THREE.SphereGeometry(0.065, 10, 10)
-    const cargoMat = new THREE.MeshBasicMaterial({ color: 0xffffff })
-    const movingCargo = tradeArcs.map((arc, index) => {
-      const mesh = new THREE.Mesh(cargoGeo, cargoMat)
+    const packetGeo = new THREE.SphereGeometry(0.05, 8, 8)
+    const packetGoldMat = new THREE.MeshBasicMaterial({ color: 0xfffbeb })
+    const packetCyanMat = new THREE.MeshBasicMaterial({ color: 0x7dd3fc })
+
+    const movingPackets = networkArcs.map((arc, index) => {
+      const mesh = new THREE.Mesh(packetGeo, index % 2 === 0 ? packetGoldMat : packetCyanMat)
       globeMaster.add(mesh)
-      return { mesh, curve: arc.curve, speed: 0.005 + index * 0.0015, t: index * 0.25 }
+      return {
+        mesh,
+        curve: arc.curve,
+        speed: 0.004 + (index % 5) * 0.0012,
+        t: (index * 0.17) % 1,
+      }
     })
 
     // ----------------------------------------------------------------
-    // 5. Orbital Radiant Blue Rings (Strictly fitted within container)
+    // 5. Concentric Gold & Cyan Orbital Logistics Rings
     // ----------------------------------------------------------------
     const ringGeo1 = new THREE.TorusGeometry(2.35, 0.016, 16, isMobile ? 40 : 80)
-    const ringMat1 = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
+    const ringMat1 = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b, // Amber Gold
+      metalness: 0.9,
+      roughness: 0.2,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.8,
     })
     const orbit1 = new THREE.Mesh(ringGeo1, ringMat1)
-    orbit1.rotation.x = Math.PI / 3
+    orbit1.rotation.x = Math.PI / 3.2
     globeMaster.add(orbit1)
 
     const ringGeo2 = new THREE.TorusGeometry(2.55, 0.014, 16, isMobile ? 40 : 80)
-    const ringMat2 = new THREE.MeshBasicMaterial({
-      color: 0x60a5fa,
+    const ringMat2 = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8, // Sky Cyan
+      metalness: 0.9,
+      roughness: 0.2,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.7,
     })
     const orbit2 = new THREE.Mesh(ringGeo2, ringMat2)
-    orbit2.rotation.x = -Math.PI / 4
+    orbit2.rotation.x = -Math.PI / 4.2
     orbit2.rotation.y = Math.PI / 4
     globeMaster.add(orbit2)
 
-    // ----------------------------------------------------------------
-    // 6. Natural Blue Atmosphere Lighting & Cosmic Particles
-    // ----------------------------------------------------------------
-    scene.add(new THREE.AmbientLight(THREE_COLORS.LIGHTS.ambient, 0.9))
-    const pBlueKey = new THREE.PointLight(0x38bdf8, 3.2, 25)
-    pBlueKey.position.set(5, 5, 5)
-    scene.add(pBlueKey)
+    // Orbital satellite markers
+    const satGeo = new THREE.BoxGeometry(0.08, 0.08, 0.08)
+    const satMat = new THREE.MeshBasicMaterial({ color: 0xfffbeb })
+    const satellite1 = new THREE.Mesh(satGeo, satMat)
+    orbit1.add(satellite1)
+    satellite1.position.x = 2.35
 
-    const pAzureFill = new THREE.PointLight(0x1d4ed8, 2.5, 20)
-    pAzureFill.position.set(-5, 4, -4)
-    scene.add(pAzureFill)
+    const satellite2 = new THREE.Mesh(satGeo, satMat)
+    orbit2.add(satellite2)
+    satellite2.position.x = 2.55
 
-    const pCount = isMobile ? 30 : 65
+    // ----------------------------------------------------------------
+    // 6. Gold & Cyan Atmosphere Lighting & Dust
+    // ----------------------------------------------------------------
+    scene.add(new THREE.AmbientLight(0xffffff, 0.85))
+
+    const goldKeyLight = new THREE.PointLight(0xf59e0b, 3.0, 25)
+    goldKeyLight.position.set(5, 5, 5)
+    scene.add(goldKeyLight)
+
+    const blueFillLight = new THREE.PointLight(0x0284c7, 2.5, 20)
+    blueFillLight.position.set(-5, 4, -4)
+    scene.add(blueFillLight)
+
+    const pCount = isMobile ? 30 : 60
     const pGeo = new THREE.BufferGeometry()
     const pPos = new Float32Array(pCount * 3)
     for (let i = 0; i < pCount; i++) {
@@ -211,10 +246,10 @@ export default function MajdTradeGlobe3D() {
     }
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3))
     const pMat = new THREE.PointsMaterial({
-      color: 0x7dd3fc,
-      size: 0.045,
+      color: 0xfef08a,
+      size: 0.04,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.7,
     })
     const particles = new THREE.Points(pGeo, pMat)
     scene.add(particles)
@@ -231,8 +266,8 @@ export default function MajdTradeGlobe3D() {
       const rect = container.getBoundingClientRect()
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1
       const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1)
-      targetRotY = x * 0.25
-      targetRotX = -y * 0.12
+      targetRotY = x * 0.22
+      targetRotX = -y * 0.1
     }
     window.addEventListener('mousemove', onMouseMove, { passive: true })
 
@@ -250,19 +285,22 @@ export default function MajdTradeGlobe3D() {
       const t = clock.getElapsedTime()
 
       if (!reducedMotion) {
-        globeMaster.rotation.y += (targetRotY - globeMaster.rotation.y) * THREE_TIMING.DAMPING_FACTOR + 0.001
-        globeMaster.rotation.x += (targetRotX - globeMaster.rotation.x) * THREE_TIMING.DAMPING_FACTOR
+        // Continuous organic global trade rotation + mouse parallax
+        globeMaster.rotation.y +=
+          (targetRotY - globeMaster.rotation.y) * THREE_TIMING.DAMPING_FACTOR + 0.0015
+        globeMaster.rotation.x +=
+          (targetRotX - globeMaster.rotation.x) * THREE_TIMING.DAMPING_FACTOR
 
-        orbit1.rotation.z += 0.004
-        orbit2.rotation.z -= 0.003
+        orbit1.rotation.z += 0.0035
+        orbit2.rotation.z -= 0.0028
 
-        movingCargo.forEach((c) => {
-          c.t = (c.t + c.speed) % 1
-          const pt = c.curve.getPoint(c.t)
-          c.mesh.position.copy(pt)
+        movingPackets.forEach((p) => {
+          p.t = (p.t + p.speed) % 1
+          const pt = p.curve.getPoint(p.t)
+          p.mesh.position.copy(pt)
         })
 
-        particles.rotation.y = t * 0.01
+        particles.rotation.y = t * 0.008
       }
 
       renderer.render(scene, camera)
@@ -295,7 +333,7 @@ export default function MajdTradeGlobe3D() {
     <div
       ref={containerRef}
       className="w-full h-full min-h-[320px] lg:min-h-[400px] relative pointer-events-auto cursor-grab active:cursor-grabbing"
-      aria-hidden="true"
+      aria-label="Interactive Majd 3D Global Trade & Logistics Network Globe"
     />
   )
 }
