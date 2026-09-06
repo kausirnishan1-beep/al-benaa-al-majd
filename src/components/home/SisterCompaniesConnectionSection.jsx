@@ -45,12 +45,17 @@ export default function SisterCompaniesConnectionSection() {
             </Suspense>
 
             {/* Live Indicator Badges */}
-            <div className="absolute top-3 sm:top-4 left-3 sm:left-4 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-benaa-dark/90 border border-emerald-500/30 text-[10px] sm:text-[11px] text-emerald-300 font-mono shadow-lg backdrop-blur-md max-w-[45%]">
+            <div className="absolute top-3 sm:top-4 left-3 sm:left-4 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-benaa-dark/90 border border-emerald-500/30 text-[10px] sm:text-[11px] text-emerald-300 font-mono shadow-lg backdrop-blur-md max-w-[32%] sm:max-w-[35%]">
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
               <span className="truncate">{benaa?.name ? benaa.name.split(' CONTRACTING')[0] : 'AL BENAA'}</span>
             </div>
 
-            <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-[#402e03]/90 border border-amber-500/30 text-[10px] sm:text-[11px] text-amber-300 font-mono shadow-lg backdrop-blur-md max-w-[45%]">
+            <div className="absolute top-3 sm:top-4 left-1/2 -translate-x-1/2 flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-teal-950/80 border border-teal-500/30 text-[9px] sm:text-[10px] text-teal-300 font-mono shadow-lg backdrop-blur-md">
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping flex-shrink-0"></span>
+              <span className="uppercase tracking-wider font-bold">Synergy</span>
+            </div>
+
+            <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-[#402e03]/90 border border-amber-500/30 text-[10px] sm:text-[11px] text-amber-300 font-mono shadow-lg backdrop-blur-md max-w-[32%] sm:max-w-[35%]">
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0"></span>
               <span className="truncate">{majd?.name ? majd.name.split(' FOR TRADE')[0] : 'AL MAJD'}</span>
             </div>
