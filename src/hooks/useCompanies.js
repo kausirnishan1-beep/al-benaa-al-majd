@@ -1,8 +1,35 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../utils/supabaseClient.js'
 
+const DEFAULT_COMPANIES = [
+  {
+    id: 'benaa',
+    name: 'AL BENAA AL RAHAB CONTRACTING EST.',
+    nameAr: 'مؤسسة البناء الرحاب للمقاولات',
+    tagline: 'General Construction, Civil Contracting & Project Management',
+    taglineAr: 'المقاولات العامة والإنشاءات والترميم وإدارة المشاريع',
+    description: 'Specializing in residential compounds, commercial towers, structural rehabilitation, and full-lifecycle project management across Saudi Arabia.',
+    descriptionAr: 'متخصصون في تنفيذ المشاريع السكنية والتجارية، أعمال التجديد والترميم، الصيانة الوقائية وإدارة المشاريع الهندسية المتكاملة.',
+    color: 'benaa',
+    logo: '/logo/al-benaa-logo.svg',
+    path: '/benaa',
+  },
+  {
+    id: 'majd',
+    name: 'AL MAJD LINES FOR TRADE & IMPORT',
+    nameAr: 'مؤسسة خطوط المجد للتجارة والاستيراد',
+    tagline: 'International Trade, Import & Export & Logistics Solutions',
+    taglineAr: 'التجارة العامة والاستيراد والتصدير وسلاسل الإمداد اللوجستية',
+    description: 'Empowering Saudi infrastructure through premium construction material procurement, industrial machinery imports, and reliable global freight operations.',
+    descriptionAr: 'متخصصون في الاستيراد والتصدير الدولي، التجارة العامة، توريد مواد البناء والمعدات الصناعية، وإدارة سلاسل الإمداد والخدمات اللوجستية المتكاملة.',
+    color: 'majd',
+    logo: '/logo/al-majd-logo.svg',
+    path: '/majd',
+  },
+]
+
 export function useCompanies() {
-  const [companies, setCompanies] = useState([])
+  const [companies, setCompanies] = useState(DEFAULT_COMPANIES)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
