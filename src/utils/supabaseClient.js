@@ -1,9 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 
-const rawUrl = import.meta.env.VITE_SUPABASE_URL
-const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const rawUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim()
+const rawKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim()
 
-export const isSupabaseConfigured = Boolean(rawUrl && rawKey && rawUrl.startsWith('http'))
+// Auto-sanitize URL if user accidentally included /rest/v1/ or trailing slash
+const sanitizedUrl = rawUrl
+  ? rawUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '')
+  : ''
+
+export const isSupabaseConfigured = Boolean(
+  sanitizedUrl && rawKey && sanitizedUrl.startsWith('http')
+)
 
 if (!isSupabaseConfigured) {
   console.warn(
@@ -11,7 +18,7 @@ if (!isSupabaseConfigured) {
   )
 }
 
-const supabaseUrl = isSupabaseConfigured ? rawUrl : 'https://placeholder.supabase.co'
+const supabaseUrl = isSupabaseConfigured ? sanitizedUrl : 'https://placeholder.supabase.co'
 const supabaseAnonKey = isSupabaseConfigured ? rawKey : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder'
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
