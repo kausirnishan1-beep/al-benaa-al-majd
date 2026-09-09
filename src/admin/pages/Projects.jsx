@@ -112,8 +112,12 @@ export default function Projects() {
       render: (row) => (
         <div className="flex items-center gap-3">
           <img
-            src={row.image}
+            src={row.image || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=400&q=80'}
             alt={row.title}
+            onError={(e) => {
+              e.target.onerror = null
+              e.target.src = 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=400&q=80'
+            }}
             className="w-12 h-12 rounded-xl object-cover border border-gray-200 flex-shrink-0"
           />
           <div className="min-w-0">

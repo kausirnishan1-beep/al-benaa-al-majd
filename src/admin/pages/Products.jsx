@@ -103,8 +103,12 @@ export default function Products() {
       render: (row) => (
         <div className="flex items-center gap-3">
           <img
-            src={row.image}
+            src={row.image || 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=400&q=80'}
             alt={row.name}
+            onError={(e) => {
+              e.target.onerror = null
+              e.target.src = 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=400&q=80'
+            }}
             className="w-12 h-12 rounded-xl object-cover border border-gray-200 flex-shrink-0"
           />
           <div className="min-w-0">
