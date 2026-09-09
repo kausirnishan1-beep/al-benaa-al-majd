@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react'
-import { supabase } from '../../utils/supabaseClient.js'
+import { supabase, isSupabaseConfigured } from '../../utils/supabaseClient.js'
 
 const AdminAuthContext = createContext(null)
 
@@ -85,6 +85,13 @@ export function AdminAuthProvider({ children }) {
   }, [])
 
   const login = async (email, password) => {
+    if (!isSupabaseConfigured) {
+      return {
+        success: false,
+        error: 'Missing Supabase credentials in Vercel. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Vercel Project Settings and click "Redeploy".',
+      }
+    }
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
@@ -133,9 +140,12 @@ export function AdminAuthProvider({ children }) {
       }
     } catch (err) {
       console.error('Supabase signIn error:', err)
+      const msg = err.message === 'Failed to fetch'
+        ? 'Failed to connect to Supabase. Ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set in Vercel, then Redeploy.'
+        : (err.message || 'Connection error / خطأ في الاتصال بقاعدة البيانات')
       return {
         success: false,
-        error: err.message || 'Connection error / خطأ في الاتصال بقاعدة البيانات',
+        error: msg,
       }
     }
   }
