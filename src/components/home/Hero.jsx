@@ -110,16 +110,18 @@ export default function Hero() {
           <div className="lg:col-span-7 max-w-2xl">
             <div
               ref={badgeRef}
-              className="inline-flex flex-wrap items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-sm mb-5 max-w-full"
+              className="inline-flex items-start sm:items-center gap-2.5 px-3.5 py-2 sm:px-4 sm:py-1.5 rounded-2xl sm:rounded-full bg-white/10 border border-white/15 backdrop-blur-sm mb-5 max-w-full"
             >
-              <span className="w-2 h-2 rounded-full bg-majd-light animate-pulse flex-shrink-0"></span>
-              <span className="text-majd-light font-bold text-[11px] sm:text-xs md:text-sm tracking-wider uppercase">
-                {general.siteNameEn || 'AL BENAA AL RAHAB & AL MAJD LINES'}
-              </span>
-              <span className="text-white/40 hidden xs:inline">|</span>
-              <span className="text-white/80 text-[11px] sm:text-xs md:text-sm font-arabic">
-                {general.siteNameAr || 'مؤسسة البناء ومؤسسة خطوط المجد'}
-              </span>
+              <span className="w-2 h-2 rounded-full bg-majd-light animate-pulse shrink-0 mt-1 sm:mt-0"></span>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-left">
+                <span className="text-majd-light font-bold text-[11px] sm:text-xs md:text-sm tracking-wider uppercase leading-snug">
+                  {general.siteNameEn || 'AL BENAA AL RAHAB & AL MAJD LINES'}
+                </span>
+                <span className="text-white/40 hidden sm:inline">|</span>
+                <span className="text-white/80 text-[10px] sm:text-xs md:text-sm font-arabic leading-snug">
+                  {general.siteNameAr || 'مؤسسة البناء ومؤسسة خطوط المجد'}
+                </span>
+              </div>
             </div>
 
             <h1
@@ -166,19 +168,19 @@ export default function Hero() {
                 <Button
                   to={benaaCompany?.path || '/benaa'}
                   variant="white"
-                  className="w-full sm:w-auto bg-white text-gray-900 hover:bg-gray-100 shadow-xl px-5 sm:px-6 py-3 sm:py-3.5 border border-white/20 active:scale-98 transition-transform"
+                  className="w-full sm:w-auto bg-white text-gray-900 hover:bg-gray-100 shadow-xl px-4 sm:px-6 py-3 sm:py-3.5 border border-white/20 active:scale-98 transition-transform"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-benaa/10 flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="w-9 h-9 rounded-lg bg-benaa/10 flex items-center justify-center shrink-0">
                       <Building2 className="w-4 h-4 text-benaa" />
                     </div>
-                    <div className="text-left">
+                    <div className="text-left flex-1 min-w-0">
                       <span className="block font-extrabold text-gray-900 text-xs sm:text-sm leading-tight">
                         {benaaCompany?.name
                           ? benaaCompany.name.split(' CONTRACTING')[0]
                           : 'AL BENAA AL RAHAB'}
                       </span>
-                      <span className="block text-[10px] text-benaa font-bold font-arabic leading-tight">
+                      <span className="block text-[11px] text-benaa font-bold font-arabic leading-tight mt-0.5">
                         {benaaCompany?.nameAr || 'مؤسسة البناء الرحاب للمقاولات'}
                       </span>
                     </div>
@@ -188,19 +190,19 @@ export default function Hero() {
                 <Button
                   to={majdCompany?.path || '/majd'}
                   variant="secondary"
-                  className="w-full sm:w-auto bg-gradient-to-r from-majd to-amber-600 text-white hover:brightness-110 shadow-xl px-5 sm:px-6 py-3 sm:py-3.5 border border-majd/30 active:scale-98 transition-transform"
+                  className="w-full sm:w-auto bg-gradient-to-r from-majd to-amber-600 text-white hover:brightness-110 shadow-xl px-4 sm:px-6 py-3 sm:py-3.5 border border-majd/30 active:scale-98 transition-transform"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
                       <Globe2 className="w-4 h-4 text-white" />
                     </div>
-                    <div className="text-left">
-                      <span className="block font-bold text-xs sm:text-sm leading-tight">
+                    <div className="text-left flex-1 min-w-0">
+                      <span className="block font-extrabold text-white text-xs sm:text-sm leading-tight">
                         {majdCompany?.name
                           ? majdCompany.name.split(' FOR TRADE')[0]
                           : 'AL MAJD LINES'}
                       </span>
-                      <span className="block text-[10px] text-white/80 font-arabic leading-tight">
+                      <span className="block text-[11px] text-white/90 font-bold font-arabic leading-tight mt-0.5">
                         {majdCompany?.nameAr || 'مؤسسة خطوط المجد للتجارة'}
                       </span>
                     </div>
