@@ -160,51 +160,71 @@ export default function Hero() {
 
             <div
               ref={ctaGroupRef}
-              className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3.5 sm:gap-4"
+              className="mt-6 sm:mt-8 space-y-4"
             >
-              <Button
-                to={benaaCompany?.path || '/benaa'}
-                variant="primary"
-                className="w-full sm:w-auto bg-white text-benaa hover:bg-gray-100 shadow-xl px-5 sm:px-6 py-3 sm:py-3.5 border border-white/20 active:scale-98 transition-transform"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-benaa/10 flex items-center justify-center flex-shrink-0">
-                    <Building2 className="w-4 h-4 text-benaa" />
+              <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-4">
+                <Button
+                  to={benaaCompany?.path || '/benaa'}
+                  variant="primary"
+                  className="w-full sm:w-auto bg-white text-benaa hover:bg-gray-100 shadow-xl px-5 sm:px-6 py-3 sm:py-3.5 border border-white/20 active:scale-98 transition-transform"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-benaa/10 flex items-center justify-center flex-shrink-0">
+                      <Building2 className="w-4 h-4 text-benaa" />
+                    </div>
+                    <div className="text-left">
+                      <span className="block font-bold text-xs sm:text-sm leading-tight">
+                        {benaaCompany?.name
+                          ? benaaCompany.name.split(' CONTRACTING')[0]
+                          : 'AL BENAA AL RAHAB'}
+                      </span>
+                      <span className="block text-[10px] text-benaa/80 font-arabic leading-tight">
+                        {benaaCompany?.nameAr || 'مؤسسة البناء الرحاب للمقاولات'}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <span className="block font-bold text-xs sm:text-sm leading-tight">
-                      {benaaCompany?.name
-                        ? benaaCompany.name.split(' CONTRACTING')[0]
-                        : 'AL BENAA AL RAHAB'}
-                    </span>
-                    <span className="block text-[10px] text-benaa/80 font-arabic leading-tight">
-                      {benaaCompany?.nameAr || 'مؤسسة البناء الرحاب للمقاولات'}
-                    </span>
-                  </div>
-                </div>
-              </Button>
+                </Button>
 
-              <Button
-                to={majdCompany?.path || '/majd'}
-                variant="secondary"
-                className="w-full sm:w-auto bg-gradient-to-r from-majd to-amber-600 text-white hover:brightness-110 shadow-xl px-5 sm:px-6 py-3 sm:py-3.5 border border-majd/30 active:scale-98 transition-transform"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
-                    <Globe2 className="w-4 h-4 text-white" />
+                <Button
+                  to={majdCompany?.path || '/majd'}
+                  variant="secondary"
+                  className="w-full sm:w-auto bg-gradient-to-r from-majd to-amber-600 text-white hover:brightness-110 shadow-xl px-5 sm:px-6 py-3 sm:py-3.5 border border-majd/30 active:scale-98 transition-transform"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+                      <Globe2 className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <span className="block font-bold text-xs sm:text-sm leading-tight">
+                        {majdCompany?.name
+                          ? majdCompany.name.split(' FOR TRADE')[0]
+                          : 'AL MAJD LINES'}
+                      </span>
+                      <span className="block text-[10px] text-white/80 font-arabic leading-tight">
+                        {majdCompany?.nameAr || 'مؤسسة خطوط المجد للتجارة'}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <span className="block font-bold text-xs sm:text-sm leading-tight">
-                      {majdCompany?.name
-                        ? majdCompany.name.split(' FOR TRADE')[0]
-                        : 'AL MAJD LINES'}
-                    </span>
-                    <span className="block text-[10px] text-white/80 font-arabic leading-tight">
-                      {majdCompany?.nameAr || 'مؤسسة خطوط المجد للتجارة'}
-                    </span>
-                  </div>
-                </div>
-              </Button>
+                </Button>
+              </div>
+
+              {/* Trust Badges Bar */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-[11px] sm:text-xs text-white/70">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  CR Registered & Verified
+                </span>
+                <span className="text-white/30 hidden xs:inline">•</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-majd-light"></span>
+                  Saudi Building Code (SBC) Standards
+                </span>
+                <span className="text-white/30 hidden xs:inline">•</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
+                  Global Sourcing & Logistics
+                </span>
+              </div>
             </div>
           </div>
 

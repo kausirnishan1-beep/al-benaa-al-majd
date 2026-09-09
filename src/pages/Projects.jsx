@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import Container from '../components/common/Container.jsx'
 import SectionTitle from '../components/common/SectionTitle.jsx'
 import ProjectGrid from '../components/projects/ProjectGrid.jsx'
 import ProjectFilter from '../components/projects/ProjectFilter.jsx'
+import Breadcrumb from '../components/common/Breadcrumb.jsx'
 import SEO from '../components/common/SEO.jsx'
 import { useProjects } from '../admin/hooks/useProjects.js'
 
@@ -12,14 +13,18 @@ export default function Projects() {
   const categories = useMemo(() => [...new Set(projects.map((p) => p.category))], [projects])
   const filtered = active === 'all' ? projects : projects.filter((p) => p.category === active)
 
+  const breadcrumbs = [{ label: 'Projects & Deliveries' }]
+
   return (
-    <div className="py-16 md:py-24">
+    <div className="py-8 md:py-16 bg-gray-50/50">
       <SEO
         title="Projects & Commercial Portfolio | AL BENAA & AL MAJD"
         description="Delivered construction projects, engineering works, and international commercial supply contracts across Saudi Arabia."
         canonicalPath="/projects"
       />
       <Container>
+        <Breadcrumb items={breadcrumbs} className="mb-6" />
+
         <SectionTitle
           as="h1"
           eyebrow="Our Work & Deliveries"
@@ -29,11 +34,12 @@ export default function Projects() {
           subtitle="Delivered construction engineering and commercial trade deliveries across Saudi Arabia."
           subtitleAr="استعراض للمشاريع الإنشائية وعقود التوريد التجاري المنجزة في المملكة."
         />
-        <ProjectFilter categories={categories} active={active} onChange={setActive} />
-        <ProjectGrid projects={filtered} />
+
+        <div className="mt-8">
+          <ProjectFilter categories={categories} active={active} onChange={setActive} />
+          <ProjectGrid projects={filtered} />
+        </div>
       </Container>
     </div>
   )
 }
-
-
