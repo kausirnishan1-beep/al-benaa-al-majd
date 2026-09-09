@@ -127,7 +127,7 @@ export default function Products() {
                 <div className="relative aspect-video overflow-hidden bg-gray-100">
                   <OptimizedImage
                     src={p.image}
-                    alt={p.name}
+                    alt={`${p.name || 'Imported Product'}${p.nameAr ? ` - ${p.nameAr}` : ''} | Al-Majd Trading`}
                     aspectRatio="16/9"
                     className="group-hover:scale-105 transition-transform duration-500 w-full h-full object-cover"
                     fallbackText={p.name}
@@ -202,7 +202,7 @@ export default function Products() {
             <div className="relative rounded-xl overflow-hidden aspect-video bg-gray-100">
               <OptimizedImage
                 src={selectedProduct.image}
-                alt={selectedProduct.name}
+                alt={`${selectedProduct.name || 'Product'}${selectedProduct.nameAr ? ` - ${selectedProduct.nameAr}` : ''} | Specifications & Details`}
                 aspectRatio="16/9"
                 className="w-full h-full object-cover"
                 fallbackText={selectedProduct.name}

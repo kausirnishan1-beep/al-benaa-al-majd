@@ -72,7 +72,7 @@ export default function OptimizedImage({
       ) : (
         <img
           src={src}
-          alt={alt}
+          alt={alt || fallbackText || 'Al-Benaa & Al-Majd Commercial Entity Media'}
           width={width}
           height={height}
           loading={priority ? 'eager' : 'lazy'}

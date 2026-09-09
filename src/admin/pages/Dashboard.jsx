@@ -163,7 +163,7 @@ export default function Dashboard() {
               >
                 <img
                   src={p.image}
-                  alt={p.title}
+                  alt={p.title || 'Recent project preview'}
                   className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-gray-100"
                 />
                 <div className="min-w-0 flex-grow">

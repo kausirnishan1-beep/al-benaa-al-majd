@@ -47,7 +47,7 @@ export default function ProjectCard({ project, onSelect }) {
       <div className="relative aspect-video overflow-hidden bg-gray-100">
         <OptimizedImage
           src={project.image}
-          alt={project.title}
+          alt={`${project.title || 'Saudi Construction Project'}${project.titleAr ? ` - ${project.titleAr}` : ''} | ${isBenaa ? 'Al-Benaa Contracting' : 'Al-Majd Trading'}`}
           aspectRatio="16/9"
           className="group-hover:scale-105 transition-transform duration-500 w-full h-full object-cover"
           fallbackText={project.title}

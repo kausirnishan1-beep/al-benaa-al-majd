@@ -113,7 +113,7 @@ export default function Projects() {
         <div className="flex items-center gap-3">
           <img
             src={row.image || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=400&q=80'}
-            alt={row.title}
+            alt={row.title || 'Project thumbnail'}
             onError={(e) => {
               e.target.onerror = null
               e.target.src = 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=400&q=80'

@@ -7,6 +7,7 @@ import Container from '../common/Container.jsx'
 import { useScroll } from '../../hooks/useScroll.js'
 import { useSettings } from '../../admin/hooks/useSettings.js'
 import MobileMenu from './MobileMenu.jsx'
+import LanguageSwitcher from '../common/LanguageSwitcher.jsx'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -50,35 +51,28 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden sm:flex items-center gap-2 xl:gap-3 flex-shrink-0">
-          <NavLink
-            to="/admin"
-            className="border border-gray-200 hover:border-benaa/40 text-gray-700 hover:text-benaa text-xs font-bold px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 hover:bg-benaa/5"
-            title="Admin Portal / لوحة الإدارة"
-          >
-            <span className="block leading-tight">Admin</span>
-            <span className="block text-[10px] text-gray-400 font-arabic">(الإدارة)</span>
-          </NavLink>
+        <div className="flex items-center gap-2 xl:gap-3 flex-shrink-0">
+          <LanguageSwitcher />
 
           <NavLink
             to="/contact"
-            className="bg-benaa text-white text-xs font-bold px-3.5 xl:px-4 py-2 xl:py-2.5 rounded-xl hover:bg-benaa-light transition-all flex items-center gap-2 shadow-sm flex-shrink-0"
+            className="hidden sm:flex bg-benaa text-white text-xs font-bold px-3.5 xl:px-4 py-2 xl:py-2.5 rounded-xl hover:bg-benaa-light transition-all items-center gap-2 shadow-sm flex-shrink-0"
           >
             <PhoneCall className="w-3.5 h-3.5 text-majd-light" />
-            <div className="text-left">
+            <div className="text-left rtl:text-right">
               <span className="block leading-tight">Get in Touch</span>
               <span className="block text-[10px] text-white/80 font-arabic leading-tight">تواصل معنا</span>
             </div>
           </NavLink>
-        </div>
 
-        <button
-          className="xl:hidden p-2.5 text-benaa hover:bg-gray-100 rounded-xl transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center active:scale-95 ml-2"
-          onClick={() => setOpen(!open)}
-          aria-label={open ? "Close menu" : "Open menu"}
-        >
-          {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+          <button
+            className="xl:hidden p-2.5 text-benaa hover:bg-gray-100 rounded-xl transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center active:scale-95 ml-1 rtl:mr-1 rtl:ml-0"
+            onClick={() => setOpen(!open)}
+            aria-label={open ? "Close menu" : "Open menu"}
+          >
+            {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </Container>
 
       <AnimatePresence>

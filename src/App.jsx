@@ -5,23 +5,26 @@ import ScrollToTop from './components/common/ScrollToTop.jsx'
 import WhatsAppButton from './components/common/WhatsAppButton.jsx'
 import AppRoutes from './routes.jsx'
 import { AdminAuthProvider } from './admin/context/AdminAuthContext.jsx'
+import { LanguageProvider } from './context/LanguageContext.jsx'
 
 function App() {
   const location = useLocation()
   const isAdminRoute = location.pathname.startsWith('/admin')
 
   return (
-    <AdminAuthProvider>
-      <div className="min-h-screen flex flex-col bg-white text-gray-800">
-        <ScrollToTop />
-        {!isAdminRoute && <Navbar />}
-        <main className="flex-grow">
-          <AppRoutes />
-        </main>
-        {!isAdminRoute && <Footer />}
-        {!isAdminRoute && <WhatsAppButton />}
-      </div>
-    </AdminAuthProvider>
+    <LanguageProvider>
+      <AdminAuthProvider>
+        <div className="min-h-screen flex flex-col bg-white text-gray-800">
+          <ScrollToTop />
+          {!isAdminRoute && <Navbar />}
+          <main className="flex-grow">
+            <AppRoutes />
+          </main>
+          {!isAdminRoute && <Footer />}
+          {!isAdminRoute && <WhatsAppButton />}
+        </div>
+      </AdminAuthProvider>
+    </LanguageProvider>
   )
 }
 

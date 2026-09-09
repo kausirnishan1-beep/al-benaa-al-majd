@@ -43,7 +43,7 @@ export default function ProjectGrid({ projects }) {
             <div className="relative rounded-xl overflow-hidden aspect-video bg-gray-100">
               <OptimizedImage
                 src={selectedProject.image}
-                alt={selectedProject.title}
+                alt={`${selectedProject.title || 'Project Showcase'}${selectedProject.titleAr ? ` - ${selectedProject.titleAr}` : ''} | Full View`}
                 aspectRatio="16/9"
                 className="w-full h-full object-cover"
                 fallbackText={selectedProject.title}

@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ChevronRight, PhoneCall, ShieldCheck } from 'lucide-react'
+import { ChevronRight, PhoneCall } from 'lucide-react'
 import { mainNav } from '../../data/navigation.js'
+import LanguageSwitcher from '../common/LanguageSwitcher.jsx'
 
 export default function MobileMenu({ onClose }) {
   return (
@@ -24,43 +25,30 @@ export default function MobileMenu({ onClose }) {
               }`
             }
           >
-            <div>
+            <div className="text-left rtl:text-right">
               <span className="block font-bold text-sm sm:text-base leading-tight">{item.label}</span>
               <span className="block text-[11px] sm:text-xs text-gray-500 font-arabic leading-tight">{item.labelAr}</span>
             </div>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <ChevronRight className="w-4 h-4 text-gray-400 rtl:rotate-180" />
           </NavLink>
         ))}
 
-        <div className="pt-3 flex flex-col gap-2">
+        <div className="pt-3 flex flex-col gap-2.5">
+          <LanguageSwitcher mobile />
+
           <NavLink
             to="/contact"
             onClick={onClose}
             className="min-h-[48px] py-3 px-4 rounded-xl bg-benaa text-white font-bold text-sm flex items-center justify-between shadow-md active:scale-98 transition-transform"
           >
             <div className="flex items-center gap-2.5">
-              <PhoneCall className="w-4 h-4 text-majd-light" />
-              <div>
+              <PhoneCall className="w-4 h-4 text-majd-light shrink-0" />
+              <div className="text-left rtl:text-right">
                 <span className="block leading-tight">Get in Touch / Request Quote</span>
                 <span className="block text-[10px] text-white/80 font-arabic leading-tight">تواصل معنا واطلب عرض سعر</span>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-white/70" />
-          </NavLink>
-
-          <NavLink
-            to="/admin"
-            onClick={onClose}
-            className="min-h-[44px] py-2.5 px-3 flex items-center justify-between text-benaa font-bold text-xs hover:bg-benaa/5 rounded-xl transition-colors border border-benaa/15"
-          >
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-benaa" />
-              <div>
-                <span className="block leading-tight">Admin Portal</span>
-                <span className="block text-[10px] text-gray-500 font-arabic leading-tight">لوحة التحكم والإدارة</span>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-benaa" />
+            <ChevronRight className="w-4 h-4 text-white/70 rtl:rotate-180" />
           </NavLink>
         </div>
       </nav>

@@ -110,7 +110,7 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
         <div className="relative rounded-2xl overflow-hidden border border-gray-200 aspect-video max-h-56 bg-gray-50 group">
           <img
             src={value}
-            alt="Uploaded preview"
+            alt={label ? `${label} preview` : 'Uploaded media preview'}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Phone, Mail, MapPin, Building2, ChevronRight, Clock, ShieldCheck } from 'lucide-react'
 import Container from '../common/Container.jsx'
+import LanguageSwitcher from '../common/LanguageSwitcher.jsx'
 import { CONTACT_INFO } from '../../utils/constants.js'
 import { useSettings } from '../../admin/hooks/useSettings.js'
 
@@ -64,12 +65,15 @@ export default function Footer() {
             </li>
             <li>
               <Link to="/contact" className="hover:text-white flex items-center gap-2 transition-colors">
-                <ChevronRight className="w-4 h-4 text-majd-light" />
+                <ChevronRight className="w-4 h-4 text-majd-light rtl:rotate-180" />
                 <span>Contact Us <span className="text-xs text-white/50 font-arabic">(تواصل معنا)</span></span>
               </Link>
             </li>
+            <li className="pt-2">
+              <LanguageSwitcher className="!bg-white/10 !border-white/20 !text-white hover:!bg-white/20" />
+            </li>
             <li>
-              <Link to="/admin" className="hover:text-majd-light flex items-center gap-2 transition-colors text-white/40 text-xs mt-2">
+              <Link to="/admin" className="hover:text-majd-light flex items-center gap-2 transition-colors text-white/40 text-xs mt-3">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Admin Portal <span className="font-arabic">(بوابة الإدارة)</span></span>
               </Link>

@@ -104,7 +104,7 @@ export default function Products() {
         <div className="flex items-center gap-3">
           <img
             src={row.image || 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=400&q=80'}
-            alt={row.name}
+            alt={row.name || 'Product thumbnail'}
             onError={(e) => {
               e.target.onerror = null
               e.target.src = 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=400&q=80'
