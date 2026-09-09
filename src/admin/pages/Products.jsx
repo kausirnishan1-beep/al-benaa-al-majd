@@ -7,9 +7,11 @@ import ConfirmDialog from '../components/ConfirmDialog.jsx'
 
 const categories = [
   { id: 'construction-materials', nameEn: 'Construction Materials', nameAr: 'مواد البناء الأساسية' },
-  { id: 'industrial-equipment', nameEn: 'Industrial Machinery', nameAr: 'المعدات والآليات الصناعية' },
-  { id: 'mep-supplies', nameEn: 'MEP & Electrical Supplies', nameAr: 'مستلزمات الكهرباء والكهروميكانيك' },
-  { id: 'finishing', nameEn: 'Architectural Finishing', nameAr: 'مواد التشطيب والديكور' },
+  { id: 'finishes', nameEn: 'Finishes & Ceramics', nameAr: 'التشطيبات والبورسلان' },
+  { id: 'tools-machinery', nameEn: 'Tools & Machinery', nameAr: 'المعدات والآليات الصناعية' },
+  { id: 'safety-gear', nameEn: 'Safety & PPE', nameAr: 'معدات السلامة والوقاية' },
+  { id: 'insulation', nameEn: 'Insulation & Chemicals', nameAr: 'العوازل والمواد الكيميائية' },
+  { id: 'plumbing', nameEn: 'Plumbing & Valves', nameAr: 'السباكة والصمامات' },
 ]
 
 export default function Products() {
