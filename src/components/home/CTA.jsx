@@ -23,13 +23,13 @@ export default function CTA() {
 
           <Button
             to="/contact"
-            variant="primary"
-            className="bg-white text-benaa hover:bg-gray-100 font-bold px-8 py-3.5 shadow-lg inline-flex items-center gap-2"
+            variant="white"
+            className="bg-white text-gray-900 hover:bg-gray-100 font-bold px-8 py-3.5 shadow-lg inline-flex items-center gap-2"
           >
             <PhoneCall className="w-4 h-4 text-benaa" />
             <div className="text-left">
-              <span className="block leading-tight">Request Consultation</span>
-              <span className="block text-[10px] text-gray-500 font-arabic leading-tight">طلب استشارة وعرض سعر</span>
+              <span className="block leading-tight text-gray-900 font-bold">Request Consultation</span>
+              <span className="block text-[10px] text-benaa font-semibold font-arabic leading-tight">طلب استشارة وعرض سعر</span>
             </div>
           </Button>
         </div>

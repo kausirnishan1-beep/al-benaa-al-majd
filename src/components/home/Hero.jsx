@@ -165,20 +165,20 @@ export default function Hero() {
               <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-4">
                 <Button
                   to={benaaCompany?.path || '/benaa'}
-                  variant="primary"
-                  className="w-full sm:w-auto bg-white text-benaa hover:bg-gray-100 shadow-xl px-5 sm:px-6 py-3 sm:py-3.5 border border-white/20 active:scale-98 transition-transform"
+                  variant="white"
+                  className="w-full sm:w-auto bg-white text-gray-900 hover:bg-gray-100 shadow-xl px-5 sm:px-6 py-3 sm:py-3.5 border border-white/20 active:scale-98 transition-transform"
                 >
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-benaa/10 flex items-center justify-center flex-shrink-0">
                       <Building2 className="w-4 h-4 text-benaa" />
                     </div>
                     <div className="text-left">
-                      <span className="block font-bold text-xs sm:text-sm leading-tight">
+                      <span className="block font-extrabold text-gray-900 text-xs sm:text-sm leading-tight">
                         {benaaCompany?.name
                           ? benaaCompany.name.split(' CONTRACTING')[0]
                           : 'AL BENAA AL RAHAB'}
                       </span>
-                      <span className="block text-[10px] text-benaa/80 font-arabic leading-tight">
+                      <span className="block text-[10px] text-benaa font-bold font-arabic leading-tight">
                         {benaaCompany?.nameAr || 'مؤسسة البناء الرحاب للمقاولات'}
                       </span>
                     </div>
