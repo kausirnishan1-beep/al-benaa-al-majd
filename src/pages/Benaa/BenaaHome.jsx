@@ -6,6 +6,7 @@ import SEO from '../../components/common/SEO.jsx'
 import { usePublicServices } from '../../hooks/usePublicServices.js'
 import { useCompanies } from '../../hooks/useCompanies.js'
 import { Link } from 'react-router-dom'
+import ThreeDCanvasBoundary from '../../components/3d/ThreeDCanvasBoundary.jsx'
 
 const BenaaConstruction3D = lazy(() => import('../../components/3d/BenaaConstruction3D.jsx'))
 
@@ -54,7 +55,9 @@ export default function BenaaHome() {
                   </div>
                 }
               >
-                <BenaaConstruction3D />
+                <ThreeDCanvasBoundary label="AL BENAA construction visual">
+                  <BenaaConstruction3D />
+                </ThreeDCanvasBoundary>
               </Suspense>
             </div>
           </div>

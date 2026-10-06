@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.js";
 
 html {
   scroll-behavior: smooth;
@@ -10,6 +9,27 @@ body {
   font-family: 'Plus Jakarta Sans', 'Cairo', 'Tajawal', system-ui, sans-serif;
   color: #1f2937;
   background-color: #ffffff;
+  overflow-x: hidden;
+}
+
+:focus-visible {
+  outline: 3px solid rgba(15, 76, 58, 0.45);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .font-arabic {

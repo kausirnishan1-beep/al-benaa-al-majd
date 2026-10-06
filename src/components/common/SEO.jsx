@@ -51,9 +51,8 @@ export default function SEO({
     setMetaTag('name', 'description', metaDescription)
 
     // 3. Canonical Link
-    const fullCanonicalUrl = typeof window !== 'undefined'
-      ? `${window.location.origin}${canonicalPath}`
-      : `${BASE_URL}${canonicalPath}`
+    const normalizedPath = canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`
+    const fullCanonicalUrl = `${BASE_URL}${normalizedPath}`
 
     let canonicalEl = document.querySelector('link[rel="canonical"]')
     if (!canonicalEl) {
@@ -68,14 +67,16 @@ export default function SEO({
     setMetaTag('property', 'og:description', metaDescription)
     setMetaTag('property', 'og:url', fullCanonicalUrl)
     setMetaTag('property', 'og:type', ogType)
-    setMetaTag('property', 'og:image', ogImage.startsWith('http') ? ogImage : `${window.location.origin}${ogImage}`)
+    const fullImageUrl = ogImage.startsWith('http') ? ogImage : `${BASE_URL}${ogImage.startsWith('/') ? ogImage : `/${ogImage}`}`
+    setMetaTag('property', 'og:image', fullImageUrl)
+    setMetaTag('property', 'og:image:alt', title ? `${title} — AL BENAA & AL MAJD` : 'AL BENAA & AL MAJD')
     setMetaTag('property', 'og:site_name', 'AL BENAA & AL MAJD')
 
     // 5. Twitter Card Meta Tags
     setMetaTag('name', 'twitter:card', 'summary_large_image')
     setMetaTag('name', 'twitter:title', siteTitle)
     setMetaTag('name', 'twitter:description', metaDescription)
-    setMetaTag('name', 'twitter:image', ogImage.startsWith('http') ? ogImage : `${window.location.origin}${ogImage}`)
+    setMetaTag('name', 'twitter:image', fullImageUrl)
   }, [title, description, canonicalPath, ogType, ogImage])
 
   return null

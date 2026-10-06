@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import Container from '../common/Container.jsx'
 import SectionTitle from '../common/SectionTitle.jsx'
 import { useCompanies } from '../../hooks/useCompanies.js'
+import ThreeDCanvasBoundary from '../3d/ThreeDCanvasBoundary.jsx'
 
 const SisterCompanies3DConnection = lazy(() => import('../3d/SisterCompanies3DConnection.jsx'))
 
@@ -41,7 +42,9 @@ export default function SisterCompaniesConnectionSection() {
                 </div>
               }
             >
-              <SisterCompanies3DConnection />
+              <ThreeDCanvasBoundary label="AL BENAA and AL MAJD alliance visual">
+                <SisterCompanies3DConnection />
+              </ThreeDCanvasBoundary>
             </Suspense>
 
             {/* Live Indicator Badges */}

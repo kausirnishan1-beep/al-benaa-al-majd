@@ -14,12 +14,14 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
     if (!file) return
 
     // 1. File type & MIME validation
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
-    const allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg']
+    // SVG is intentionally excluded: active content inside an SVG can execute
+    // when the public file is opened directly.
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    const allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif']
     const fileExt = file.name.split('.').pop()?.toLowerCase() || ''
 
-    if (!allowedTypes.includes(file.type) && !allowedExts.includes(fileExt)) {
-      setUploadError('Invalid file type. Please upload a valid image (JPG, PNG, WEBP, SVG, GIF). / صيغة الملف غير مدعومة')
+    if (!allowedTypes.includes(file.type) || !allowedExts.includes(fileExt)) {
+      setUploadError('Invalid file type. Please upload JPG, PNG, WEBP, or GIF. / صيغة الملف غير مدعومة')
       if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
@@ -71,8 +73,16 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
   }
 
   const handleApplyUrl = () => {
-    if (urlInput.trim()) {
-      onChange(urlInput.trim())
+    const candidate = urlInput.trim()
+    if (candidate) {
+      try {
+        const parsed = new URL(candidate)
+        if (parsed.protocol !== 'https:') throw new Error('Only HTTPS image URLs are allowed.')
+        onChange(parsed.href)
+      } catch (err) {
+        setUploadError(err.message || 'Please enter a valid HTTPS image URL.')
+        return
+      }
       setUrlInput('')
       setUploadError('')
     }
@@ -143,7 +153,7 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
             {isUploading ? 'Uploading Image...' : 'Click or Drag & Drop image file here'}
           </p>
           <p className="text-[11px] text-gray-500 font-arabic mt-1">
-            يدعم صور JPG, PNG, WEBP حتى 5 ميجابايت
+            يدعم صور JPG, PNG, WEBP, GIF حتى 5 ميجابايت
           </p>
         </div>
       ) : (
@@ -176,7 +186,7 @@ export default function ImageUploader({ value, onChange, label = 'Image / الص
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif"
         onChange={handleFileSelect}
         className="hidden"
       />

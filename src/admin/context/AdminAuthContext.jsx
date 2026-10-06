@@ -29,21 +29,17 @@ export function AdminAuthProvider({ children }) {
               role: adminRecord.role || 'admin',
             }
             setUser(u)
-            localStorage.setItem('albenaa_admin_user', JSON.stringify(u))
           } else {
             // Unauthorized or inactive user: do NOT grant fallback admin role
             setUser(null)
-            localStorage.removeItem('albenaa_admin_user')
             await supabase.auth.signOut()
           }
         } else {
           setUser(null)
-          localStorage.removeItem('albenaa_admin_user')
         }
       } catch (err) {
         console.warn('Supabase auth session check:', err)
         setUser(null)
-        localStorage.removeItem('albenaa_admin_user')
       } finally {
         setLoading(false)
       }
@@ -68,14 +64,11 @@ export function AdminAuthProvider({ children }) {
             role: adminRecord.role || 'admin',
           }
           setUser(u)
-          localStorage.setItem('albenaa_admin_user', JSON.stringify(u))
         } else {
           setUser(null)
-          localStorage.removeItem('albenaa_admin_user')
         }
       } else {
         setUser(null)
-        localStorage.removeItem('albenaa_admin_user')
       }
     })
 
@@ -116,7 +109,6 @@ export function AdminAuthProvider({ children }) {
         if (adminErr || !adminRecord || adminRecord.is_active === false) {
           await supabase.auth.signOut()
           setUser(null)
-          localStorage.removeItem('albenaa_admin_user')
           return {
             success: false,
             error: 'Your account is not authorized for admin access. / ليس لديك صلاحيات للوصول إلى لوحة الإدارة',
@@ -130,7 +122,6 @@ export function AdminAuthProvider({ children }) {
           role: adminRecord.role || 'admin',
         }
         setUser(u)
-        localStorage.setItem('albenaa_admin_user', JSON.stringify(u))
         return { success: true, user: u }
       }
 
@@ -156,7 +147,6 @@ export function AdminAuthProvider({ children }) {
     } catch (e) {
       console.warn('SignOut error:', e)
     }
-    localStorage.removeItem('albenaa_admin_user')
     setUser(null)
   }
 

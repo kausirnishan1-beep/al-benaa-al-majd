@@ -5,6 +5,7 @@ import Button from '../common/Button.jsx'
 import { useSettings } from '../../admin/hooks/useSettings.js'
 import { useCompanies } from '../../hooks/useCompanies.js'
 import { gsap, ScrollTrigger, prefersReducedMotion } from '../../utils/gsap-utils.js'
+import ThreeDCanvasBoundary from '../3d/ThreeDCanvasBoundary.jsx'
 
 const Hero3DBuilding = lazy(() => import('../3d/Hero3DBuilding.jsx'))
 
@@ -242,7 +243,9 @@ export default function Hero() {
                 </div>
               }
             >
-              <Hero3DBuilding />
+              <ThreeDCanvasBoundary label="AL BENAA architectural headquarters visual">
+                <Hero3DBuilding />
+              </ThreeDCanvasBoundary>
             </Suspense>
           </div>
         </div>

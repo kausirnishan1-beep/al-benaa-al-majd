@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Phone, Mail, MapPin, Clock } from 'lucide-react'
 import { CONTACT_INFO } from '../../utils/constants.js'
 import { useSettings } from '../../admin/hooks/useSettings.js'
+import ThreeDCanvasBoundary from '../3d/ThreeDCanvasBoundary.jsx'
 
 const Contact3DPin = lazy(() => import('../3d/Contact3DPin.jsx'))
 
@@ -18,7 +19,9 @@ export default function ContactInfo() {
             <div className="text-white/40 text-xs animate-pulse">Loading 3D Headquarters...</div>
           }
         >
-          <Contact3DPin />
+          <ThreeDCanvasBoundary label="AL BENAA and AL MAJD headquarters visual">
+            <Contact3DPin />
+          </ThreeDCanvasBoundary>
         </Suspense>
       </div>
 

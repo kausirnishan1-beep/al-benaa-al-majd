@@ -21,9 +21,14 @@ export default function FileUploader({
 
     // 1. File type & extension validation
     const allowedExts = ['pdf', 'doc', 'docx']
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ]
     const fileExt = file.name.split('.').pop()?.toLowerCase() || ''
 
-    if (!allowedExts.includes(fileExt)) {
+    if (!allowedExts.includes(fileExt) || !allowedTypes.includes(file.type)) {
       setUploadError('Invalid document format. Only PDF, DOC, and DOCX files are allowed. / يرجى رفع ملف بصيغة PDF أو DOC')
       if (fileInputRef.current) fileInputRef.current.value = ''
       return
@@ -77,8 +82,19 @@ export default function FileUploader({
   }
 
   const handleApplyUrl = () => {
-    if (urlInput.trim()) {
-      onChange(urlInput.trim())
+    const candidate = urlInput.trim()
+    if (candidate) {
+      try {
+        const parsed = new URL(candidate, window.location.origin)
+        if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Only HTTP(S) document URLs are allowed.')
+        if (parsed.origin !== window.location.origin && parsed.protocol !== 'https:') {
+          throw new Error('External document URLs must use HTTPS.')
+        }
+        onChange(candidate.startsWith('/') ? candidate : parsed.href)
+      } catch (err) {
+        setUploadError(err.message || 'Please enter a valid document URL.')
+        return
+      }
       setUrlInput('')
       setUploadError('')
     }

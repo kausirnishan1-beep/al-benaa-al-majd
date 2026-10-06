@@ -43,7 +43,7 @@ export default class ErrorBoundary extends React.Component {
               We encountered an unexpected issue. Please reload the page to continue.
             </p>
 
-            {this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="mt-4 text-left p-3 rounded-lg bg-gray-100 border border-gray-200 text-[11px] text-gray-700 max-h-40 overflow-auto font-mono">
                 <summary className="cursor-pointer font-bold text-red-600 mb-1">
                   Error details: {this.state.error.message || this.state.error.toString()}

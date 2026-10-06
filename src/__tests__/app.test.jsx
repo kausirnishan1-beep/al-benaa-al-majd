@@ -59,7 +59,6 @@ describe('LanguageContext & RTL Integration', () => {
     fireEvent.click(switcher)
   })
 })
-
 describe('Button Component', () => {
   it('renders primary button with accessible text', () => {
     render(

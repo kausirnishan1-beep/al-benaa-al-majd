@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSearchParams } from 'react-router-dom'
 import { Send, CheckCircle2, AlertCircle, Loader2, MessageSquare, PhoneCall } from 'lucide-react'
-import { supabase } from '../../utils/supabaseClient.js'
+import { supabase, isSupabaseConfigured } from '../../utils/supabaseClient.js'
 import { useSettings } from '../../admin/hooks/useSettings.js'
 import { CONTACT_INFO } from '../../utils/constants.js'
 
@@ -42,6 +42,12 @@ export default function ContactForm() {
 
   const onSubmit = async (data) => {
     setErrorMessage('')
+
+    if (!isSupabaseConfigured) {
+      setErrorMessage('Online inquiries are temporarily unavailable. Please contact us by phone or WhatsApp. / خدمة الرسائل غير متاحة مؤقتًا')
+      setStatus('error')
+      return
+    }
 
     // 1. Honeypot check (if filled by bot, fake success & drop)
     if (data.website_hp) {
@@ -89,7 +95,10 @@ export default function ContactForm() {
       reset()
     } catch (err) {
       console.error('Supabase contact form submission error:', err)
-      setErrorMessage(err.message || 'Error sending message. Please try again. / حدث خطأ أثناء الإرسال.')
+      const isRateLimited = err.message?.includes('Rate limit exceeded')
+      setErrorMessage(isRateLimited
+        ? 'Please wait before submitting another inquiry. / يرجى الانتظار قبل إرسال رسالة أخرى'
+        : 'We could not send your inquiry. Please try again or contact us directly. / تعذر إرسال الطلب، يرجى المحاولة مرة أخرى')
       setStatus('error')
     }
   }
@@ -148,7 +157,10 @@ export default function ContactForm() {
             {...register('name', {
               required: 'Please enter your full name | يرجى إدخال الاسم الكامل',
               minLength: { value: 2, message: 'Name must be at least 2 characters' },
+              maxLength: { value: 100, message: 'Name must be 100 characters or fewer' },
             })}
+            maxLength={100}
+            autoComplete="name"
             placeholder="e.g. Abdullah Al-Otaibi / عبدالله العتيبي"
             className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 ${
               errors.name ? 'border-red-500 focus:ring-red-300' : 'border-gray-200 focus:ring-benaa'
@@ -176,6 +188,8 @@ export default function ContactForm() {
                   message: 'Invalid email address',
                 },
               })}
+              maxLength={150}
+              autoComplete="email"
               placeholder="name@company.com"
               className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 ${
                 errors.email ? 'border-red-500 focus:ring-red-300' : 'border-gray-200 focus:ring-benaa'
@@ -195,10 +209,20 @@ export default function ContactForm() {
             </label>
             <input
               type="tel"
-              {...register('phone')}
+              {...register('phone', {
+                maxLength: { value: 30, message: 'Phone number must be 30 characters or fewer' },
+                pattern: { value: /^[+0-9()\s.-]*$/, message: 'Please enter a valid phone number' },
+              })}
+              maxLength={30}
+              autoComplete="tel"
               placeholder="+966 50 000 0000"
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-benaa"
             />
+            {errors.phone && (
+              <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                <AlertCircle className="w-3.5 h-3.5 inline" /> {errors.phone.message}
+              </p>
+            )}
           </div>
         </div>
 
@@ -233,7 +257,9 @@ export default function ContactForm() {
             {...register('message', {
               required: 'Please write your message | يرجى كتابة رسالتك أو تفاصيل استفسارك',
               minLength: { value: 10, message: 'Message must be at least 10 characters' },
+              maxLength: { value: 2000, message: 'Message must be 2000 characters or fewer' },
             })}
+            maxLength={2000}
             placeholder="Tell us about your project requirements, quantities, or technical specifications..."
             className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 ${
               errors.message ? 'border-red-500 focus:ring-red-300' : 'border-gray-200 focus:ring-benaa'
@@ -271,7 +297,7 @@ export default function ContactForm() {
         </button>
 
         {status === 'success' && (
-          <div className="p-4 bg-green-50 border border-green-200 text-green-800 rounded-xl flex items-center gap-3">
+          <div role="status" aria-live="polite" className="p-4 bg-green-50 border border-green-200 text-green-800 rounded-xl flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
             <div>
               <p className="font-bold text-sm">Your inquiry has been submitted successfully!</p>
@@ -281,7 +307,7 @@ export default function ContactForm() {
         )}
 
         {status === 'error' && (
-          <div className="p-4 bg-red-50 border border-red-200 text-red-800 rounded-xl flex items-center gap-3">
+          <div role="alert" aria-live="assertive" className="p-4 bg-red-50 border border-red-200 text-red-800 rounded-xl flex items-center gap-3">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
             <div>
               <p className="font-bold text-sm">{errorMessage || 'Error sending message. Please try again.'}</p>

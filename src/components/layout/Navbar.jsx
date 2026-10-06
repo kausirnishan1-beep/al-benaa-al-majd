@@ -32,7 +32,7 @@ export default function Navbar() {
           </div>
         </NavLink>
 
-        <nav className="hidden xl:flex items-center gap-1.5 2xl:gap-3">
+        <nav aria-label="Primary navigation" className="hidden xl:flex items-center gap-1.5 2xl:gap-3">
           {mainNav.map((item) => (
             <NavLink
               key={item.path}
@@ -52,7 +52,9 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2 xl:gap-3 flex-shrink-0">
-          <LanguageSwitcher />
+          <div className="hidden xl:block">
+            <LanguageSwitcher />
+          </div>
 
           <NavLink
             to="/contact"

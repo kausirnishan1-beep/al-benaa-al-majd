@@ -6,6 +6,7 @@ import SEO from '../../components/common/SEO.jsx'
 import { usePublicServices } from '../../hooks/usePublicServices.js'
 import { useCompanies } from '../../hooks/useCompanies.js'
 import { Link } from 'react-router-dom'
+import ThreeDCanvasBoundary from '../../components/3d/ThreeDCanvasBoundary.jsx'
 
 const MajdTradeGlobe3D = lazy(() => import('../../components/3d/MajdTradeGlobe3D.jsx'))
 
@@ -54,7 +55,9 @@ export default function MajdHome() {
                   </div>
                 }
               >
-                <MajdTradeGlobe3D />
+                <ThreeDCanvasBoundary label="AL MAJD global trade visual">
+                  <MajdTradeGlobe3D />
+                </ThreeDCanvasBoundary>
               </Suspense>
             </div>
           </div>

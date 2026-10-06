@@ -40,9 +40,10 @@ const AdminSettings = lazy(() => import('./admin/pages/Settings.jsx'))
 
 function RouteFallback() {
   return (
-    <div className="min-h-[50vh] flex flex-col items-center justify-center py-20">
+    <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center px-4 py-20" role="status" aria-live="polite">
       <Loader2 className="w-8 h-8 text-benaa animate-spin mb-3" />
-      <p className="text-xs font-bold text-gray-500 font-arabic tracking-wide">جاري التحميل...</p>
+      <p className="text-sm font-bold text-gray-600 tracking-wide">Loading…</p>
+      <p className="mt-1 text-xs font-bold text-gray-500 font-arabic">جاري التحميل…</p>
     </div>
   )
 }
