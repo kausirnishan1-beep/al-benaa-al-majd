@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Mail, Trash2, Eye, MessageSquare, Copy, Check, ExternalLink } from 'lucide-react'
+import { Mail, Trash2, Eye, MessageSquare, Copy, Check, Send, Loader2 } from 'lucide-react'
 import { useMessages } from '../hooks/useMessages.js'
 import DataTable from '../components/DataTable.jsx'
 import ConfirmDialog from '../components/ConfirmDialog.jsx'
 import { useAdminAuth } from '../context/AdminAuthContext.jsx'
-import { buildGmailComposeUrl, isValidEmailAddress } from '../../utils/email.js'
+import { sendAdminReply } from '../../utils/adminReply.js'
 
 const REPLY_SUBJECT = 'Inquiry Response - Al-Benaa & Al-Majd Group'
 
@@ -16,6 +16,9 @@ export default function Messages() {
   const [selectedMessage, setSelectedMessage] = useState(null)
   const [deleteTargetId, setDeleteTargetId] = useState(null)
   const [copiedEmail, setCopiedEmail] = useState(false)
+  const [replySubject, setReplySubject] = useState(REPLY_SUBJECT)
+  const [replyBody, setReplyBody] = useState('')
+  const [replyState, setReplyState] = useState({ sending: false, error: '', success: '' })
 
   const handleCopyEmail = (email) => {
     if (!email) return
@@ -26,19 +29,40 @@ export default function Messages() {
 
   const handleOpenDetail = (msg) => {
     setSelectedMessage(msg)
+    setReplySubject(REPLY_SUBJECT)
+    setReplyBody(
+      `Dear ${msg.name},\n\nThank you for contacting Al-Benaa & Al-Majd Group.\n\nRegarding your inquiry:\n"${msg.message}"\n\nKind regards,\nCustomer Relations Team\nAl-Benaa & Al-Majd Group`
+    )
+    setReplyState({ sending: false, error: '', success: '' })
     if (!msg.is_read) {
       markAsRead(msg.id, true)
     }
   }
 
-  const getGmailReplyUrl = (message, includeBody = true) => buildGmailComposeUrl({
-    accountEmail: senderEmail,
-    to: message.email,
-    subject: REPLY_SUBJECT,
-    body: includeBody
-      ? `Dear ${message.name},\n\nThank you for contacting Al-Benaa & Al-Majd Group.\n\nRegarding your inquiry:\n"${message.message}"\n\nKind regards,\nCustomer Relations Team\nAl-Benaa & Al-Majd Group`
-      : '',
-  })
+  const handleSendReply = async () => {
+    if (!selectedMessage || !replySubject.trim() || !replyBody.trim()) return
+
+    setReplyState({ sending: true, error: '', success: '' })
+    try {
+      const result = await sendAdminReply({
+        messageId: selectedMessage.id,
+        subject: replySubject.trim(),
+        body: replyBody.trim(),
+      })
+      setReplyState({
+        sending: false,
+        error: '',
+        success: `Reply sent successfully from ${result.from} to ${result.to}.`,
+      })
+      markAsRead(selectedMessage.id, true)
+    } catch (error) {
+      setReplyState({
+        sending: false,
+        error: error.message || 'Could not send the reply.',
+        success: '',
+      })
+    }
+  }
 
   const handleConfirmDelete = async () => {
     if (deleteTargetId) {
@@ -191,15 +215,9 @@ export default function Messages() {
                 <div>
                   <span className="block font-bold text-gray-400 text-[10px] uppercase">Email Address</span>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <a
-                      href={getGmailReplyUrl(selectedMessage, false) || undefined}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-bold text-benaa hover:underline text-xs block truncate"
-                      title="Open in Gmail Web"
-                    >
+                    <span className="font-bold text-benaa text-xs block truncate">
                       {selectedMessage.email}
-                    </a>
+                    </span>
                     <button
                       type="button"
                       onClick={() => handleCopyEmail(selectedMessage.email)}
@@ -239,17 +257,59 @@ export default function Messages() {
                 </div>
               </div>
 
-              {/* Action Buttons: WhatsApp & Direct Webmail Compose */}
+              {/* Secure server-side email reply */}
               <div className="rounded-2xl border border-benaa/15 bg-benaa/5 px-4 py-3">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                  Reply will open from this admin account
+                  Reply will be sent securely from this admin account
                 </p>
                 <p className="mt-1 break-all text-xs font-extrabold text-benaa" dir="ltr">
                   {senderEmail || 'Admin email unavailable'}
                 </p>
                 <p className="mt-1 text-[10px] leading-relaxed text-gray-500">
-                  Confirm Gmail shows this address in the From field before sending.
+                  Browser Gmail accounts are not used. The server verifies your admin session before sending.
                 </p>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label htmlFor="reply-subject" className="block font-bold text-gray-500 uppercase tracking-wider text-[11px] mb-2">
+                    Reply Subject
+                  </label>
+                  <input
+                    id="reply-subject"
+                    type="text"
+                    maxLength={180}
+                    value={replySubject}
+                    onChange={(event) => setReplySubject(event.target.value)}
+                    disabled={replyState.sending}
+                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-800 outline-none transition focus:border-benaa focus:ring-2 focus:ring-benaa/15 disabled:bg-gray-100"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="reply-body" className="block font-bold text-gray-500 uppercase tracking-wider text-[11px] mb-2">
+                    Reply Message
+                  </label>
+                  <textarea
+                    id="reply-body"
+                    rows={9}
+                    maxLength={10000}
+                    value={replyBody}
+                    onChange={(event) => setReplyBody(event.target.value)}
+                    disabled={replyState.sending}
+                    className="w-full resize-y rounded-xl border border-gray-200 px-4 py-3 text-sm leading-relaxed text-gray-800 outline-none transition focus:border-benaa focus:ring-2 focus:ring-benaa/15 disabled:bg-gray-100"
+                  />
+                </div>
+
+                {replyState.error && (
+                  <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-bold text-red-700">
+                    {replyState.error}
+                  </p>
+                )}
+                {replyState.success && (
+                  <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-700">
+                    {replyState.success}
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5 pt-4 border-t border-gray-100">
@@ -265,23 +325,24 @@ export default function Messages() {
                   </a>
                 )}
 
-                {/* Direct Gmail Web Compose */}
-                <a
-                  href={getGmailReplyUrl(selectedMessage) || undefined}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-disabled={!senderEmail || !isValidEmailAddress(selectedMessage.email)}
+                <button
+                  type="button"
+                  onClick={handleSendReply}
+                  disabled={replyState.sending || !senderEmail || !replySubject.trim() || !replyBody.trim()}
                   className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-bold text-xs transition-all shadow-sm ${
-                    senderEmail && isValidEmailAddress(selectedMessage.email)
+                    senderEmail && replySubject.trim() && replyBody.trim() && !replyState.sending
                       ? 'bg-benaa hover:bg-benaa-light active:scale-95'
-                      : 'bg-gray-400 pointer-events-none opacity-60'
+                      : 'bg-gray-400 cursor-not-allowed opacity-60'
                   }`}
-                  title={`Open Gmail using ${senderEmail || 'the signed-in admin account'}`}
+                  title={`Send securely from ${senderEmail || 'the signed-in admin account'}`}
                 >
-                  <Mail className="w-4 h-4" />
-                  <span>Reply from {senderEmail || 'Admin Email'}</span>
-                  <ExternalLink className="w-3 h-3 opacity-70" />
-                </a>
+                  {replyState.sending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                  <span>{replyState.sending ? 'Sending…' : `Send from ${senderEmail || 'Admin Email'}`}</span>
+                </button>
 
                 <button
                   type="button"

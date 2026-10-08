@@ -22,6 +22,19 @@ This project is ready for Vercel deployment. Push to GitHub and import the repo 
 setting the `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` environment variables in the
 Vercel dashboard.
 
+### Secure admin email replies
+
+Admin replies are sent by the server-side `/api/send-reply` function instead of opening the
+browser's active Gmail account. To enable it in production:
+
+1. Add and verify `albenaagroup.com` in Resend (SPF and DKIM DNS records are required).
+2. Add `RESEND_API_KEY` to the Vercel project's server-side environment variables.
+3. Add `REPLY_FROM_DOMAIN=albenaagroup.com` to Vercel and redeploy.
+
+The function verifies the Supabase access token, checks that the user is active in the `admins`
+table, derives the From address from that authenticated admin, and loads the recipient from the
+original `contact_messages` row. Never expose `RESEND_API_KEY` through a `VITE_` variable.
+
 ## Structure
 
 - `src/pages/Benaa/*` — Al-Benaa (construction) company pages
