@@ -2,7 +2,6 @@ import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ChevronRight, PhoneCall } from 'lucide-react'
 import { mainNav } from '../../data/navigation.js'
-import LanguageSwitcher from '../common/LanguageSwitcher.jsx'
 
 export default function MobileMenu({ onClose }) {
   return (
@@ -34,8 +33,6 @@ export default function MobileMenu({ onClose }) {
         ))}
 
         <div className="pt-3 flex flex-col gap-2.5">
-          <LanguageSwitcher mobile />
-
           <NavLink
             to="/contact"
             onClick={onClose}

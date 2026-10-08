@@ -3,9 +3,15 @@ import { Mail, Trash2, Eye, MessageSquare, Copy, Check, ExternalLink } from 'luc
 import { useMessages } from '../hooks/useMessages.js'
 import DataTable from '../components/DataTable.jsx'
 import ConfirmDialog from '../components/ConfirmDialog.jsx'
+import { useAdminAuth } from '../context/AdminAuthContext.jsx'
+import { buildGmailComposeUrl, isValidEmailAddress } from '../../utils/email.js'
+
+const REPLY_SUBJECT = 'Inquiry Response - Al-Benaa & Al-Majd Group'
 
 export default function Messages() {
   const { messages, markAsRead, deleteMessage } = useMessages()
+  const { user } = useAdminAuth()
+  const senderEmail = user?.email?.trim().toLowerCase() || ''
 
   const [selectedMessage, setSelectedMessage] = useState(null)
   const [deleteTargetId, setDeleteTargetId] = useState(null)
@@ -24,6 +30,15 @@ export default function Messages() {
       markAsRead(msg.id, true)
     }
   }
+
+  const getGmailReplyUrl = (message, includeBody = true) => buildGmailComposeUrl({
+    accountEmail: senderEmail,
+    to: message.email,
+    subject: REPLY_SUBJECT,
+    body: includeBody
+      ? `Dear ${message.name},\n\nThank you for contacting Al-Benaa & Al-Majd Group.\n\nRegarding your inquiry:\n"${message.message}"\n\nKind regards,\nCustomer Relations Team\nAl-Benaa & Al-Majd Group`
+      : '',
+  })
 
   const handleConfirmDelete = async () => {
     if (deleteTargetId) {
@@ -177,9 +192,9 @@ export default function Messages() {
                   <span className="block font-bold text-gray-400 text-[10px] uppercase">Email Address</span>
                   <div className="flex items-center gap-2 mt-0.5">
                     <a
-                      href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(selectedMessage.email)}&su=${encodeURIComponent('Inquiry Response - Al-Benaa & Al-Majd Group')}`}
+                      href={getGmailReplyUrl(selectedMessage, false) || undefined}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       className="font-bold text-benaa hover:underline text-xs block truncate"
                       title="Open in Gmail Web"
                     >
@@ -225,6 +240,18 @@ export default function Messages() {
               </div>
 
               {/* Action Buttons: WhatsApp & Direct Webmail Compose */}
+              <div className="rounded-2xl border border-benaa/15 bg-benaa/5 px-4 py-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                  Reply will open from this admin account
+                </p>
+                <p className="mt-1 break-all text-xs font-extrabold text-benaa" dir="ltr">
+                  {senderEmail || 'Admin email unavailable'}
+                </p>
+                <p className="mt-1 text-[10px] leading-relaxed text-gray-500">
+                  Confirm Gmail shows this address in the From field before sending.
+                </p>
+              </div>
+
               <div className="flex flex-wrap items-center gap-2.5 pt-4 border-t border-gray-100">
                 {selectedMessage.phone && (
                   <a
@@ -240,34 +267,20 @@ export default function Messages() {
 
                 {/* Direct Gmail Web Compose */}
                 <a
-                  href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
-                    selectedMessage.email
-                  )}&su=${encodeURIComponent(
-                    'Inquiry Response - Al-Benaa & Al-Majd Group'
-                  )}&body=${encodeURIComponent(
-                    `Dear ${selectedMessage.name},\n\nThank you for contacting Al-Benaa & Al-Majd Group.\n\nRegarding your inquiry:\n"${selectedMessage.message}"\n\nKind regards,\nCustomer Relations Team\nAl-Benaa & Al-Majd Group`
-                  )}`}
+                  href={getGmailReplyUrl(selectedMessage) || undefined}
                   target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-benaa text-white font-bold text-xs hover:bg-benaa-light transition-all shadow-sm active:scale-95"
-                  title="Open directly in Gmail Web Compose"
+                  rel="noopener noreferrer"
+                  aria-disabled={!senderEmail || !isValidEmailAddress(selectedMessage.email)}
+                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-bold text-xs transition-all shadow-sm ${
+                    senderEmail && isValidEmailAddress(selectedMessage.email)
+                      ? 'bg-benaa hover:bg-benaa-light active:scale-95'
+                      : 'bg-gray-400 pointer-events-none opacity-60'
+                  }`}
+                  title={`Open Gmail using ${senderEmail || 'the signed-in admin account'}`}
                 >
                   <Mail className="w-4 h-4" />
-                  <span>Reply via Gmail</span>
+                  <span>Reply from {senderEmail || 'Admin Email'}</span>
                   <ExternalLink className="w-3 h-3 opacity-70" />
-                </a>
-
-                {/* Default Mail Client (Outlook/Windows Mail) */}
-                <a
-                  href={`mailto:${selectedMessage.email}?subject=${encodeURIComponent(
-                    'Inquiry Response - Al-Benaa & Al-Majd Group'
-                  )}&body=${encodeURIComponent(
-                    `Dear ${selectedMessage.name},\n\nThank you for contacting Al-Benaa & Al-Majd Group.\n\nRegarding your inquiry:\n"${selectedMessage.message}"\n\n`
-                  )}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-bold text-xs hover:bg-gray-200 transition-colors"
-                  title="Open in System Default Mail Client"
-                >
-                  <span>Default Mail App</span>
                 </a>
 
                 <button

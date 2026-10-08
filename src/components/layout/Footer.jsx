@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Phone, Mail, MapPin, Building2, ChevronRight, Clock, ShieldCheck } from 'lucide-react'
 import Container from '../common/Container.jsx'
-import LanguageSwitcher from '../common/LanguageSwitcher.jsx'
 import { CONTACT_INFO } from '../../utils/constants.js'
 import { useSettings } from '../../admin/hooks/useSettings.js'
 
@@ -68,9 +67,6 @@ export default function Footer() {
                 <ChevronRight className="w-4 h-4 text-majd-light rtl:rotate-180" />
                 <span>Contact Us <span className="text-xs text-white/50 font-arabic">(تواصل معنا)</span></span>
               </Link>
-            </li>
-            <li className="pt-2">
-              <LanguageSwitcher className="!bg-white/10 !border-white/20 !text-white hover:!bg-white/20" />
             </li>
             <li>
               <Link to="/admin" className="hover:text-majd-light flex items-center gap-2 transition-colors text-white/40 text-xs mt-3">

@@ -7,7 +7,6 @@ import Container from '../common/Container.jsx'
 import { useScroll } from '../../hooks/useScroll.js'
 import { useSettings } from '../../admin/hooks/useSettings.js'
 import MobileMenu from './MobileMenu.jsx'
-import LanguageSwitcher from '../common/LanguageSwitcher.jsx'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -52,10 +51,6 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2 xl:gap-3 flex-shrink-0">
-          <div className="hidden xl:block">
-            <LanguageSwitcher />
-          </div>
-
           <NavLink
             to="/contact"
             className="hidden sm:flex bg-benaa text-white text-xs font-bold px-3.5 xl:px-4 py-2 xl:py-2.5 rounded-xl hover:bg-benaa-light transition-all items-center gap-2 shadow-sm flex-shrink-0"

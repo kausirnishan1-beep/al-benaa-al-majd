@@ -1,64 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { BrowserRouter } from 'react-router-dom'
-import { LanguageProvider, useLanguage } from '../context/LanguageContext.jsx'
 import Button from '../components/common/Button.jsx'
-import LanguageSwitcher from '../components/common/LanguageSwitcher.jsx'
 import { mainNav } from '../data/navigation.js'
 import { CONTACT_INFO, SITE_NAME_EN, SITE_NAME_AR } from '../utils/constants.js'
+import { buildGmailComposeUrl } from '../utils/email.js'
 
-function TestLanguageConsumer() {
-  const { language, isRTL, toggleLanguage } = useLanguage()
-  return (
-    <div>
-      <span data-testid="lang-display">{language}</span>
-      <span data-testid="rtl-display">{isRTL ? 'RTL' : 'LTR'}</span>
-      <button onClick={toggleLanguage} data-testid="toggle-btn">
-        Toggle
-      </button>
-    </div>
-  )
-}
-
-describe('LanguageContext & RTL Integration', () => {
-  beforeEach(() => {
-    localStorage.clear()
-    document.documentElement.lang = 'en'
-    document.documentElement.dir = 'ltr'
-  })
-
-  it('provides default language and switches to Arabic with RTL dir', () => {
-    render(
-      <LanguageProvider>
-        <TestLanguageConsumer />
-      </LanguageProvider>
-    )
-
-    const langDisplay = screen.getByTestId('lang-display')
-    const toggleBtn = screen.getByTestId('toggle-btn')
-
-    expect(['en', 'ar']).toContain(langDisplay.textContent)
-
-    // Trigger toggle
-    fireEvent.click(toggleBtn)
-
-    // Should update HTML attributes
-    expect(['ltr', 'rtl']).toContain(document.documentElement.dir)
-  })
-
-  it('renders LanguageSwitcher component and responds to clicks', () => {
-    render(
-      <LanguageProvider>
-        <LanguageSwitcher />
-      </LanguageProvider>
-    )
-
-    const switcher = screen.getByRole('button', { name: /current language/i })
-    expect(switcher).toBeInTheDocument()
-    fireEvent.click(switcher)
-  })
-})
 describe('Button Component', () => {
   it('renders primary button with accessible text', () => {
     render(
@@ -93,6 +41,31 @@ describe('Button Component', () => {
 
     const link = screen.getByRole('link', { name: /contact/i })
     expect(link).toHaveAttribute('href', '/contact')
+  })
+})
+
+describe('Admin Gmail reply links', () => {
+  it('targets the authenticated admin account and the client recipient', () => {
+    const url = buildGmailComposeUrl({
+      accountEmail: 'info@albenaagroup.com',
+      to: 'client@example.com',
+      subject: 'Inquiry Response',
+      body: 'Hello client',
+    })
+
+    expect(url).toContain('/mail/u/info%40albenaagroup.com/')
+    expect(url).toContain('authuser=info%40albenaagroup.com')
+    expect(url).toContain('to=client%40example.com')
+    expect(url).toContain('su=Inquiry+Response')
+    expect(url).toContain('body=Hello+client')
+  })
+
+  it('does not create a compose link for an invalid sender or recipient', () => {
+    expect(buildGmailComposeUrl({
+      accountEmail: 'not-an-email',
+      to: 'client@example.com',
+      subject: 'Reply',
+    })).toBeNull()
   })
 })
 
