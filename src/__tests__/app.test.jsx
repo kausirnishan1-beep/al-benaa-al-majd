@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { BrowserRouter } from 'react-router-dom'
 import Button from '../components/common/Button.jsx'
 import { mainNav } from '../data/navigation.js'
 import { CONTACT_INFO, SITE_NAME_EN, SITE_NAME_AR } from '../utils/constants.js'
+import SEO from '../components/common/SEO.jsx'
 
 describe('Button Component', () => {
   it('renders primary button with accessible text', () => {
@@ -58,5 +59,34 @@ describe('Configuration & Navigation Data Integrity', () => {
     expect(SITE_NAME_AR).toContain('مؤسسة البناء')
     expect(CONTACT_INFO.phone).toBeDefined()
     expect(CONTACT_INFO.email).toBeDefined()
+  })
+})
+
+describe('SEO metadata', () => {
+  it('sets a clean branded title, canonical URL, social image, and noindex when requested', async () => {
+    render(
+      <SEO
+        title="Projects | AL BENAA & AL MAJD"
+        description="Project portfolio"
+        canonicalPath="/projects"
+        noIndex
+      />
+    )
+
+    await waitFor(() => {
+      expect(document.title).toBe('Projects | AL BENAA & AL MAJD')
+    })
+
+    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://albenaagroup.com/projects'
+    )
+    expect(document.querySelector('meta[name="robots"]')).toHaveAttribute(
+      'content',
+      'noindex, nofollow, noarchive'
+    )
+    expect(document.querySelector('meta[property="og:image"]')?.content).toContain(
+      '/images/hero/hero-corporate-building.jpg'
+    )
   })
 })

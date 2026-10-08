@@ -16,10 +16,24 @@ function supportsWebGL() {
   }
 }
 
+function shouldUseLightweightVisual() {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false
+  if (/jsdom/i.test(navigator.userAgent)) return false
+
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection
+  return (
+    window.innerWidth < 768 ||
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+    connection?.saveData === true ||
+    (Number.isFinite(navigator.deviceMemory) && navigator.deviceMemory <= 4) ||
+    (Number.isFinite(navigator.hardwareConcurrency) && navigator.hardwareConcurrency <= 4)
+  )
+}
+
 export default class ThreeDCanvasBoundary extends Component {
   constructor(props) {
     super(props)
-    this.state = { unavailable: !supportsWebGL() }
+    this.state = { unavailable: !supportsWebGL() || shouldUseLightweightVisual() }
   }
 
   static getDerivedStateFromError() {

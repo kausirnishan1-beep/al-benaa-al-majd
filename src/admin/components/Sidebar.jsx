@@ -85,13 +85,16 @@ export default function Sidebar({ isOpen, onClose }) {
     <>
       {/* Mobile Backdrop */}
       {isOpen && (
-        <div
+        <button
+          type="button"
           onClick={onClose}
+          aria-label="Close administration menu"
           className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
         />
       )}
 
       <aside
+        aria-label="Administration navigation"
         className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-[#06241b] text-white flex flex-col transition-transform duration-300 ease-in-out border-r border-white/10 lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
@@ -113,7 +116,9 @@ export default function Sidebar({ isOpen, onClose }) {
           </Link>
 
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close administration menu"
             className="p-1.5 rounded-lg text-white/60 hover:text-white lg:hidden"
           >
             <X className="w-5 h-5" />
@@ -127,7 +132,7 @@ export default function Sidebar({ isOpen, onClose }) {
           </div>
           <div className="min-w-0 flex-grow">
             <p className="text-xs font-bold text-white truncate">{user?.name || 'Administrator'}</p>
-            <p className="text-[10px] text-white/60 truncate">{user?.email || 'admin@albenaa-almajd.com'}</p>
+            <p className="text-[10px] text-white/60 truncate">{user?.email || 'info@albenaagroup.com'}</p>
           </div>
         </div>
 

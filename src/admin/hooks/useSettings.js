@@ -1,90 +1,110 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
 
-export function useSettings() {
-  const [settings, setSettings] = useState({
-    general: {
-      siteNameEn: 'AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT',
-      siteNameAr: 'مؤسسة البناء الرحاب للمقاولات ومؤسسة خطوط المجد للتجارة والاستيراد',
-      taglineEn: 'Building the Future, Connecting Global Markets',
-      taglineAr: 'نبني المستقبل، ونربط الأسواق العالمية',
-    },
-    contact: {
-      phone: '+966 11 456 7890',
-      phoneAlt: '+966 50 123 4567',
-      whatsapp: '+966501234567',
-      email: 'info@albenaa-almajd.com',
-      addressEn: 'King Fahd Road, Al Olaya, Riyadh, Kingdom of Saudi Arabia',
-      addressAr: 'طريق الملك فهد، حي العليا، الرياض، المملكة العربية السعودية',
-      workingHoursEn: 'Sunday - Thursday: 8:00 AM - 5:00 PM',
-      workingHoursAr: 'الأحد - الخميس: 8:00 ص - 5:00 م',
-      mapEmbedUrl: 'https://www.google.com/maps?q=Riyadh,Saudi+Arabia&output=embed',
-    },
-    stats: {
-      yearsExperience: '',
-      completedProjects: '',
-      tradePartners: '',
-      exportHubs: '',
-    },
-    social: {
-      facebook: '',
-      linkedin: '',
-      instagram: '',
-      twitter: '',
-    },
+const DEFAULT_SETTINGS = {
+  general: {
+    siteNameEn: 'AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT',
+    siteNameAr: 'مؤسسة البناء الرحاب للمقاولات ومؤسسة خطوط المجد للتجارة والاستيراد',
+    taglineEn: 'Building the Future, Connecting Global Markets',
+    taglineAr: 'نبني المستقبل، ونربط الأسواق العالمية',
+  },
+  contact: {
+    phone: '+966 11 456 7890',
+    phoneAlt: '+966 50 123 4567',
+    whatsapp: '+966501234567',
+    email: 'info@albenaagroup.com',
+    addressEn: 'King Fahd Road, Al Olaya, Riyadh, Kingdom of Saudi Arabia',
+    addressAr: 'طريق الملك فهد، حي العليا، الرياض، المملكة العربية السعودية',
+    workingHoursEn: 'Sunday - Thursday: 8:00 AM - 5:00 PM',
+    workingHoursAr: 'الأحد - الخميس: 8:00 ص - 5:00 م',
+    mapEmbedUrl: 'https://www.google.com/maps?q=Riyadh,Saudi+Arabia&output=embed',
+  },
+  stats: {
+    yearsExperience: '',
+    completedProjects: '',
+    tradePartners: '',
+    exportHubs: '',
+  },
+  social: {
+    facebook: '',
+    linkedin: '',
+    instagram: '',
+    twitter: '',
+  },
+}
+
+let settingsCache = null
+let settingsRequest = null
+
+function mergeSettingsRows(rows) {
+  const merged = Object.fromEntries(
+    Object.entries(DEFAULT_SETTINGS).map(([key, value]) => [key, { ...value }])
+  )
+
+  rows?.forEach((row) => {
+    if (!row.key || !row.value) return
+
+    let value = row.value
+    if (typeof value === 'string') {
+      try {
+        value = JSON.parse(value)
+      } catch {
+        return
+      }
+    }
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) return
+
+    merged[row.key] = { ...(merged[row.key] || {}), ...value }
   })
+
+  const contact = merged.contact
+  merged.contact = {
+    ...DEFAULT_SETTINGS.contact,
+    ...contact,
+    phone: contact.phone?.trim() || DEFAULT_SETTINGS.contact.phone,
+    phoneAlt: contact.phoneAlt?.trim() || DEFAULT_SETTINGS.contact.phoneAlt,
+    whatsapp: contact.whatsapp?.trim() || contact.phoneAlt?.trim() || contact.phone?.trim() || DEFAULT_SETTINGS.contact.whatsapp,
+    email: contact.email?.trim() || DEFAULT_SETTINGS.contact.email,
+    addressEn: contact.addressEn?.trim() || DEFAULT_SETTINGS.contact.addressEn,
+    addressAr: contact.addressAr?.trim() || DEFAULT_SETTINGS.contact.addressAr,
+  }
+
+  return merged
+}
+
+async function loadSettings(force = false) {
+  if (!force && settingsCache) return settingsCache
+  if (!force && settingsRequest) return settingsRequest
+
+  settingsRequest = supabase
+    .from('site_settings')
+    .select('*')
+    .then(({ data, error }) => {
+      if (error) throw error
+      settingsCache = mergeSettingsRows(data)
+      return settingsCache
+    })
+    .finally(() => {
+      settingsRequest = null
+    })
+
+  return settingsRequest
+}
+
+export function useSettings() {
+  const [settings, setSettings] = useState(() => settingsCache || DEFAULT_SETTINGS)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const fetchSettings = useCallback(async () => {
+  const fetchSettings = useCallback(async (force = false) => {
     setLoading(true)
     setError(null)
     try {
-      const { data, error: fetchErr } = await supabase
-        .from('site_settings')
-        .select('*')
-
-      if (fetchErr) throw fetchErr
-
-      if (data && data.length > 0) {
-        setSettings((prev) => {
-          const merged = { ...prev }
-          data.forEach((row) => {
-            if (row.key && row.value) {
-              let val = row.value
-              if (typeof row.value === 'string') {
-                try {
-                  val = JSON.parse(row.value)
-                } catch {
-                  val = row.value
-                }
-              }
-              if (typeof val === 'object' && val !== null) {
-                merged[row.key] = {
-                  ...prev[row.key],
-                  ...val,
-                }
-              }
-              if (row.key === 'contact') {
-                merged.contact = {
-                  ...prev.contact,
-                  ...val,
-                  phone: val.phone !== undefined && val.phone !== '' ? val.phone.trim() : prev.contact.phone,
-                  phoneAlt: val.phoneAlt !== undefined && val.phoneAlt !== '' ? val.phoneAlt.trim() : prev.contact.phoneAlt,
-                  whatsapp: val.whatsapp !== undefined && val.whatsapp !== '' ? val.whatsapp.trim() : (val.phoneAlt || val.phone || prev.contact.whatsapp || '+966501234567'),
-                  email: val.email !== undefined && val.email !== '' ? val.email.trim() : prev.contact.email,
-                  addressEn: val.addressEn !== undefined && val.addressEn !== '' ? val.addressEn.trim() : prev.contact.addressEn,
-                  addressAr: val.addressAr !== undefined && val.addressAr !== '' ? val.addressAr.trim() : prev.contact.addressAr,
-                }
-              }
-            }
-          })
-          return merged
-        })
-      }
+      setSettings(await loadSettings(force))
     } catch (err) {
       console.warn('Supabase settings fetch error, using default settings:', err)
       setError(err.message)
+      setSettings(settingsCache || DEFAULT_SETTINGS)
     } finally {
       setLoading(false)
     }
@@ -110,6 +130,10 @@ export function useSettings() {
         ...prev,
         [key]: newValue,
       }))
+      settingsCache = {
+        ...(settingsCache || settings),
+        [key]: newValue,
+      }
       return { success: true }
     } catch (err) {
       console.error(`Error saving settings for ${key} in Supabase:`, err)
@@ -121,7 +145,7 @@ export function useSettings() {
     settings,
     loading,
     error,
-    refreshSettings: fetchSettings,
+    refreshSettings: () => fetchSettings(true),
     updateSettingGroup,
   }
 }

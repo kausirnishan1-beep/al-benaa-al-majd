@@ -33,10 +33,13 @@ export default function CompaniesPage() {
             <p className="text-gray-400 text-xs font-arabic mt-1">جاري تحديث ملفات الشركات حالياً.</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-8 mt-10">
-            {benaa && <BenaaCard data={benaa} />}
-            {majd && <MajdCard data={majd} />}
-          </div>
+          <section aria-labelledby="company-profiles-heading">
+            <h2 id="company-profiles-heading" className="sr-only">Company profiles</h2>
+            <div className="grid md:grid-cols-2 gap-8 mt-10">
+              {benaa && <BenaaCard data={benaa} />}
+              {majd && <MajdCard data={majd} />}
+            </div>
+          </section>
         )}
       </Container>
     </div>

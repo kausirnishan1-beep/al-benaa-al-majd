@@ -1,7 +1,10 @@
 import { useEffect } from 'react'
 
-const BASE_URL = 'https://albenaa-almajd.com' // or current window location origin fallback
-const DEFAULT_IMAGE = '/logo/group-logo.svg'
+const configuredBaseUrl = (import.meta.env.VITE_SITE_URL || '').trim().replace(/\/+$/, '')
+const BASE_URL = configuredBaseUrl.startsWith('https://')
+  ? configuredBaseUrl
+  : 'https://albenaagroup.com'
+const DEFAULT_IMAGE = '/images/hero/hero-corporate-building.jpg'
 
 /**
  * Lightweight SPA SEO & Open Graph Manager
@@ -24,11 +27,13 @@ export default function SEO({
   canonicalPath = '',
   ogType = 'website',
   ogImage = DEFAULT_IMAGE,
+  noIndex = false,
 }) {
   useEffect(() => {
     // 1. Document Title
+    const alreadyBranded = /AL BENAA|AL MAJD/i.test(title || '')
     const siteTitle = title
-      ? `${title} | AL BENAA & AL MAJD`
+      ? (alreadyBranded ? title : `${title} | AL BENAA & AL MAJD`)
       : 'AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT'
     document.title = siteTitle
 
@@ -49,6 +54,7 @@ export default function SEO({
       description ||
       'AL BENAA AL RAHAB CONTRACTING EST. & AL MAJD LINES FOR TRADE & IMPORT - General Construction Contracting, Engineering & International Trade in Saudi Arabia | الإنشاءات والمقاولات والتجارة العامة بالمملكة العربية السعودية'
     setMetaTag('name', 'description', metaDescription)
+    setMetaTag('name', 'robots', noIndex ? 'noindex, nofollow, noarchive' : 'index, follow')
 
     // 3. Canonical Link
     const normalizedPath = canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`
@@ -70,14 +76,19 @@ export default function SEO({
     const fullImageUrl = ogImage.startsWith('http') ? ogImage : `${BASE_URL}${ogImage.startsWith('/') ? ogImage : `/${ogImage}`}`
     setMetaTag('property', 'og:image', fullImageUrl)
     setMetaTag('property', 'og:image:alt', title ? `${title} — AL BENAA & AL MAJD` : 'AL BENAA & AL MAJD')
+    setMetaTag('property', 'og:image:width', '750')
+    setMetaTag('property', 'og:image:height', '500')
     setMetaTag('property', 'og:site_name', 'AL BENAA & AL MAJD')
+    setMetaTag('property', 'og:locale', 'en_SA')
+    setMetaTag('property', 'og:locale:alternate', 'ar_SA')
 
     // 5. Twitter Card Meta Tags
     setMetaTag('name', 'twitter:card', 'summary_large_image')
     setMetaTag('name', 'twitter:title', siteTitle)
     setMetaTag('name', 'twitter:description', metaDescription)
     setMetaTag('name', 'twitter:image', fullImageUrl)
-  }, [title, description, canonicalPath, ogType, ogImage])
+    setMetaTag('name', 'twitter:image:alt', title ? `${title} — AL BENAA & AL MAJD` : 'AL BENAA & AL MAJD')
+  }, [title, description, canonicalPath, ogType, ogImage, noIndex])
 
   return null
 }

@@ -6,6 +6,24 @@ import { supabase, isSupabaseConfigured } from '../../utils/supabaseClient.js'
 import { useSettings } from '../../admin/hooks/useSettings.js'
 import { CONTACT_INFO } from '../../utils/constants.js'
 
+const CONTACT_SUBMIT_STORAGE_KEY = 'albenaa_last_contact_submit'
+
+function getLastSubmitTime() {
+  try {
+    return parseInt(localStorage.getItem(CONTACT_SUBMIT_STORAGE_KEY) || '0', 10)
+  } catch {
+    return 0
+  }
+}
+
+function rememberSubmitTime(timestamp) {
+  try {
+    localStorage.setItem(CONTACT_SUBMIT_STORAGE_KEY, timestamp.toString())
+  } catch {
+    // The server-side database rate limit remains authoritative when storage is unavailable.
+  }
+}
+
 export default function ContactForm() {
   const [searchParams] = useSearchParams()
   const subjectParam = searchParams.get('subject') || ''
@@ -58,7 +76,7 @@ export default function ContactForm() {
     }
 
     // 2. Persistent Rate Limit check (60 seconds between submissions)
-    const lastSubmitTime = parseInt(localStorage.getItem('albenaa_last_contact_submit') || '0', 10)
+    const lastSubmitTime = getLastSubmitTime()
     const now = Date.now()
     const elapsedSeconds = Math.floor((now - lastSubmitTime) / 1000)
     if (elapsedSeconds < 60) {
@@ -90,7 +108,7 @@ export default function ContactForm() {
         throw error
       }
 
-      localStorage.setItem('albenaa_last_contact_submit', now.toString())
+      rememberSubmitTime(now)
       setStatus('success')
       reset()
     } catch (err) {

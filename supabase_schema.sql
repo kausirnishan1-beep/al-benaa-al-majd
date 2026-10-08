@@ -102,6 +102,11 @@ as $$
     );
 $$;
 
+revoke all on function public.is_admin() from public, anon;
+grant execute on function public.is_admin() to authenticated;
+revoke all on function public.is_super_admin() from public, anon;
+grant execute on function public.is_super_admin() to authenticated;
+
 
 -- ============================================================
 -- 5. COMPANIES
@@ -309,7 +314,10 @@ create table public.contact_messages (
         check (char_length(btrim(name)) between 2 and 100),
 
     email text not null
-        check (char_length(btrim(email)) between 5 and 150),
+        check (
+            char_length(btrim(email)) between 5 and 150
+            and btrim(email) ~* '^[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}$'
+        ),
 
     phone text
         check (phone is null or char_length(btrim(phone)) <= 30),
@@ -531,7 +539,7 @@ on public.site_settings
 for select
 to anon, authenticated
 using (
-    true
+    key in ('general', 'contact', 'stats', 'social')
 );
 
 
@@ -560,6 +568,7 @@ with check (
     is_read = false
     and char_length(btrim(name)) between 2 and 100
     and char_length(btrim(email)) between 5 and 150
+    and btrim(email) ~* '^[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}$'
     and (phone is null or char_length(btrim(phone)) <= 30)
     and char_length(btrim(message)) between 10 and 2000
 );
@@ -988,6 +997,7 @@ to authenticated
 using (
     bucket_id = 'images'
     and public.is_admin()
+    and (storage.foldername(name))[1] = 'uploads'
 )
 with check (
     bucket_id = 'images'
@@ -1004,6 +1014,7 @@ to authenticated
 using (
     bucket_id = 'images'
     and public.is_admin()
+    and (storage.foldername(name))[1] = 'uploads'
 );
 
 
@@ -1039,6 +1050,7 @@ to authenticated
 using (
     bucket_id = 'documents'
     and public.is_admin()
+    and (storage.foldername(name))[1] = 'documents'
 )
 with check (
     bucket_id = 'documents'
@@ -1055,6 +1067,7 @@ to authenticated
 using (
     bucket_id = 'documents'
     and public.is_admin()
+    and (storage.foldername(name))[1] = 'documents'
 );
 
 
@@ -1132,6 +1145,10 @@ begin
     new.email := lower(btrim(new.email));
     new.phone := nullif(btrim(new.phone), '');
     new.message := btrim(new.message);
+
+    -- Serialize checks for the same normalized email to close the concurrent
+    -- submission race that a plain EXISTS check would leave open.
+    perform pg_advisory_xact_lock(hashtextextended(new.email, 0));
 
     -- Prevent repeated message submissions from the same email within 60 seconds
     if exists (

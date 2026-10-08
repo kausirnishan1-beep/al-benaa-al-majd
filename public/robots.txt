@@ -2,5 +2,6 @@
 Allow: /
 Disallow: /admin
 Disallow: /admin/*
+Disallow: /api/
 
-Sitemap: https://albenaa-almajd.com/sitemap.xml
+Sitemap: https://albenaagroup.com/sitemap.xml

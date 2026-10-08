@@ -85,7 +85,7 @@ export default function GeneralTrading() {
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900">Reliable Commercial Supply Partner</h3>
+                <h2 className="text-xl font-bold text-gray-900">Reliable Commercial Supply Partner</h2>
                 <p className="text-xs font-bold text-majd font-arabic">شريكك الموثوق في التوريدات التجارية</p>
               </div>
             </div>
@@ -112,7 +112,7 @@ export default function GeneralTrading() {
 
           {/* Trading Categories */}
           <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
-            <h4 className="text-lg font-bold text-gray-900 mb-1">Our Product & Commodity Sectors</h4>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Our Product & Commodity Sectors</h2>
             <p className="text-xs font-bold text-majd font-arabic mb-6">قطاعات التوريد والتجارة الرئيسية</p>
 
             <div className="grid sm:grid-cols-2 gap-5">
@@ -130,7 +130,7 @@ export default function GeneralTrading() {
           {/* CTA */}
           <div className="p-8 rounded-3xl bg-gradient-to-r from-[#1a1202] via-[#2d2005] to-majd text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-lg">
             <div className="space-y-1 text-center sm:text-left">
-              <h4 className="text-xl font-bold">Request a Wholesale Pricing Proposal</h4>
+              <h2 className="text-xl font-bold">Request a Wholesale Pricing Proposal</h2>
               <p className="text-xs sm:text-sm text-white/80 font-arabic">
                 احصل على تسعير فوري ومنافس لعقود التوريد والكميات التجارية
               </p>

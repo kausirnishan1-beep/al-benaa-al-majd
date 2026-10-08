@@ -6,7 +6,7 @@ React + Vite + Tailwind CSS + Framer Motion + Supabase project scaffold.
 
 ```bash
 npm install
-cp .env .env.local   # then fill in your Supabase keys
+cp .env.example .env.local   # then fill in your Supabase keys and site URL
 npm run dev
 ```
 
@@ -20,7 +20,12 @@ npm run build
 
 This project is ready for Vercel deployment. Push to GitHub and import the repo in Vercel,
 setting the `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` environment variables in the
-Vercel dashboard.
+Vercel dashboard. Set `VITE_SITE_URL` to the final HTTPS production origin so canonical and
+social metadata always point to the deployed domain.
+
+For an existing Supabase project, apply `supabase_security_migration.sql` in the Supabase SQL
+Editor. It is the non-destructive security update; do not rerun the full `supabase_schema.sql` on
+a production database because that bootstrap schema intentionally recreates application tables.
 
 ### Secure admin email replies
 

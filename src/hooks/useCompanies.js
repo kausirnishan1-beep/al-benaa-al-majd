@@ -28,42 +28,59 @@ const DEFAULT_COMPANIES = [
   },
 ]
 
+let companiesCache = null
+let companiesRequest = null
+
+function mapCompanies(data) {
+  if (!data?.length) return DEFAULT_COMPANIES
+
+  return data.map((c) => ({
+    id: c.id,
+    name: c.name || (c.id === 'benaa' ? 'AL BENAA AL RAHAB CONTRACTING EST.' : 'AL MAJD LINES FOR TRADE & IMPORT'),
+    nameAr: c.name_ar || c.nameAr || '',
+    tagline: c.tagline || '',
+    taglineAr: c.tagline_ar || c.taglineAr || '',
+    description: c.description || '',
+    descriptionAr: c.description_ar || c.descriptionAr || '',
+    color: c.color || (c.id === 'benaa' ? 'benaa' : 'majd'),
+    logo: c.logo || (c.id === 'benaa' ? '/logo/al-benaa-logo.svg' : '/logo/al-majd-logo.svg'),
+    path: c.path || `/${c.id}`,
+  }))
+}
+
+async function loadCompanies(force = false) {
+  if (!force && companiesCache) return companiesCache
+  if (!force && companiesRequest) return companiesRequest
+
+  companiesRequest = supabase
+    .from('companies')
+    .select('*')
+    .order('id', { ascending: true })
+    .then(({ data, error }) => {
+      if (error) throw error
+      companiesCache = mapCompanies(data)
+      return companiesCache
+    })
+    .finally(() => {
+      companiesRequest = null
+    })
+
+  return companiesRequest
+}
+
 export function useCompanies() {
-  const [companies, setCompanies] = useState(DEFAULT_COMPANIES)
+  const [companies, setCompanies] = useState(() => companiesCache || DEFAULT_COMPANIES)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const fetchCompanies = useCallback(async () => {
+  const fetchCompanies = useCallback(async (force = false) => {
     setLoading(true)
     setError(null)
     try {
-      const { data, error: fetchErr } = await supabase
-        .from('companies')
-        .select('*')
-        .order('id', { ascending: true })
-
-      if (fetchErr) throw fetchErr
-
-      if (data && data.length > 0) {
-        const mapped = data.map((c) => ({
-          id: c.id,
-          name: c.name || (c.id === 'benaa' ? 'AL BENAA AL RAHAB CONTRACTING EST.' : 'AL MAJD LINES FOR TRADE & IMPORT'),
-          nameAr: c.name_ar || c.nameAr || '',
-          tagline: c.tagline || '',
-          taglineAr: c.tagline_ar || c.taglineAr || '',
-          description: c.description || '',
-          descriptionAr: c.description_ar || c.descriptionAr || '',
-          color: c.color || (c.id === 'benaa' ? 'benaa' : 'majd'),
-          logo: c.logo || (c.id === 'benaa' ? '/logo/al-benaa-logo.svg' : '/logo/al-majd-logo.svg'),
-          path: c.path || `/${c.id}`,
-        }))
-        setCompanies(mapped)
-      } else {
-        setCompanies([])
-      }
+      setCompanies(await loadCompanies(force))
     } catch (err) {
-      console.error('Supabase companies fetch error:', err)
-      setCompanies([])
+      console.warn('Supabase companies fetch error, using resilient defaults:', err)
+      setCompanies(companiesCache || DEFAULT_COMPANIES)
       setError(err.message)
     } finally {
       setLoading(false)
@@ -79,5 +96,11 @@ export function useCompanies() {
     [companies]
   )
 
-  return { companies, loading, error, getCompany, refreshCompanies: fetchCompanies }
+  return {
+    companies,
+    loading,
+    error,
+    getCompany,
+    refreshCompanies: () => fetchCompanies(true),
+  }
 }

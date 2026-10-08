@@ -56,7 +56,7 @@ export default function DataTable({
 
       {/* Table Content */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs text-gray-600">
+        <table className="w-full min-w-[760px] text-left text-xs text-gray-600">
           <thead className="bg-gray-50 text-gray-500 font-bold uppercase tracking-wider text-[11px] border-b border-gray-100">
             <tr>
               {columns.map((col, idx) => (
@@ -99,7 +99,7 @@ export default function DataTable({
 
       {/* Pagination Footer */}
       {totalPages > 1 && (
-        <div className="p-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 bg-gray-50/50">
+        <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-gray-500 bg-gray-50/50">
           <div>
             Showing {(currentPage - 1) * pageSize + 1} to{' '}
             {Math.min(currentPage * pageSize, filteredData.length)} of{' '}

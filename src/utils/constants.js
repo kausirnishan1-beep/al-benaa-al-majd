@@ -7,7 +7,7 @@ export const SITE_TAGLINE_AR = 'نبني المستقبل، ونربط الأس�
 export const CONTACT_INFO = {
   phone: '+966 11 456 7890',
   phoneAlt: '+966 50 123 4567',
-  email: 'info@albenaa-almajd.com',
+  email: 'info@albenaagroup.com',
   addressEn: 'King Fahd Road, Al Olaya, Riyadh, Kingdom of Saudi Arabia',
   addressAr: 'طريق الملك فهد، حي العليا، الرياض، المملكة العربية السعودية',
   address: 'Riyadh, Kingdom of Saudi Arabia | الرياض، المملكة العربية السعودية',

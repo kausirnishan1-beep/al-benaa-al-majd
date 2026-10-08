@@ -110,6 +110,7 @@ export default function Products() {
         </div>
 
         {/* Products Grid */}
+        <h2 className="sr-only">Product catalogue</h2>
         {filteredProducts.length === 0 ? (
           <EmptyState
             title="No products found"
@@ -171,9 +172,9 @@ export default function Products() {
           <div className="w-12 h-12 rounded-2xl bg-white shadow-sm text-majd flex items-center justify-center mx-auto mb-2">
             <Sparkles className="w-6 h-6" />
           </div>
-          <h4 className="font-extrabold text-gray-900 text-lg sm:text-xl">
+          <h2 className="font-extrabold text-gray-900 text-lg sm:text-xl">
             Looking for a custom product or bulk factory import?
-          </h4>
+          </h2>
           <p className="text-xs sm:text-sm text-gray-600 font-arabic">
             هل تبحث عن توريد منتج خاص أو شحنات كميات كبرى مباشرة من المصانع العالمية؟
           </p>

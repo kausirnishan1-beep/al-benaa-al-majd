@@ -85,7 +85,7 @@ export default function ImportExport() {
                 <Globe2 className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900">Global Trade Gateway to Saudi Arabia</h3>
+                <h2 className="text-xl font-bold text-gray-900">Global Trade Gateway to Saudi Arabia</h2>
                 <p className="text-xs font-bold text-majd font-arabic">بوابة التجارة الدولية نحو المملكة</p>
               </div>
             </div>
@@ -112,7 +112,7 @@ export default function ImportExport() {
 
           {/* Import Phases */}
           <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
-            <h4 className="text-lg font-bold text-gray-900 mb-1">Our Trade & Import Pipeline</h4>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Our Trade & Import Pipeline</h2>
             <p className="text-xs font-bold text-majd font-arabic mb-6">مراحل وخطوات التوريد والاستيراد الدولي</p>
 
             <div className="grid sm:grid-cols-2 gap-5">
@@ -130,7 +130,7 @@ export default function ImportExport() {
           {/* CTA Banner */}
           <div className="p-8 rounded-3xl bg-gradient-to-r from-[#1a1202] via-[#2d2005] to-majd text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-lg">
             <div className="space-y-1 text-center sm:text-left">
-              <h4 className="text-xl font-bold">Import or Export With Total Regulatory Assurance</h4>
+              <h2 className="text-xl font-bold">Import or Export With Total Regulatory Assurance</h2>
               <p className="text-xs sm:text-sm text-white/80 font-arabic">
                 تواصل مع فريق الاستيراد والتجارة الدولية لتسريع توريداتك
               </p>

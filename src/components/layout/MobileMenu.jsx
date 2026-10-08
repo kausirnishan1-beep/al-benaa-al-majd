@@ -6,13 +6,14 @@ import { mainNav } from '../../data/navigation.js'
 export default function MobileMenu({ onClose }) {
   return (
     <motion.div
+      id="mobile-navigation"
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
       transition={{ duration: 0.25 }}
       className="xl:hidden bg-white border-t border-gray-100 shadow-2xl overflow-hidden"
     >
-      <nav className="flex flex-col p-4 divide-y divide-gray-100">
+      <nav aria-label="Mobile navigation" className="flex flex-col p-4 divide-y divide-gray-100">
         {mainNav.map((item) => (
           <NavLink
             key={item.path}

@@ -92,9 +92,9 @@ export default function About() {
             <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-benaa/10 to-majd/10 rounded-bl-full pointer-events-none" />
 
             <div className="relative z-10">
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-benaa mb-1">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-benaa mb-1">
                 Our Corporate Legacy & Identity
-              </h3>
+              </h2>
               <p className="text-sm sm:text-base font-bold text-majd font-arabic mb-6">
                 مسيرتنا ورؤيتنا المؤسسية في المملكة العربية السعودية
               </p>
@@ -133,9 +133,9 @@ export default function About() {
                 <div className="w-12 h-12 rounded-2xl bg-benaa/10 text-benaa flex items-center justify-center mb-5">
                   <Building2 className="w-6 h-6" />
                 </div>
-                <h4 className="text-xl font-bold text-benaa">
+                <h3 className="text-xl font-bold text-benaa">
                   {benaa?.name || 'AL BENAA AL RAHAB CONTRACTING EST.'}
-                </h4>
+                </h3>
                 <p className="text-xs font-bold text-gray-500 font-arabic mt-0.5">
                   {benaa?.nameAr || 'مؤسسة البناء الرحاب للمقاولات'}
                 </p>
@@ -174,9 +174,9 @@ export default function About() {
                 <div className="w-12 h-12 rounded-2xl bg-majd/10 text-majd flex items-center justify-center mb-5">
                   <Globe2 className="w-6 h-6" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-900">
+                <h3 className="text-xl font-bold text-gray-900">
                   {majd?.name || 'AL MAJD LINES FOR TRADE & IMPORT'}
-                </h4>
+                </h3>
                 <p className="text-xs font-bold text-gray-500 font-arabic mt-0.5">
                   {majd?.nameAr || 'مؤسسة خطوط المجد للتجارة'}
                 </p>
@@ -215,7 +215,7 @@ export default function About() {
               <div className="w-12 h-12 rounded-2xl bg-benaa/10 text-benaa flex items-center justify-center mb-5">
                 <Eye className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-benaa">Our Vision</h3>
+              <h2 className="text-xl font-bold text-benaa">Our Vision</h2>
               <p className="text-xs font-bold text-majd font-arabic mb-3">رؤيتنا الاستراتيجية</p>
               <p className="text-sm text-gray-700 leading-relaxed flex-grow">
                 To be recognized across the Kingdom of Saudi Arabia as an exemplary model of
@@ -232,7 +232,7 @@ export default function About() {
               <div className="w-12 h-12 rounded-2xl bg-majd/10 text-majd flex items-center justify-center mb-5">
                 <Target className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-benaa">Our Mission</h3>
+              <h2 className="text-xl font-bold text-benaa">Our Mission</h2>
               <p className="text-xs font-bold text-majd font-arabic mb-3">رسالتنا</p>
               <p className="text-sm text-gray-700 leading-relaxed flex-grow">
                 Delivering high-standard contracting execution, ethical procurement, certified
@@ -248,9 +248,9 @@ export default function About() {
 
           {/* Core Values Grid */}
           <div className="bg-white p-8 sm:p-12 rounded-3xl border border-gray-100 shadow-sm">
-            <h3 className="text-2xl font-bold text-gray-900 text-center mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
               Our Core Pillars & Values
-            </h3>
+            </h2>
             <p className="text-sm text-gray-500 text-center mb-10 font-arabic">
               قيمنا وركائز العمل المؤسسي
             </p>
@@ -267,7 +267,7 @@ export default function About() {
                       <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-benaa mb-4">
                         <IconComponent className="w-6 h-6" />
                       </div>
-                      <h5 className="font-bold text-gray-900 text-sm mb-1">{v.title}</h5>
+                      <h3 className="font-bold text-gray-900 text-sm mb-1">{v.title}</h3>
                       <p className="text-[11px] font-bold text-majd font-arabic mb-2">
                         {v.titleAr}
                       </p>
@@ -282,7 +282,7 @@ export default function About() {
           {/* Compliance & Verification Banner */}
           <div className="p-8 rounded-3xl bg-gradient-to-r from-benaa via-benaa-dark to-[#082b20] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md">
             <div>
-              <h4 className="text-xl font-bold">Verified Corporate Credentials</h4>
+              <h2 className="text-xl font-bold">Verified Corporate Credentials</h2>
               <p className="text-sm text-white/80 font-arabic mt-1">
                 الوثائق والشهادات النظامية والتراخيص الرسمية المعتمدة
               </p>

@@ -32,7 +32,7 @@ export default function AdminLayout() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 lg:pl-72">
         <AdminNavbar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
-        <main className="p-6 md:p-8 flex-grow">
+        <main className="p-4 sm:p-6 md:p-8 flex-grow">
           <Outlet />
         </main>
       </div>

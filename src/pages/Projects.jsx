@@ -36,6 +36,7 @@ export default function Projects() {
         />
 
         <div className="mt-8">
+          <h2 className="sr-only">Project portfolio results</h2>
           <ProjectFilter categories={categories} active={active} onChange={setActive} />
           <ProjectGrid projects={filtered} />
         </div>

@@ -85,7 +85,7 @@ export default function ProductSourcing() {
                 <Search className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900">Strategic Worldwide Procurement</h3>
+                <h2 className="text-xl font-bold text-gray-900">Strategic Worldwide Procurement</h2>
                 <p className="text-xs font-bold text-majd font-arabic">خدمات البحث والتعاقد والتوريد الدولي</p>
               </div>
             </div>
@@ -112,7 +112,7 @@ export default function ProductSourcing() {
 
           {/* Workflow */}
           <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
-            <h4 className="text-lg font-bold text-gray-900 mb-1">Our 4-Step Sourcing Methodology</h4>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Our 4-Step Sourcing Methodology</h2>
             <p className="text-xs font-bold text-majd font-arabic mb-6">منهجية البحث والاعتماد والتوريد</p>
 
             <div className="grid sm:grid-cols-2 gap-5">
@@ -130,7 +130,7 @@ export default function ProductSourcing() {
           {/* CTA */}
           <div className="p-8 rounded-3xl bg-gradient-to-r from-[#1a1202] via-[#2d2005] to-majd text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-lg">
             <div className="space-y-1 text-center sm:text-left">
-              <h4 className="text-xl font-bold">Source Direct From Top Global Manufacturers</h4>
+              <h2 className="text-xl font-bold">Source Direct From Top Global Manufacturers</h2>
               <p className="text-xs sm:text-sm text-white/80 font-arabic">
                 تواصل مع مستشاري التوريد لاختيار وتأهيل أفضل المصانع العالمية لمشروعك
               </p>

@@ -63,9 +63,12 @@ export default function Navbar() {
           </NavLink>
 
           <button
+            type="button"
             className="xl:hidden p-2.5 text-benaa hover:bg-gray-100 rounded-xl transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center active:scale-95 ml-1 rtl:mr-1 rtl:ml-0"
             onClick={() => setOpen(!open)}
             aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="mobile-navigation"
           >
             {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>

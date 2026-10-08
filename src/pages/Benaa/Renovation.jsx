@@ -85,7 +85,7 @@ export default function Renovation() {
                 <Hammer className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-benaa">Revitalizing Existing Properties</h3>
+                <h2 className="text-xl font-bold text-benaa">Revitalizing Existing Properties</h2>
                 <p className="text-xs font-bold text-majd font-arabic">تحديث وتطوير العقارات القائمة</p>
               </div>
             </div>
@@ -112,7 +112,7 @@ export default function Renovation() {
 
           {/* Workflow */}
           <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
-            <h4 className="text-lg font-bold text-gray-900 mb-1">Our Renovation Lifecycle</h4>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Our Renovation Lifecycle</h2>
             <p className="text-xs font-bold text-majd font-arabic mb-6">مراحل وخطوات التقييم والتنفيذ</p>
 
             <div className="grid sm:grid-cols-2 gap-5">
@@ -130,7 +130,7 @@ export default function Renovation() {
           {/* CTA Banner */}
           <div className="p-8 rounded-3xl bg-gradient-to-r from-benaa via-benaa-dark to-[#082b20] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-lg">
             <div className="space-y-1 text-center sm:text-left">
-              <h4 className="text-xl font-bold">Request an On-Site Renovation Assessment</h4>
+              <h2 className="text-xl font-bold">Request an On-Site Renovation Assessment</h2>
               <p className="text-xs sm:text-sm text-white/80 font-arabic">
                 احصل على استشارة هندسية ومعاينة ميدانية لتقييم وتجديد عقارك
               </p>

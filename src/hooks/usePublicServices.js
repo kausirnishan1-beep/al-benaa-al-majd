@@ -100,43 +100,60 @@ const DEFAULT_SERVICES = [
   },
 ]
 
+let servicesCache = null
+let servicesRequest = null
+
+function mapServices(data) {
+  if (!data?.length) return DEFAULT_SERVICES
+
+  return data.map((s) => ({
+    id: s.id,
+    companyId: s.company_id || s.companyId || (s.id.startsWith('majd') ? 'majd' : 'benaa'),
+    title: s.title,
+    titleAr: s.title_ar || s.titleAr || '',
+    description: s.description || '',
+    descriptionAr: s.description_ar || s.descriptionAr || '',
+    path: s.path,
+    icon: s.icon,
+    isActive: s.is_active ?? true,
+    sortOrder: s.sort_order || 0,
+  }))
+}
+
+async function loadServices(force = false) {
+  if (!force && servicesCache) return servicesCache
+  if (!force && servicesRequest) return servicesRequest
+
+  servicesRequest = supabase
+    .from('services')
+    .select('*')
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true })
+    .then(({ data, error }) => {
+      if (error) throw error
+      servicesCache = mapServices(data)
+      return servicesCache
+    })
+    .finally(() => {
+      servicesRequest = null
+    })
+
+  return servicesRequest
+}
+
 export function usePublicServices() {
-  const [services, setServices] = useState(DEFAULT_SERVICES)
+  const [services, setServices] = useState(() => servicesCache || DEFAULT_SERVICES)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const fetchServices = useCallback(async () => {
+  const fetchServices = useCallback(async (force = false) => {
     setLoading(true)
     setError(null)
     try {
-      const { data, error: fetchErr } = await supabase
-        .from('services')
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true })
-
-      if (fetchErr) throw fetchErr
-
-      if (data && data.length > 0) {
-        const mapped = data.map((s) => ({
-          id: s.id,
-          companyId: s.company_id || s.companyId || (s.id.startsWith('majd') ? 'majd' : 'benaa'),
-          title: s.title,
-          titleAr: s.title_ar || s.titleAr || '',
-          description: s.description || '',
-          descriptionAr: s.description_ar || s.descriptionAr || '',
-          path: s.path,
-          icon: s.icon,
-          isActive: s.is_active ?? true,
-          sortOrder: s.sort_order || 0,
-        }))
-        setServices(mapped)
-      } else {
-        setServices([])
-      }
+      setServices(await loadServices(force))
     } catch (err) {
-      console.error('Supabase services fetch error:', err)
-      setServices([])
+      console.warn('Supabase services fetch error, using resilient defaults:', err)
+      setServices(servicesCache || DEFAULT_SERVICES)
       setError(err.message)
     } finally {
       setLoading(false)
@@ -162,6 +179,6 @@ export function usePublicServices() {
     loading,
     error,
     getServicesByCompany,
-    refreshServices: fetchServices,
+    refreshServices: () => fetchServices(true),
   }
 }

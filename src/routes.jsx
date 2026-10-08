@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
 import { Home as HomeIcon, AlertCircle, Loader2 } from 'lucide-react'
+import SEO from './components/common/SEO.jsx'
 
 // Public Pages (Lazy Loaded for performance & code-splitting)
 const Home = lazy(() => import('./pages/Home.jsx'))
@@ -51,6 +52,12 @@ function RouteFallback() {
 function NotFound() {
   return (
     <div className="py-28 px-4 text-center max-w-lg mx-auto">
+      <SEO
+        title="Page Not Found"
+        description="The requested page could not be found. Return to the AL BENAA & AL MAJD homepage."
+        canonicalPath="/404"
+        noIndex
+      />
       <div className="w-16 h-16 rounded-3xl bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-6">
         <AlertCircle className="w-8 h-8" />
       </div>

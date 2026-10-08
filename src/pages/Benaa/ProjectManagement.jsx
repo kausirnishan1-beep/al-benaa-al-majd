@@ -85,7 +85,7 @@ export default function ProjectManagement() {
                 <ClipboardCheck className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-benaa">Total Project Lifecycle Leadership</h3>
+                <h2 className="text-xl font-bold text-benaa">Total Project Lifecycle Leadership</h2>
                 <p className="text-xs font-bold text-majd font-arabic">قيادة وإدارة متكاملة لدورة حياة المشروع</p>
               </div>
             </div>
@@ -112,7 +112,7 @@ export default function ProjectManagement() {
 
           {/* Management Phases */}
           <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
-            <h4 className="text-lg font-bold text-gray-900 mb-1">Our Governance & Oversight Framework</h4>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Our Governance & Oversight Framework</h2>
             <p className="text-xs font-bold text-majd font-arabic mb-6">مراحل ومنهجية إدارة المشاريع والإشراف</p>
 
             <div className="grid sm:grid-cols-2 gap-5">
@@ -130,7 +130,7 @@ export default function ProjectManagement() {
           {/* CTA */}
           <div className="p-8 rounded-3xl bg-gradient-to-r from-benaa via-benaa-dark to-[#082b20] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-lg">
             <div className="space-y-1 text-center sm:text-left">
-              <h4 className="text-xl font-bold">Consult with Our Project Management Team</h4>
+              <h2 className="text-xl font-bold">Consult with Our Project Management Team</h2>
               <p className="text-xs sm:text-sm text-white/80 font-arabic">
                 تواصل مع خبرائنا لمناقشة إدارة وإشراف مشروعك القادم
               </p>

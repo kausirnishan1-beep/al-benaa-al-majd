@@ -85,7 +85,7 @@ export default function Maintenance() {
                 <Wrench className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-benaa">Continuous Maintenance Excellence</h3>
+                <h2 className="text-xl font-bold text-benaa">Continuous Maintenance Excellence</h2>
                 <p className="text-xs font-bold text-majd font-arabic">خدمات الصيانة والتشغيل المتكاملة</p>
               </div>
             </div>
@@ -112,7 +112,7 @@ export default function Maintenance() {
 
           {/* Pillars */}
           <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
-            <h4 className="text-lg font-bold text-gray-900 mb-1">Our Operation & Maintenance Protocol</h4>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Our Operation & Maintenance Protocol</h2>
             <p className="text-xs font-bold text-majd font-arabic mb-6">آلية إدارة العقود وجودة الخدمة</p>
 
             <div className="grid sm:grid-cols-2 gap-5">
@@ -130,7 +130,7 @@ export default function Maintenance() {
           {/* CTA Banner */}
           <div className="p-8 rounded-3xl bg-gradient-to-r from-benaa via-benaa-dark to-[#082b20] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-lg">
             <div className="space-y-1 text-center sm:text-left">
-              <h4 className="text-xl font-bold">Request a Maintenance Service Contract</h4>
+              <h2 className="text-xl font-bold">Request a Maintenance Service Contract</h2>
               <p className="text-xs sm:text-sm text-white/80 font-arabic">
                 تواصل معنا للحصول على عقد صيانة وقائية مخصص لمنشأتك
               </p>

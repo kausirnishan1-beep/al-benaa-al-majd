@@ -15,6 +15,7 @@ export default function AdminNavbar({ onToggleSidebar }) {
         <button
           type="button"
           onClick={onToggleSidebar}
+          aria-label="Open administration menu"
           className="p-2 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-gray-100 lg:hidden"
         >
           <Menu className="w-5 h-5" />
@@ -50,7 +51,7 @@ export default function AdminNavbar({ onToggleSidebar }) {
               {user?.name || 'Administrator'}
             </p>
             <p className="text-[10px] text-emerald-600 font-semibold">
-              Online • Super Admin
+              Online • {user?.role === 'admin' ? 'Administrator' : 'Editor'}
             </p>
           </div>
           <div className="w-9 h-9 rounded-xl bg-benaa text-white font-bold text-xs flex items-center justify-center shadow-md">

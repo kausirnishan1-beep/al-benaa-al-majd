@@ -41,6 +41,7 @@ export default function Compliance() {
           />
         ) : (
           <div className="max-w-4xl mx-auto space-y-6 mt-10">
+            <h2 className="sr-only">Published compliance documents</h2>
             {documents.map((item) => (
               <div
                 key={item.id || item.title}

@@ -267,7 +267,7 @@ export default function Settings() {
                 type="email"
                 value={formData.contact?.email || ''}
                 onChange={(e) => handleFieldChange('contact', 'email', e.target.value)}
-                placeholder="info@albenaa-almajd.com"
+                placeholder="info@albenaagroup.com"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-benaa/30 focus:border-benaa"
               />
             </div>

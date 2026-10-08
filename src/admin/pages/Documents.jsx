@@ -33,7 +33,7 @@ export default function Documents() {
       titleAr: '',
       description: '',
       descriptionAr: '',
-      fileUrl: '/documents/company-profile.pdf',
+      fileUrl: '',
       tag: 'Official Certificate',
       sortOrder: documents.length + 1,
     })
