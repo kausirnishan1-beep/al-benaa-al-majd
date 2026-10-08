@@ -6,6 +6,7 @@ import Button from '../components/common/Button.jsx'
 import { mainNav } from '../data/navigation.js'
 import { CONTACT_INFO, SITE_NAME_EN, SITE_NAME_AR } from '../utils/constants.js'
 import SEO from '../components/common/SEO.jsx'
+import { buildGoogleMapsDirectionsUrl, buildGoogleMapsEmbedUrl, normalizeAddress } from '../utils/maps.js'
 
 describe('Button Component', () => {
   it('renders primary button with accessible text', () => {
@@ -88,5 +89,21 @@ describe('SEO metadata', () => {
     expect(document.querySelector('meta[property="og:image"]')?.content).toContain(
       '/images/hero/hero-corporate-building.jpg'
     )
+  })
+})
+
+describe('Google Maps links', () => {
+  it('generates an embed URL from the saved headquarters address', () => {
+    const url = buildGoogleMapsEmbedUrl(' King Fahd Road,  Riyadh ')
+
+    expect(url).toBe('https://www.google.com/maps?q=King%20Fahd%20Road%2C%20Riyadh&output=embed')
+  })
+
+  it('generates a directions URL that supports Arabic addresses', () => {
+    const address = normalizeAddress('  طريق الملك فهد،   الرياض  ')
+    const url = buildGoogleMapsDirectionsUrl(address)
+
+    expect(url).toContain('https://www.google.com/maps/dir/?api=1&destination=')
+    expect(decodeURIComponent(url)).toContain('طريق الملك فهد، الرياض')
   })
 })

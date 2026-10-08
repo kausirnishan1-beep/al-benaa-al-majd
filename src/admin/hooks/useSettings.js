@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../utils/supabaseClient.js'
+import { buildGoogleMapsEmbedUrl, getHeadquartersAddress } from '../../utils/maps.js'
 
 const DEFAULT_SETTINGS = {
   general: {
@@ -67,7 +68,10 @@ function mergeSettingsRows(rows) {
     email: contact.email?.trim() || DEFAULT_SETTINGS.contact.email,
     addressEn: contact.addressEn?.trim() || DEFAULT_SETTINGS.contact.addressEn,
     addressAr: contact.addressAr?.trim() || DEFAULT_SETTINGS.contact.addressAr,
+    workingHoursEn: contact.workingHoursEn?.trim() || DEFAULT_SETTINGS.contact.workingHoursEn,
+    workingHoursAr: contact.workingHoursAr?.trim() || DEFAULT_SETTINGS.contact.workingHoursAr,
   }
+  merged.contact.mapEmbedUrl = buildGoogleMapsEmbedUrl(getHeadquartersAddress(merged.contact))
 
   return merged
 }

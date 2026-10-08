@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Save, CheckCircle2, Phone, Share2, BarChart3, Globe } from 'lucide-react'
+import { Save, CheckCircle2, Phone, Share2, BarChart3, Globe, Clock3, MapPin, ExternalLink } from 'lucide-react'
 import { useSettings } from '../hooks/useSettings.js'
+import { buildGoogleMapsDirectionsUrl, buildGoogleMapsEmbedUrl, getHeadquartersAddress } from '../../utils/maps.js'
 
 export default function Settings() {
   const { settings, updateSettingGroup } = useSettings()
@@ -31,13 +32,31 @@ export default function Settings() {
   const handleSaveGroup = async (groupKey) => {
     setSavedSuccess('')
     setSaveError('')
-    const targetValue = formData[groupKey]
+    let targetValue = formData[groupKey]
     if (!targetValue) return
+
+    if (groupKey === 'contact') {
+      const headquartersAddress = getHeadquartersAddress(targetValue)
+      if (!headquartersAddress) {
+        setSaveError('Please enter the headquarters address in English or Arabic.')
+        return
+      }
+
+      targetValue = {
+        ...targetValue,
+        addressEn: targetValue.addressEn?.trim() || '',
+        addressAr: targetValue.addressAr?.trim() || '',
+        workingHoursEn: targetValue.workingHoursEn?.trim() || '',
+        workingHoursAr: targetValue.workingHoursAr?.trim() || '',
+        mapEmbedUrl: buildGoogleMapsEmbedUrl(headquartersAddress),
+      }
+    }
 
     setSavingGroup(groupKey)
     const res = await updateSettingGroup(groupKey, targetValue)
     setSavingGroup('')
     if (res.success) {
+      setFormData((prev) => ({ ...prev, [groupKey]: targetValue }))
       setSavedSuccess(groupKey)
       setTimeout(() => setSavedSuccess(''), 3500)
     } else {
@@ -199,7 +218,7 @@ export default function Settings() {
           <div>
             <h3 className="font-bold text-benaa text-base">Headquarters & Contact Details</h3>
             <p className="text-xs text-gray-500 font-arabic">
-              أرقام الهواتف والواتساب والبريد الإلكتروني وعنوان الرياض ورابط خرائط جوجل
+              أرقام الهواتف والواتساب والبريد الإلكتروني والعنوان وساعات العمل
             </p>
           </div>
 
@@ -299,17 +318,56 @@ export default function Settings() {
               />
             </div>
 
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                Google Maps Embed URL / رابط تضمين الخريطة
+            <div>
+              <label className="flex items-center gap-1.5 text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                <Clock3 className="w-3.5 h-3.5 text-gold" />
+                Working Hours (English)
               </label>
               <input
                 type="text"
-                value={formData.contact?.mapEmbedUrl || ''}
-                onChange={(e) => handleFieldChange('contact', 'mapEmbedUrl', e.target.value)}
-                placeholder="https://www.google.com/maps?q=Riyadh,Saudi+Arabia&output=embed"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-mono focus:ring-2 focus:ring-benaa/30 focus:border-benaa"
+                value={formData.contact?.workingHoursEn || ''}
+                onChange={(e) => handleFieldChange('contact', 'workingHoursEn', e.target.value)}
+                placeholder="Sunday - Thursday: 8:00 AM - 5:00 PM"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-benaa/30 focus:border-benaa"
               />
+            </div>
+
+            <div>
+              <label className="flex items-center justify-end gap-1.5 text-xs font-bold text-gray-700 font-arabic mb-1.5">
+                ساعات العمل (باللغة العربية)
+                <Clock3 className="w-3.5 h-3.5 text-gold" />
+              </label>
+              <input
+                type="text"
+                dir="rtl"
+                value={formData.contact?.workingHoursAr || ''}
+                onChange={(e) => handleFieldChange('contact', 'workingHoursAr', e.target.value)}
+                placeholder="الأحد - الخميس: 8:00 ص - 5:00 م"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-arabic text-right focus:ring-2 focus:ring-benaa/30 focus:border-benaa"
+              />
+            </div>
+
+            <div className="sm:col-span-2 rounded-2xl border border-benaa/15 bg-benaa/[0.035] p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex items-start gap-2.5 min-w-0">
+                  <MapPin className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-benaa">Automatic Google Map & Directions</p>
+                    <p className="text-[11px] text-gray-500 mt-1 break-words">
+                      The map is generated automatically from the Headquarters Address above.
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={buildGoogleMapsDirectionsUrl(getHeadquartersAddress(formData.contact))}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border border-benaa/20 bg-white text-benaa text-xs font-bold hover:bg-benaa hover:text-white transition-colors flex-shrink-0"
+                >
+                  Preview directions
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
             </div>
           </div>
 

@@ -1,37 +1,42 @@
 import { useSettings } from '../../admin/hooks/useSettings.js'
-
-const DEFAULT_MAP_URL = 'https://www.google.com/maps?q=Riyadh,Saudi+Arabia&output=embed'
-
-function getSafeMapUrl(value) {
-  try {
-    const url = new URL(value)
-    const isGoogleMaps = url.protocol === 'https:' && (
-      url.hostname === 'google.com' ||
-      url.hostname === 'www.google.com' ||
-      url.hostname === 'maps.google.com'
-    )
-    return isGoogleMaps ? url.toString() : DEFAULT_MAP_URL
-  } catch {
-    return DEFAULT_MAP_URL
-  }
-}
+import { MapPin, Navigation } from 'lucide-react'
+import { buildGoogleMapsDirectionsUrl, buildGoogleMapsEmbedUrl, getHeadquartersAddress } from '../../utils/maps.js'
 
 export default function Map() {
   const { settings } = useSettings()
-  const mapUrl = getSafeMapUrl(settings?.contact?.mapEmbedUrl || DEFAULT_MAP_URL)
+  const address = getHeadquartersAddress(settings?.contact)
+  const mapUrl = buildGoogleMapsEmbedUrl(address)
+  const directionsUrl = buildGoogleMapsDirectionsUrl(address)
 
   return (
-    <div className="w-full h-80 rounded-3xl overflow-hidden shadow-lg border border-gray-100">
-      <iframe
-        title="location-map"
-        src={mapUrl}
-        width="100%"
-        height="100%"
-        style={{ border: 0 }}
-        allowFullScreen=""
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-      />
+    <div className="w-full rounded-3xl overflow-hidden shadow-lg border border-gray-100 bg-white">
+      <div className="h-72 sm:h-80">
+        <iframe
+          title={`Headquarters map: ${address}`}
+          src={mapUrl}
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          allowFullScreen=""
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+      </div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 sm:px-5 border-t border-gray-100">
+        <div className="flex items-start gap-2.5 min-w-0">
+          <MapPin className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <p className="text-sm text-gray-700 leading-relaxed break-words">{address}</p>
+        </div>
+        <a
+          href={directionsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-benaa px-4 py-2.5 text-sm font-bold text-white hover:bg-benaa-light transition-colors flex-shrink-0"
+        >
+          <Navigation className="w-4 h-4" aria-hidden="true" />
+          Get Directions / الاتجاهات
+        </a>
+      </div>
     </div>
   )
 }
